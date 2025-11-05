@@ -1,5 +1,8 @@
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialIcon from 'react-native-vector-icons/FontAwesome';
+
 import { View, Text, StyleSheet, TextInput, Pressable } from 'react-native';
+import FormInput from '@/components/inputs/FormInput';
 
 export default function LoginScreen({ navigator }) {
   return (
@@ -10,42 +13,41 @@ export default function LoginScreen({ navigator }) {
       <Text style={styles.title}>Bienvenido</Text>
       <Text style={styles.subtitle}>Inicie sesión para continuar</Text>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.emailLabel}>Correo electronico</Text>
+      <FormInput
+        iconName="email-outline"
+        size={24}
+        color="#848496"
+        placeholder="ejemplo@correo.com"
+        placeholderTextColor={'#848496'}
+        keyBoardType="email-address"
+        labelText="Correo electronico"
+      />
 
-        <View style={styles.inputRow}>
-          <Icon name="email-outline" size={24} color="#848496" />
-          <TextInput
-            style={styles.emailInput}
-            placeholder='ejemplo@correo.com'
-            placeholderTextColor={'#848496'}
-            keyboardType="email-address"
-            autoCapitalize='none'
-          />
-        </View>
-
-      </View>
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.emailLabel}>Contraseña</Text>
-
-        <View style={styles.inputRow}>
-          <Icon name="lock-outline" size={24} color="#848496" />
-          <TextInput
-            style={styles.emailInput}
-            placeholder='Contraseña'
-            placeholderTextColor={'#848496'}
-            keyboardType="visible-password"
-            autoCapitalize='none'
-          />
-        </View>
-      </View>
+      <FormInput
+        iconName="lock-outline"
+        size={24}
+        color="#848496"
+        placeholder="Contraseña"
+        placeholderTextColor={'#848496'}
+        keyBoardType="visible-password"
+        labelText="Contraseña"
+      />
 
       <Text style={styles.forgotPassword}>¿Olvidaste tu contraseña?</Text>
 
-      <Pressable color='#be185d' title='Iniciar Sesion' style={styles.button}>
-        <Text style={styles.buttonText}>Iniciar Sesion</Text>
-      </Pressable>
+
+      <View style={styles.buttonsContainer}>
+        <Pressable color='#be185d' title='Iniciar Sesion' style={styles.button}>
+          <Text style={styles.buttonText}>Iniciar Sesion</Text>
+        </Pressable>
+
+        <Text style={styles.oText}>o</Text>
+
+        <Pressable color='#be185d' title='Iniciar Sesion' style={styles.googleButton}>
+          <MaterialIcon style={styles.icon} name="google" size={30} color="rgb(255, 255, 255)" />
+          <Text style={styles.buttonText}>Iniciar sesion con Google</Text>
+        </Pressable>
+      </View>
 
       <View style={styles.registerTextContainer}>
         <Text style={styles.register}>¿No tenés cuenta? </Text>
@@ -86,37 +88,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     color: "#d6d6d6",
   },
-  inputContainer: {
-    marginTop: 35,
-    width: '100%',
-    justifyContent: 'center',
-    paddingHorizontal: 30,
-    gap: 6
-  },
-  inputRow: {
-    flexDirection: 'row',      // icono + input en fila
-    alignItems: 'center',
-    borderStyle: 'solid',
-    borderColor: "#848496",
-    borderWidth: 0.7,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    backgroundColor: "#53535328",
-  },
-  emailLabel: {
-    color: "#d6d6d6",
-    fontSize: 16,
-    fontWeight: '400',
-  },
-  emailInput: {
-    borderRadius: 7,
-    height: 50,
-    paddingHorizontal: 10,
-    color: "#FFFFFF",
-    flex: 1,
-    fontSize: 16
-  },
   forgotPassword: {
     color: "#be185d",
     marginTop: 8,
@@ -153,6 +124,27 @@ const styles = StyleSheet.create({
   },
   registerSubText: {
     color: "#be185d",
+    fontSize: 16,
+    fontWeight: 500
+  },
+  googleButton: {
+    flexDirection: 'row',
+    backgroundColor: "#404040",
+    borderRadius: 8,
+    paddingVertical: 10,
+    width: '86%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 15
+  },
+  buttonsContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    gap: 15
+  },
+  oText: {
+    color: "#FFFFFF",
     fontSize: 16,
     fontWeight: 500
   }
