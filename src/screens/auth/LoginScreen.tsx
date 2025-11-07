@@ -1,10 +1,10 @@
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcon from 'react-native-vector-icons/FontAwesome';
 
-import { View, Text, StyleSheet, TextInput, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import FormInput from '@/components/inputs/FormInput';
 
-export default function LoginScreen({ navigator }) {
+export default function LoginScreen({ navigation  }) {
   return (
     <View style={styles.container}>
       <View style={styles.iconContainer}>
@@ -14,13 +14,14 @@ export default function LoginScreen({ navigator }) {
       <Text style={styles.subtitle}>Inicie sesión para continuar</Text>
 
       <FormInput
-        iconName="email-outline"
+        iconName="email"
         size={24}
         color="#848496"
         placeholder="ejemplo@correo.com"
         placeholderTextColor={'#848496'}
         keyBoardType="email-address"
         labelText="Correo electronico"
+        marginTop={35}
       />
 
       <FormInput
@@ -31,6 +32,7 @@ export default function LoginScreen({ navigator }) {
         placeholderTextColor={'#848496'}
         keyBoardType="visible-password"
         labelText="Contraseña"
+        marginTop={35}
       />
 
       <Text style={styles.forgotPassword}>¿Olvidaste tu contraseña?</Text>
@@ -51,7 +53,7 @@ export default function LoginScreen({ navigator }) {
 
       <View style={styles.registerTextContainer}>
         <Text style={styles.register}>¿No tenés cuenta? </Text>
-        <Text style={styles.registerSubText}>Registrate</Text>
+        <Text onPress={() => navigation.navigate("Register")} style={styles.registerSubText}>Registrate</Text>
       </View>
     </View>
   );
