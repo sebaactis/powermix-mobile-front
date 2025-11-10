@@ -1,14 +1,20 @@
 import MainNavigator from '@/src/navigation/MainNavigator';
-import React from 'react';
-import { StatusBar } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 
 export default function App() {
 
   return (
-    <SafeAreaProvider>
+    <SafeAreaProvider style={styles.container}>
         <MainNavigator />
     </SafeAreaProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#1E1E1E',
+  },
+});

@@ -1,5 +1,5 @@
 import ActivityCard from '@/components/home/ActivityCard';
-import { ProgressRing } from '@/components/home/ProgressRing';
+import  ProgressRing from '@/components/home/ProgressRing';
 import ScreenSafeArea from '@/components/safeArea/ScreenSafeArea';
 import { mainColor } from '@/src/constant';
 import { Pressable, StyleSheet, Text, View, ViewStyle, ScrollView } from 'react-native';
