@@ -1,10 +1,11 @@
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import MaterialIcon from 'react-native-vector-icons/FontAwesome';
 
-import Header from '@/components/Header';
 import HomeScreen from '../screens/home/HomeScreen';
 import ProfileScreen from '../screens/home/ProfileScreen';
+import { mainColor } from '../constant';
 
 
 // si usas algún paquete de íconos, importalo acá
@@ -16,9 +17,7 @@ const TabNavigator = () => {
     return (
         <Tab.Navigator
             screenOptions={{
-                // Header custom para TODAS las tabs
-                header: () => <Header />,
-                // estilos generales de la barra de tabs
+                headerShown: false, 
                 tabBarStyle: styles.tabBar,
             }}
         >
@@ -26,11 +25,10 @@ const TabNavigator = () => {
                 name="Home"
                 component={HomeScreen}
                 options={{
+                    tabBarIcon: () => (
+                        <MaterialIcon name="home" size={32} color={mainColor} />
+                    ),
                     title: 'Inicio',
-                    // de momento un ícono dummy; después metemos los que usás vos
-                    // tabBarIcon: ({ focused }) => (
-                    //   <Icon name="home" size={24} color={focused ? 'tomato' : 'gray'} />
-                    // ),
                 }}
             />
             <Tab.Screen
@@ -38,9 +36,6 @@ const TabNavigator = () => {
                 component={ProfileScreen}
                 options={{
                     title: 'Perfil',
-                    // tabBarIcon: ({ focused }) => (
-                    //   <Icon name="user" size={24} color={focused ? 'tomato' : 'gray'} />
-                    // ),
                 }}
             />
         </Tab.Navigator>
@@ -52,6 +47,6 @@ export default TabNavigator;
 const styles = StyleSheet.create({
     tabBar: {
         height: 80,
-        paddingTop: 7,
+        paddingTop: 1,
     },
 });

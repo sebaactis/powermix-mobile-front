@@ -1,8 +1,9 @@
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import { View, Text, StyleSheet, Pressable } from 'react-native';
 import FormInput from '@/components/inputs/FormInput';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { mainColor } from '@/src/constant';
 
 export default function LoginScreen({ navigation  }) {
   return (
@@ -39,13 +40,13 @@ export default function LoginScreen({ navigation  }) {
 
 
       <View style={styles.buttonsContainer}>
-        <Pressable color='#be185d' title='Iniciar Sesion' style={styles.button}>
+        <Pressable color={mainColor} title='Iniciar Sesion' style={styles.button}>
           <Text style={styles.buttonText}>Iniciar Sesion</Text>
         </Pressable>
 
         <Text style={styles.oText}>o</Text>
 
-        <Pressable color='#be185d' title='Iniciar Sesion' style={styles.googleButton}>
+        <Pressable color={mainColor} title='Iniciar Sesion' style={styles.googleButton}>
           <MaterialIcon style={styles.icon} name="google" size={30} color="rgb(255, 255, 255)" />
           <Text style={styles.buttonText}>Iniciar sesion con Google</Text>
         </Pressable>
@@ -91,7 +92,7 @@ const styles = StyleSheet.create({
     color: "#d6d6d6",
   },
   forgotPassword: {
-    color: "#be185d",
+    color: mainColor,
     marginTop: 8,
     textAlign: 'right',
     width: '85%',
@@ -99,7 +100,7 @@ const styles = StyleSheet.create({
     fontWeight: 500,
   },
   button: {
-    backgroundColor: "#be185d",
+    backgroundColor: mainColor,
     marginTop: 45,
     borderRadius: 8,
     paddingVertical: 14,
@@ -125,7 +126,7 @@ const styles = StyleSheet.create({
     fontWeight: 500
   },
   registerSubText: {
-    color: "#be185d",
+    color: mainColor,
     fontSize: 16,
     fontWeight: 500
   },

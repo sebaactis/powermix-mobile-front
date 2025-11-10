@@ -1,7 +1,8 @@
 import Icon from 'react-native-vector-icons/AntDesign';
 
-import { View, Text, StyleSheet, Pressable } from 'react-native';
 import FormInput from '@/components/inputs/FormInput';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { mainColor } from '@/src/constant';
 
 export default function RegisterScreen() {
   return (
@@ -71,7 +72,7 @@ export default function RegisterScreen() {
 
 
       <View style={styles.buttonsContainer}>
-        <Pressable color='#be185d' title='Iniciar Sesion' style={styles.button}>
+        <Pressable color={mainColor} title='Iniciar Sesion' style={styles.button}>
           <Text style={styles.buttonText}>Crear cuenta</Text>
         </Pressable>
       </View>
@@ -124,11 +125,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   link: {
-    color: '#be185d',
+    color: mainColor,
     fontWeight: '600',
   },
   button: {
-    backgroundColor: "#be185d",
+    backgroundColor: mainColor,
     marginTop: 25,
     borderRadius: 8,
     paddingVertical: 14,
