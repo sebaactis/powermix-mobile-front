@@ -5,6 +5,7 @@ import CustomTabBar from '@/components/tabbar/CustomTabBar';
 import { MAIN_COLOR } from '../constant';
 import HomeScreen from '../screens/home/HomeScreen';
 import ProfileScreen from '../screens/home/ProfileScreen';
+import ProofScreen from '../screens/home/ProofScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -42,7 +43,7 @@ const TabNavigator = () => {
 
       <Tab.Screen
         name="Proofs"
-        component={ProfileScreen}
+        component={ProofScreen}
         options={{
           title: 'Comprobantes',
           tabBarIcon: ({ color }) => (
