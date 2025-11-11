@@ -1,14 +1,14 @@
 import Icon from 'react-native-vector-icons/AntDesign';
 
 import FormInput from '@/components/inputs/FormInput';
+import { BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from '@/src/constant';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { mainColor } from '@/src/constant';
 
 export default function RegisterScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.iconContainer}>
-        <Icon style={styles.icon} name="user-add" size={55} color="rgb(190, 24, 93)" />
+        <Icon style={styles.icon} name="user-add" size={55} color={MAIN_COLOR} />
       </View>
       <Text style={styles.title}>Crear una cuenta nueva</Text>
       <Text style={styles.subtitle}>Unite para empezar a disfrutar de nuestro servicio</Text>
@@ -16,9 +16,9 @@ export default function RegisterScreen() {
       <FormInput
         iconName="abc"
         size={24}
-        color="#848496"
+        color={SUBTEXT}
         placeholder="Introduce tu nombre"
-        placeholderTextColor={'#848496'}
+        placeholderTextColor={SUBTEXT}
         keyBoardType="visible-password"
         labelText="Nombre"
         marginTop={25}
@@ -27,9 +27,9 @@ export default function RegisterScreen() {
       <FormInput
         iconName="email"
         size={24}
-        color="#848496"
+        color={SUBTEXT}
         placeholder="ejemplo@correo.com"
-        placeholderTextColor={'#848496'}
+        placeholderTextColor={SUBTEXT}
         keyBoardType="email-address"
         labelText="Correo electronico"
         marginTop={25}
@@ -38,9 +38,9 @@ export default function RegisterScreen() {
       <FormInput
         iconName="lock-outline"
         size={24}
-        color="#848496"
+        color={SUBTEXT}
         placeholder="Crea una contraseña segura"
-        placeholderTextColor={'#848496'}
+        placeholderTextColor={SUBTEXT}
         keyBoardType="visible-password"
         labelText="Contraseña"
         marginTop={25}
@@ -49,9 +49,9 @@ export default function RegisterScreen() {
       <FormInput
         iconName="lock-outline"
         size={24}
-        color="#848496"
+        color={SUBTEXT}
         placeholder="Repite la contraseña"
-        placeholderTextColor={'#848496'}
+        placeholderTextColor={SUBTEXT}
         keyBoardType="visible-password"
         labelText="Confirmar contraseña"
         marginTop={25}
@@ -72,7 +72,7 @@ export default function RegisterScreen() {
 
 
       <View style={styles.buttonsContainer}>
-        <Pressable color={mainColor} title='Iniciar Sesion' style={styles.button}>
+        <Pressable color={MAIN_COLOR} title='Iniciar Sesion' style={styles.button}>
           <Text style={styles.buttonText}>Crear cuenta</Text>
         </Pressable>
       </View>
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#171717'
+    backgroundColor: BG
   },
   iconContainer: {
     backgroundColor: '#8b003a7c',
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     marginTop: 20,
     textAlign: 'center',
-    color: "#FFFFFF",
+    color: STRONG_TEXT,
     fontWeight: 'bold',
   },
   registerTextContainer: {
@@ -117,19 +117,19 @@ const styles = StyleSheet.create({
     marginTop: 10,
     maxWidth: '80%',
     textAlign: 'center',
-    color: "#d6d6d6",
+    color: SUBTEXT
   },
   subText: {
     fontSize: 16,
-    color: '#6b7280',
+    color: SUBTEXT,
     textAlign: 'center',
   },
   link: {
-    color: mainColor,
+    color: MAIN_COLOR,
     fontWeight: '600',
   },
   button: {
-    backgroundColor: mainColor,
+    backgroundColor: MAIN_COLOR,
     marginTop: 25,
     borderRadius: 8,
     paddingVertical: 14,
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonText: {
-    color: "#FFFFFF",
+    color: STRONG_TEXT,
     fontSize: 17,
     fontWeight: 600
   },

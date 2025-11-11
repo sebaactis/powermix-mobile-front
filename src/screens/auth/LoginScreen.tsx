@@ -2,14 +2,14 @@ import MaterialIcon from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import FormInput from '@/components/inputs/FormInput';
+import { BG, CARD_BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from '@/src/constant';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { mainColor } from '@/src/constant';
 
-export default function LoginScreen({ navigation  }) {
+export default function LoginScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.iconContainer}>
-        <Icon style={styles.icon} name="arm-flex-outline" size={55} color="rgb(190, 24, 93)" />
+        <Icon style={styles.icon} name="arm-flex-outline" size={55} color={MAIN_COLOR} />
       </View>
       <Text style={styles.title}>Bienvenido</Text>
       <Text style={styles.subtitle}>Inicie sesión para continuar</Text>
@@ -17,9 +17,9 @@ export default function LoginScreen({ navigation  }) {
       <FormInput
         iconName="email"
         size={24}
-        color="#848496"
+        color={SUBTEXT}
         placeholder="ejemplo@correo.com"
-        placeholderTextColor={'#848496'}
+        placeholderTextColor={SUBTEXT}
         keyBoardType="email-address"
         labelText="Correo electronico"
         marginTop={35}
@@ -28,9 +28,9 @@ export default function LoginScreen({ navigation  }) {
       <FormInput
         iconName="lock-outline"
         size={24}
-        color="#848496"
+        color={SUBTEXT}
         placeholder="Contraseña"
-        placeholderTextColor={'#848496'}
+        placeholderTextColor={SUBTEXT}
         keyBoardType="visible-password"
         labelText="Contraseña"
         marginTop={35}
@@ -40,14 +40,14 @@ export default function LoginScreen({ navigation  }) {
 
 
       <View style={styles.buttonsContainer}>
-        <Pressable color={mainColor} title='Iniciar Sesion' style={styles.button}>
+        <Pressable color={MAIN_COLOR} title='Iniciar Sesion' style={styles.button}>
           <Text style={styles.buttonText}>Iniciar Sesion</Text>
         </Pressable>
 
         <Text style={styles.oText}>o</Text>
 
-        <Pressable color={mainColor} title='Iniciar Sesion' style={styles.googleButton}>
-          <MaterialIcon style={styles.icon} name="google" size={30} color="rgb(255, 255, 255)" />
+        <Pressable color={MAIN_COLOR} title='Iniciar Sesion' style={styles.googleButton}>
+          <MaterialIcon style={styles.icon} name="google" size={30} color={STRONG_TEXT} />
           <Text style={styles.buttonText}>Iniciar sesion con Google</Text>
         </Pressable>
       </View>
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#171717'
+    backgroundColor: BG
   },
   iconContainer: {
     backgroundColor: '#8b003a7c',
@@ -83,16 +83,16 @@ const styles = StyleSheet.create({
     fontSize: 32,
     marginTop: 20,
     textAlign: 'center',
-    color: "#FFFFFF",
+    color: STRONG_TEXT,
     fontWeight: 'bold',
   },
   subtitle: {
     fontSize: 17.5,
     marginTop: 10,
-    color: "#d6d6d6",
+    color: SUBTEXT
   },
   forgotPassword: {
-    color: mainColor,
+    color: MAIN_COLOR,
     marginTop: 8,
     textAlign: 'right',
     width: '85%',
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     fontWeight: 500,
   },
   button: {
-    backgroundColor: mainColor,
+    backgroundColor: MAIN_COLOR,
     marginTop: 45,
     borderRadius: 8,
     paddingVertical: 14,
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonText: {
-    color: "#FFFFFF",
+    color: STRONG_TEXT,
     fontSize: 17,
     fontWeight: 600
   },
@@ -121,18 +121,18 @@ const styles = StyleSheet.create({
     gap: 2
   },
   register: {
-    color: "#ffffff",
+    color: STRONG_TEXT,
     fontSize: 16,
     fontWeight: 500
   },
   registerSubText: {
-    color: mainColor,
+    color: MAIN_COLOR,
     fontSize: 16,
     fontWeight: 500
   },
   googleButton: {
     flexDirection: 'row',
-    backgroundColor: "#404040",
+    backgroundColor: CARD_BG,
     borderRadius: 8,
     paddingVertical: 10,
     width: '86%',
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     gap: 15
   },
   oText: {
-    color: "#FFFFFF",
+    color: STRONG_TEXT,
     fontSize: 16,
     fontWeight: 500
   }

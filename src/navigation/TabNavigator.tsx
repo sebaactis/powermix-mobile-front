@@ -1,11 +1,10 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import React from 'react';
-import { StyleSheet } from 'react-native';
-import MaterialIcon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
+import CustomTabBar from '@/components/tabbar/CustomTabBar';
+import { MAIN_COLOR } from '../constant';
 import HomeScreen from '../screens/home/HomeScreen';
 import ProfileScreen from '../screens/home/ProfileScreen';
-import { mainColor } from '../constant';
 
 const Tab = createBottomTabNavigator();
 
@@ -14,11 +13,11 @@ const TabNavigator = () => {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarStyle: styles.tabBar,
-        tabBarLabelStyle: styles.tabBarLabel,
-        tabBarActiveTintColor: mainColor,
+        tabBarActiveTintColor: MAIN_COLOR,
         tabBarInactiveTintColor: '#CCCCCC',
+        tabBarShowLabel: false,
       }}
+      tabBar={(props) => <CustomTabBar {...props} />}
     >
       <Tab.Screen
         name="Home"
@@ -26,7 +25,7 @@ const TabNavigator = () => {
         options={{
           title: 'Inicio',
           tabBarIcon: ({ color }) => (
-            <MaterialIcon name="home" size={27} color={color} />
+            <Icon name="home" size={27} color={color} />
           ),
         }}
       />
@@ -36,7 +35,29 @@ const TabNavigator = () => {
         options={{
           title: 'Perfil',
           tabBarIcon: ({ color }) => (
-            <MaterialIcon name="user" size={27} color={color} />
+            <Icon name="user-circle-o" size={25} color={color} />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="Proofs"
+        component={ProfileScreen}
+        options={{
+          title: 'Comprobantes',
+          tabBarIcon: ({ color }) => (
+            <Icon name="wpforms" size={25} color={color} />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="Help"
+        component={ProfileScreen}
+        options={{
+          title: 'Ayuda',
+          tabBarIcon: ({ color }) => (
+            <Icon name="question-circle-o" size={25} color={color} />
           ),
         }}
       />
@@ -46,17 +67,3 @@ const TabNavigator = () => {
 
 export default TabNavigator;
 
-const styles = StyleSheet.create({
-  tabBar: {
-    height: 80,
-    paddingTop: 1,
-    backgroundColor: '#2f2d2d',
-    borderColor: '#2f2d2d',
-    borderTopStartRadius: 8,
-    borderTopEndRadius: 8,
-  },
-  tabBarLabel: {
-    marginTop: 4,
-    fontSize: 13,
-  },
-});

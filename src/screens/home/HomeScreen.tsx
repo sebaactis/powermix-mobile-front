@@ -1,8 +1,8 @@
 import ActivityCard from '@/components/home/ActivityCard';
-import  ProgressRing from '@/components/home/ProgressRing';
+import ProgressRing from '@/components/home/ProgressRing';
 import ScreenSafeArea from '@/components/safeArea/ScreenSafeArea';
-import { mainColor } from '@/src/constant';
-import { Pressable, StyleSheet, Text, View, ViewStyle, ScrollView } from 'react-native';
+import { BG, CARD_BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from '@/src/constant';
+import { Pressable, ScrollView, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
 
 export default function HomeScreen() {
@@ -26,7 +26,7 @@ export default function HomeScreen() {
             strokeWidth={20}
             progress={progress}
             trackColor="#202633"
-            progressColor={mainColor}
+            progressColor={MAIN_COLOR}
           />
 
           <View style={styles.circleContent}>
@@ -43,9 +43,9 @@ export default function HomeScreen() {
         </Text>
 
         <View style={styles.btnContainer}>
-          <Pressable style={[styles.button, { backgroundColor: "#2f2d2d" }]}><Text style={styles.buttonText}>Historial de comprobantes</Text></Pressable>
-          <Pressable style={[styles.button, { backgroundColor: "#2f2d2d" }]}><Text style={styles.buttonText}>Reportes</Text></Pressable>
-          <Pressable style={[styles.button, { backgroundColor: mainColor }]}><Text style={styles.buttonText}>Subir nuevo comprobante</Text></Pressable>
+          <Pressable style={[styles.button, { backgroundColor: CARD_BG }]}><Text style={styles.buttonText}>Historial de comprobantes</Text></Pressable>
+          <Pressable style={[styles.button, { backgroundColor: CARD_BG }]}><Text style={styles.buttonText}>Reportes</Text></Pressable>
+          <Pressable style={[styles.button, { backgroundColor: MAIN_COLOR }]}><Text style={styles.buttonText}>Subir nuevo comprobante</Text></Pressable>
         </View>
 
         <View>
@@ -78,7 +78,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1E1E1E",
+    backgroundColor: BG,
     paddingHorizontal: 24,
     paddingTop: 20,
   },
@@ -98,23 +98,23 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   bigNumber: {
-    color: "#FFFFFF",
+    color: STRONG_TEXT,
     fontSize: 52,
     fontWeight: "800",
   },
   totalText: {
-    color: "#9CA3AF",
+    color: SUBTEXT,
     fontSize: 32,
     marginBottom: 6,
   },
   caption: {
-    color: "#9CA3AF",
+    color: SUBTEXT,
     fontSize: 18,
     marginTop: 4,
   },
   message: {
     marginTop: 6,
-    color: "#a6a6a6",
+    color: SUBTEXT,
     fontSize: 17,
     textAlign: "center",
   },
@@ -132,13 +132,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonText: {
-    color: "#FFFFFF",
+    color: STRONG_TEXT,
     fontSize: 17,
     fontWeight: 600
   },
   actityTitle: {
     marginTop: 40,
-    color: "#FFFFFF",
+    color: STRONG_TEXT,
     fontSize: 20,
     fontWeight: 800,
   },

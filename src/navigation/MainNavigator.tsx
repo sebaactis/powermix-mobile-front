@@ -4,7 +4,7 @@ import AuthNavigator from './AuthNavigator';
 import TabNavigator from './TabNavigator';
 
 const MainNavigator = () => {
-    const [user] = useState<null | { id: string }>("123");
+    const [user] = useState<null | { id: string }>(null);
     // más adelante esto vendrá de Redux / contexto
 
     return user ? <TabNavigator /> : <AuthNavigator />;

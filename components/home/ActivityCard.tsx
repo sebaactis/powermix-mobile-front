@@ -1,8 +1,8 @@
 // components/ReceiptCard.tsx
+import { MAIN_COLOR } from "@/src/constant";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import MaterialIcon from "react-native-vector-icons/MaterialCommunityIcons";
-import { mainColor } from "@/src/constant";
 
 type ReceiptCardProps = {
     title: string;
@@ -20,7 +20,7 @@ export default function ActivityCard({
     return (
         <Pressable style={styles.card} onPress={onPress}>
             <View style={styles.iconWrapper}>
-                <MaterialIcon name="file-document-outline" size={28} color={mainColor} />
+                <MaterialIcon name="file-document-outline" size={28} color={MAIN_COLOR} />
             </View>
 
             <View style={styles.textContainer}>
