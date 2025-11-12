@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: BG,
     paddingHorizontal: 24,
-    paddingTop: 20,
+    paddingTop: 70,
   },
   circleWrapper: {
     alignSelf: "center",
@@ -138,6 +138,6 @@ const styles = StyleSheet.create({
   },
   actityCardsContainer: {
     marginTop: 20,
-    marginBottom: 50
+    marginBottom: 90
   }
 });

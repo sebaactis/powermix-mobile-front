@@ -7,6 +7,7 @@ import HomeScreen from '../screens/home/HomeScreen';
 import ProfileScreen from '../screens/home/ProfileScreen';
 import ProofScreen from '../screens/home/ProofScreen';
 import Header from '@/components/header/Header';
+import SupportScreen from '../screens/home/SupportScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -55,7 +56,7 @@ const TabNavigator = () => {
 
       <Tab.Screen
         name="Help"
-        component={ProfileScreen}
+        component={SupportScreen}
         options={{
           title: 'Ayuda',
           tabBarIcon: ({ color }) => (
