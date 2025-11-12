@@ -6,6 +6,7 @@ import { MAIN_COLOR } from '../constant';
 import HomeScreen from '../screens/home/HomeScreen';
 import ProfileScreen from '../screens/home/ProfileScreen';
 import ProofScreen from '../screens/home/ProofScreen';
+import Header from '@/components/header/Header';
 
 const Tab = createBottomTabNavigator();
 
@@ -13,10 +14,10 @@ const TabNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={{
-        headerShown: false,
         tabBarActiveTintColor: MAIN_COLOR,
         tabBarInactiveTintColor: '#CCCCCC',
         tabBarShowLabel: false,
+        header: () => <Header />
       }}
       tabBar={(props) => <CustomTabBar {...props} />}
     >

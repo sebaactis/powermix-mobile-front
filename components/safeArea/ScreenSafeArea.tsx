@@ -6,10 +6,10 @@ import { Edge, SafeAreaView } from 'react-native-safe-area-context';
 type Props = {
     children: ReactNode;
     style?: ViewStyle | ViewStyle[]; 
-    edges: Edge[];
+    edges?: Edge[];
 }
 
-export default function ScreenSafeArea({ children, style, edges = ["top"] }: Props) {
+export default function ScreenSafeArea({ children, style, edges = ['top', 'bottom'], }: Props) {
 
     const bg = MAIN_COLOR
 

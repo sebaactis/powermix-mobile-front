@@ -1,3 +1,4 @@
+import { RenderItem } from "@/components/proof/RenderItem";
 import { BG, CARD_BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
 import { useState } from "react";
 import {
@@ -16,7 +17,6 @@ import Icon from "react-native-vector-icons/FontAwesome";
 const { width } = Dimensions.get("window");
 
 type ReceiptStatus = "APROBADO" | "PENDIENTE" | "RECHAZADO";
-
 type ReceiptItem = {
     id: string;
     machine: string;
@@ -52,39 +52,6 @@ const DATA: ReceiptItem[] = [
 export default function ProofScreen() {
     const [manualCode, setManualCode] = useState("");
 
-    function getStatusConfig(status: ReceiptStatus) {
-        switch (status) {
-            case "APROBADO":
-                return {
-                    label: "Aprobado",
-                    textColor: "#1CC8A0",
-                    iconName: "check",
-                    iconColor: "#E6FFFA",
-                    outerBg: "#003B3A",
-                    innerBg: "#007266",
-                };
-            case "PENDIENTE":
-                return {
-                    label: "Pendiente",
-                    textColor: "#F5B41B",
-                    iconName: "clock-o",
-                    iconColor: "#FFF7D6",
-                    outerBg: "#3A2A00",
-                    innerBg: "#7A4B00",
-                };
-            case "RECHAZADO":
-            default:
-                return {
-                    label: "Rechazado",
-                    textColor: "#FF4B7D",
-                    iconName: "close",
-                    iconColor: "#FFE5EC",
-                    outerBg: "#3F0016",
-                    innerBg: "#7C0030",
-                };
-        }
-    }
-
     const handleBack = () => {
         // TODO: navigation.goBack()
         console.log("back");
@@ -92,56 +59,6 @@ export default function ProofScreen() {
 
     const handleUpload = () => {
         console.log("Subir comprobante. Código manual:", manualCode);
-    };
-
-    const renderItem = ({ item }: { item: ReceiptItem }) => {
-        const statusConfig = getStatusConfig(item.status);
-
-        return (
-            <View style={styles.historyCard}>
-                {/* Icono circular de estado */}
-                <View
-                    style={[
-                        styles.statusCircleOuter,
-                        { backgroundColor: statusConfig.outerBg },
-                    ]}
-                >
-                    <View
-                        style={[
-                            styles.statusCircleInner,
-                            { backgroundColor: statusConfig.innerBg },
-                        ]}
-                    >
-                        <Icon
-                            name={statusConfig.iconName}
-                            size={16}
-                            color={statusConfig.iconColor}
-                        />
-                    </View>
-                </View>
-
-                {/* Texto central */}
-                <View style={styles.historyCenter}>
-                    <Text style={styles.historyMachine}>{item.machine}</Text>
-                    <Text style={styles.historyDate}>
-                        {item.date} - {"\n"}
-                        {item.time}
-                    </Text>
-                </View>
-
-                {/* Estado a la derecha */}
-                <View style={styles.historyRight}>
-                    <Text
-                        style={[
-                            styles.historyStatusText,
-                            { color: statusConfig.textColor },
-                        ]}
-                    >
-                        {statusConfig.label}
-                    </Text>
-                </View>
-            </View>
-        );
     };
 
     return (
@@ -197,7 +114,7 @@ export default function ProofScreen() {
                 }
                 data={DATA}
                 keyExtractor={(item) => item.id}
-                renderItem={renderItem}
+                renderItem={({ item }) => <RenderItem item={item} />}
             />
         </View>
     );
@@ -263,7 +180,7 @@ const styles = StyleSheet.create({
     },
 
     topInputLabel: {
-        color: "#E5E7EB",
+        color: STRONG_TEXT,
         fontSize: 15,
         marginBottom: 6,
     },
@@ -294,7 +211,7 @@ const styles = StyleSheet.create({
         height: 36,
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: "#FFFFFF",
+        borderColor: STRONG_TEXT,
         alignItems: "center",
         justifyContent: "center",
         marginRight: 10,
@@ -311,67 +228,18 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         borderWidth: 1,
-        borderColor: "#FFFFFF",
+        borderColor: STRONG_TEXT,
     },
     uploadBtnText: {
         color: STRONG_TEXT,
         fontSize: 16,
         fontWeight: "800",
     },
-
     historyTitle: {
         color: STRONG_TEXT,
         fontSize: 19,
         fontWeight: "700",
         marginTop: 12,
         marginBottom: 16,
-    },
-    historyCard: {
-        flexDirection: "row",
-        alignItems: "center",
-        backgroundColor: CARD_BG,
-        borderRadius: 18,
-        paddingVertical: 13,
-        paddingHorizontal: 13,
-        marginBottom: 12,
-        width: width - 40,
-        alignSelf: "center",
-        borderWidth: 1,
-        borderColor: "#1E1E1E",
-    },
-    statusCircleOuter: {
-        width: 50,
-        height: 50,
-        borderRadius: 23,
-        alignItems: "center",
-        justifyContent: "center",
-        marginRight: 12,
-    },
-    statusCircleInner: {
-        width: 35,
-        height: 35,
-        borderRadius: 23,
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    historyCenter: {
-        flex: 1,
-    },
-    historyMachine: {
-        color: STRONG_TEXT,
-        fontSize: 17,
-        fontWeight: "700",
-        marginBottom: 4,
-    },
-    historyDate: {
-        color: SUBTEXT,
-        fontSize: 14,
-    },
-    historyRight: {
-        marginLeft: 10,
-    },
-    historyStatusText: {
-        fontSize: 16,
-        fontWeight: "700",
-    },
+    }
 });

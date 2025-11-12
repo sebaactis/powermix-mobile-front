@@ -1,8 +1,8 @@
 import ActivityCard from '@/components/home/ActivityCard';
 import ProgressRing from '@/components/home/ProgressRing';
-import ScreenSafeArea from '@/components/safeArea/ScreenSafeArea';
+
 import { BG, CARD_BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from '@/src/constant';
-import { Pressable, ScrollView, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 
 export default function HomeScreen() {
@@ -10,12 +10,8 @@ export default function HomeScreen() {
   const total = 10;
   const progress = completed / total;
 
-  const safeAreaStyles: ViewStyle = {
-    paddingTop: 20
-  };
-
   return (
-    <ScreenSafeArea style={safeAreaStyles}>
+    
       <ScrollView style={styles.container}>
 
         <Text style={styles.sectionTitle}></Text>
@@ -51,27 +47,26 @@ export default function HomeScreen() {
         <View>
           <Text style={styles.actityTitle}>Actividad Reciente</Text>
           <View style={styles.actityCardsContainer}>
-            <ActivityCard 
-            title="Comprobante de batido"
-            date="10/11/2025"
-            amount='5500'
+            <ActivityCard
+              title="Comprobante de batido"
+              date="10/11/2025"
+              amount='5500'
             />
 
-            <ActivityCard 
-            title="Comprobante de batido"
-            date="10/11/2025"
-            amount='5500'
+            <ActivityCard
+              title="Comprobante de batido"
+              date="10/11/2025"
+              amount='5500'
             />
 
-            <ActivityCard 
-            title="Comprobante de batido"
-            date="10/11/2025"
-            amount='5500'
+            <ActivityCard
+              title="Comprobante de batido"
+              date="10/11/2025"
+              amount='5500'
             />
           </View>
         </View>
       </ScrollView>
-    </ScreenSafeArea>
   );
 }
 
