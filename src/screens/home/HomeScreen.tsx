@@ -11,62 +11,61 @@ export default function HomeScreen() {
   const progress = completed / total;
 
   return (
-    
-      <ScrollView style={styles.container}>
 
-        <Text style={styles.sectionTitle}></Text>
+    <ScrollView style={styles.container}>
+      <Text style={styles.sectionTitle}></Text>
 
-        <View style={styles.circleWrapper}>
-          <ProgressRing
-            size={210}
-            strokeWidth={20}
-            progress={progress}
-            trackColor="#202633"
-            progressColor={MAIN_COLOR}
+      <View style={styles.circleWrapper}>
+        <ProgressRing
+          size={210}
+          strokeWidth={20}
+          progress={progress}
+          trackColor="#202633"
+          progressColor={MAIN_COLOR}
+        />
+
+        <View style={styles.circleContent}>
+          <View style={styles.rowCenter}>
+            <Text style={styles.bigNumber}>{completed}</Text>
+            <Text style={styles.totalText}>/{total}</Text>
+          </View>
+          <Text style={styles.caption}>Comprobantes</Text>
+        </View>
+      </View>
+
+      <Text style={styles.message}>
+        ¡Sigue así! Estás cada vez más cerca.
+      </Text>
+
+      <View style={styles.btnContainer}>
+        <Pressable style={[styles.button, { backgroundColor: CARD_BG }]}><Text style={styles.buttonText}>Historial de comprobantes</Text></Pressable>
+        <Pressable style={[styles.button, { backgroundColor: CARD_BG }]}><Text style={styles.buttonText}>Reportes</Text></Pressable>
+        <Pressable style={[styles.button, { backgroundColor: MAIN_COLOR }]}><Text style={styles.buttonText}>Subir nuevo comprobante</Text></Pressable>
+      </View>
+
+      <View>
+        <Text style={styles.actityTitle}>Actividad Reciente</Text>
+        <View style={styles.actityCardsContainer}>
+          <ActivityCard
+            title="Comprobante de batido"
+            date="10/11/2025"
+            amount='5500'
           />
 
-          <View style={styles.circleContent}>
-            <View style={styles.rowCenter}>
-              <Text style={styles.bigNumber}>{completed}</Text>
-              <Text style={styles.totalText}>/{total}</Text>
-            </View>
-            <Text style={styles.caption}>Comprobantes</Text>
-          </View>
+          <ActivityCard
+            title="Comprobante de batido"
+            date="10/11/2025"
+            amount='5500'
+          />
+
+          <ActivityCard
+            title="Comprobante de batido"
+            date="10/11/2025"
+            amount='5500'
+          />
         </View>
-
-        <Text style={styles.message}>
-          ¡Sigue así! Estás cada vez más cerca.
-        </Text>
-
-        <View style={styles.btnContainer}>
-          <Pressable style={[styles.button, { backgroundColor: CARD_BG }]}><Text style={styles.buttonText}>Historial de comprobantes</Text></Pressable>
-          <Pressable style={[styles.button, { backgroundColor: CARD_BG }]}><Text style={styles.buttonText}>Reportes</Text></Pressable>
-          <Pressable style={[styles.button, { backgroundColor: MAIN_COLOR }]}><Text style={styles.buttonText}>Subir nuevo comprobante</Text></Pressable>
-        </View>
-
-        <View>
-          <Text style={styles.actityTitle}>Actividad Reciente</Text>
-          <View style={styles.actityCardsContainer}>
-            <ActivityCard
-              title="Comprobante de batido"
-              date="10/11/2025"
-              amount='5500'
-            />
-
-            <ActivityCard
-              title="Comprobante de batido"
-              date="10/11/2025"
-              amount='5500'
-            />
-
-            <ActivityCard
-              title="Comprobante de batido"
-              date="10/11/2025"
-              amount='5500'
-            />
-          </View>
-        </View>
-      </ScrollView>
+      </View>
+    </ScrollView>
   );
 }
 

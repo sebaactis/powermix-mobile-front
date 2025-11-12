@@ -1,7 +1,7 @@
 import { MAIN_COLOR } from "@/src/constant";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { useEffect, useRef } from "react";
-import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Animated, Dimensions, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
   const translateX = useRef(new Animated.Value(0)).current;
@@ -82,14 +82,16 @@ export default CustomTabBar
 const styles = StyleSheet.create({
   tabBar: {
     flexDirection: 'row',
-    height: 73,
+    height: 79,
     backgroundColor: '#2f2d2d',
     borderTopColor: '#2f2d2d',
     borderTopWidth: 1,
     borderTopStartRadius: 8,
     borderTopEndRadius: 8,
     overflow: 'hidden',
-    paddingBottom: 10
+    marginBottom: Platform.OS === 'ios' ? -34 : 0,
+    paddingBottom: 20,
+    paddingTop: 5
   },
   indicator: {
     position: 'absolute',

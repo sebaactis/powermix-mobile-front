@@ -1,4 +1,3 @@
-// components/ReceiptCard.tsx
 import { MAIN_COLOR } from "@/src/constant";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";

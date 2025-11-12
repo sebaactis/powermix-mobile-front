@@ -1,6 +1,5 @@
-// Header.tsx
 import { View, StyleSheet, Platform } from 'react-native';
-import { MAIN_COLOR } from '@/src/constant';
+import { BG } from '@/src/constant';
 
 export default function Header() {
   return <View style={styles.headerContent} />;
@@ -8,7 +7,7 @@ export default function Header() {
 
 const styles = StyleSheet.create({
   headerContent: {
-    height: Platform.OS === "android" ? 70 : 0,               // lo que quieras de alto
-    backgroundColor: MAIN_COLOR,
+    height: Platform.OS === "android" ? 60 : 0,
+    backgroundColor: BG,
   },
 });

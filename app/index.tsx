@@ -1,20 +1,38 @@
+import { BG, CARD_BG } from '@/src/constant';
 import MainNavigator from '@/src/navigation/MainNavigator';
-import { StyleSheet } from 'react-native';
+import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-
 export default function App() {
-
   return (
-    <SafeAreaProvider style={styles.container}>
+    <>
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor={CARD_BG}
+        translucent={Platform.OS === 'android'}
+      />
+      {Platform.OS === 'ios' && (
+        <View style={styles.statusBarBackground} />
+      )}
+      <SafeAreaProvider style={styles.container}>
         <MainNavigator />
-    </SafeAreaProvider>
+      </SafeAreaProvider>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
+  statusBarBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 50,
+    backgroundColor: BG,
+    zIndex: 9999,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#1E1E1E',
+    backgroundColor: CARD_BG,
   },
 });

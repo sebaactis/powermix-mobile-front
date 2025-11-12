@@ -1,5 +1,5 @@
-// src/navigation/MainNavigator.tsx
-import React, { useState } from 'react';
+
+import { useState } from 'react';
 import AuthNavigator from './AuthNavigator';
 import TabNavigator from './TabNavigator';
 
