@@ -1,3 +1,5 @@
+import Field from '@/components/support/Field';
+import SupportRow from '@/components/support/SupportRow';
 import { CARD_BG, STRONG_TEXT, SUBTEXT, BG, MAIN_COLOR } from '@/src/constant';
 import { useState } from 'react';
 import {
@@ -17,27 +19,38 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 type Category = 'Problema técnico' | 'Facturación' | 'Consulta general' | 'Seguridad/abuso';
 
+type ContactRequest = {
+    name: string;
+    email: string;
+    category: Category;
+    message: string;
+    attachmentName: string | null;
+}
+
+const categories: Category[] = ['Problema técnico', 'Facturación', 'Consulta general', 'Seguridad/abuso']
 
 export default function SupportScreen() {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [category, setCategory] = useState<Category>('Problema técnico');
-    const [message, setMessage] = useState('');
+
+    const [contactRequest, setContactRequest] = useState<ContactRequest>({
+        name: '',
+        email: '',
+        category: 'Problema técnico',
+        message: '',
+        attachmentName: null,
+    })
+
+    const { name, email, category, message, attachmentName } = contactRequest;
+
     const [showCat, setShowCat] = useState(false);
-    const [attachmentName, setAttachmentName] = useState<string | null>(null);
-
-    const categories: Category[] = ['Problema técnico', 'Facturación', 'Consulta general', 'Seguridad/abuso']
-
-    const emailValid = useMemo(() => /\S+@\S+\.\S+/.test(email.trim()), [email]);
     const canSend = name.trim() && emailValid && message.trim();
+
+    const handlerContactRequest = (patch: Partial<ContactRequest>) => {
+        setContactRequest((prev) => ({ ...prev, ...patch }))
+    }
 
     const handlePickFile = async () => {
         // TO DO -> tengo que agregar para subir archivos, algo asi:
-        // const res = await DocumentPicker.getDocumentAsync({ copyToCacheDirectory: true });
-        // if (res.type === 'success') setAttachmentName(res.name);
-        // else setAttachmentName(null);
-
-        setAttachmentName('captura_error.png');
+        handlerContactRequest({ attachmentName: 'captura_error.png' });
     };
 
     const handleSubmit = () => {
@@ -78,18 +91,6 @@ export default function SupportScreen() {
                             title="Preguntas Frecuentes (FAQs)"
                             onPress={() => { }}
                         />
-                        <Separator />
-                        <SupportRow
-                            icon="file-text-o"
-                            title="Enviar una consulta / Abrir ticket"
-                            onPress={() => { }}
-                        />
-                        <Separator />
-                        <SupportRow
-                            icon="headphones"
-                            title="Contacto Directo"
-                            onPress={() => { }}
-                        />
                     </View>
 
 
@@ -105,7 +106,7 @@ export default function SupportScreen() {
                                 placeholder="Tu nombre completo"
                                 placeholderTextColor={SUBTEXT}
                                 value={name}
-                                onChangeText={setName}
+                                onChangeText={(text) => handlerContactRequest({ name: text })}
                                 style={styles.input}
                             />
                         </Field>
@@ -117,12 +118,9 @@ export default function SupportScreen() {
                                 keyboardType="email-address"
                                 autoCapitalize="none"
                                 value={email}
-                                onChangeText={setEmail}
-                                style={[styles.input, !emailValid && email ? styles.inputError : undefined]}
+                                onChangeText={(text) => handlerContactRequest({ email: text })}
+                                style={styles.input}
                             />
-                            {!emailValid && email ? (
-                                <Text style={styles.errorText}>Ingresá un email válido.</Text>
-                            ) : null}
                         </Field>
 
                         <Field label="Categoría del problema">
@@ -137,7 +135,7 @@ export default function SupportScreen() {
                                 placeholder="Describe tu problema con detalle..."
                                 placeholderTextColor={SUBTEXT}
                                 value={message}
-                                onChangeText={setMessage}
+                                onChangeText={(text) => handlerContactRequest({ message: text })}
                                 style={[styles.input, styles.multiline]}
                                 multiline
                                 numberOfLines={5}
@@ -182,7 +180,7 @@ export default function SupportScreen() {
                         renderItem={({ item }) => (
                             <Pressable
                                 onPress={() => {
-                                    setCategory(item);
+                                    handlerContactRequest({ category: item })
                                     setShowCat(false);
                                 }}
                                 style={styles.modalRow}
@@ -198,41 +196,15 @@ export default function SupportScreen() {
     );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-    return (
-        <View style={{ marginTop: 14 }}>
-            <Text style={styles.label}>{label}</Text>
-            {children}
-        </View>
-    );
-}
 
-function Separator() {
-    return <View style={styles.separator} />;
-}
-
-function SupportRow({
-    icon,
-    title,
-    onPress,
-}: {
-    icon: string;
-    title: string;
-    onPress: () => void;
-}) {
-    return (
-        <Pressable style={styles.row} onPress={onPress}>
-            <View style={styles.rowIconWrap}>
-                <Icon name={icon} size={18} color={MAIN_COLOR} />
-            </View>
-            <Text style={styles.rowText}>{title}</Text>
-            <Icon name="chevron-right" size={14} color={SUBTEXT} />
-        </Pressable>
-    );
-}
 
 const styles = StyleSheet.create({
-    title: { color: STRONG_TEXT, fontSize: 22, fontWeight: '700', marginBottom: 12 },
+    title: {
+        color: STRONG_TEXT,
+        fontSize: 22,
+        fontWeight: '700',
+        marginBottom: 12
+    },
     searchBox: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -262,8 +234,10 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: '700'
     },
-    sectionHelp: { color: SUBTEXT, marginTop: 4 },
-    label: { color: STRONG_TEXT, marginBottom: 6, fontWeight: '600' },
+    sectionHelp: {
+        color: SUBTEXT,
+        marginTop: 4
+    },
     input: {
         backgroundColor: BG,
         borderColor: CARD_BG,
@@ -273,8 +247,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
         height: 44,
     },
-    inputError: { borderColor: '#ef4444' },
-    multiline: { height: 120, paddingTop: 10 },
+    multiline:
+    {
+        height: 120,
+        paddingTop: 10
+    },
     select: {
         backgroundColor: BG,
         borderColor: CARD_BG,
@@ -286,7 +263,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
     },
-    selectText: { color: STRONG_TEXT },
+    selectText:
+    {
+        color: STRONG_TEXT
+    },
     attach: {
         marginTop: 16,
         borderWidth: 1,
@@ -307,28 +287,31 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    ctaText: { color: 'white', fontWeight: '800', fontSize: 16 },
-    row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10 },
-    rowIconWrap: {
-        width: 36,
-        height: 36,
-        borderRadius: 20,
-        backgroundColor: '#be185d3a',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: 12,
+    ctaText: {
+        color: 'white',
+        fontWeight: '800',
+        fontSize: 16
     },
-    rowText: { color: STRONG_TEXT, flex: 1, fontSize: 15, fontWeight: '600' },
-    separator: { height: 1, backgroundColor: "#424242", marginVertical: 6 },
-    errorText: { color: '#ef4444', marginTop: 6 },
-    modalBackdrop: { position: 'absolute', inset: 0 as any, backgroundColor: '#00000088' },
+    modalBackdrop: {
+        position: 'absolute',
+        inset: 0 as any,
+        backgroundColor: '#00000088'
+    },
     modalCard: {
         position: 'absolute',
         left: 16, right: 16, top: '25%',
-        backgroundColor: CARD_BG, borderRadius: 16, borderWidth: 1, borderColor: BG,
+        backgroundColor: CARD_BG,
+        borderRadius: 16,
+        borderWidth: 1,
+        borderColor: BG,
         padding: 14,
     },
-    modalTitle: { color: STRONG_TEXT, fontWeight: '700', fontSize: 16, marginBottom: 10 },
+    modalTitle: {
+        color: STRONG_TEXT,
+        fontWeight: '700',
+        fontSize: 16,
+        marginBottom: 10
+    },
     modalRow: {
         paddingVertical: 10,
         paddingHorizontal: 6,
@@ -338,5 +321,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
     },
-    modalRowText: { color: STRONG_TEXT },
+    modalRowText: {
+        color: STRONG_TEXT
+    },
 });
