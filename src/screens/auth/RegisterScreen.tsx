@@ -2,9 +2,111 @@ import Icon from 'react-native-vector-icons/AntDesign';
 
 import FormInput from '@/components/inputs/FormInput';
 import { BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from '@/src/constant';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
 
-export default function RegisterScreen() {
+type RegisterData = {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+export default function RegisterScreen({ navigation }) {
+
+  const [registerData, setRegisterData] = useState<RegisterData>({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  })
+
+  const [loading, setLoading] = useState(false);
+
+  const validEntries = registerData.name !== ""
+    && registerData.email !== ""
+    && registerData.password !== ""
+    && registerData.confirmPassword !== ""
+    && registerData.password === registerData.confirmPassword;
+
+
+  const handleRegisterData = (patch: Partial<RegisterData>) => {
+    setRegisterData((prev) => ({ ...prev, ...patch }))
+  }
+
+  const handleSubmit = async () => {
+    if (!registerData.name.trim() || !registerData.email.trim() || !registerData.password.trim()) {
+      Alert.alert('Campos incompletos', 'Completá nombre, email y contraseña.');
+      return;
+    }
+
+    if (registerData.password !== registerData.confirmPassword) {
+      Alert.alert('Contraseñas', 'Las contraseñas no coinciden.');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const res = await fetch('http://10.0.2.2:8080/api/v1/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: registerData.name.trim(),
+          email: registerData.email.trim(),
+          password: registerData.password,
+          confirmPassword: registerData.confirmPassword
+        }),
+      });
+
+      const data = await res.json().catch(() => null);
+
+      console.log('STATUS:', res.status);
+      console.log('BODY:', data);
+
+      if (!res.ok) {
+
+        const backendMsg =
+          data?.message ||
+          data?.error ||
+          data?.details?.error ||
+          'Ocurrió un error en el servidor.';
+
+        if (res.status === 500 || data?.details?.error === 'el email ya está en uso') {
+          Alert.alert('Email en uso', backendMsg);
+          return;
+        }
+
+        if (res.status === 400) {
+          Alert.alert('Error de validación', backendMsg);
+          return;
+        }
+
+        Alert.alert('Error', backendMsg);
+        return;
+      }
+
+      Alert.alert('Cuenta creada', 'Tu cuenta fue creada correctamente.', [
+        {
+          text: 'OK',
+          onPress: () => {
+            console.log('Usuario creado:', data);
+            navigation.navigate('Login');
+          },
+        },
+      ]);
+    } catch (error) {
+      console.error('Error de red:', error);
+      Alert.alert('Error de conexión', 'No se pudo conectar con el servidor. Revisá la URL o tu red.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+
   return (
     <View style={styles.container}>
       <View style={styles.iconContainer}>
@@ -17,11 +119,13 @@ export default function RegisterScreen() {
         iconName="abc"
         size={24}
         color={SUBTEXT}
-        placeholder="Introduce tu nombre"
+        placeholder="Introduce tu nombre y apellido"
         placeholderTextColor={SUBTEXT}
         keyBoardType="visible-password"
-        labelText="Nombre"
+        labelText="Nombre y Apellido"
         marginTop={25}
+        onChangeText={(text) => handleRegisterData({ name: text })}
+        value={registerData.name}
       />
 
       <FormInput
@@ -33,6 +137,8 @@ export default function RegisterScreen() {
         keyBoardType="email-address"
         labelText="Correo electronico"
         marginTop={25}
+        onChangeText={(text) => handleRegisterData({ email: text })}
+        value={registerData.email}
       />
 
       <FormInput
@@ -44,6 +150,8 @@ export default function RegisterScreen() {
         keyBoardType="visible-password"
         labelText="Contraseña"
         marginTop={25}
+        onChangeText={(text) => handleRegisterData({ password: text })}
+        value={registerData.password}
       />
 
       <FormInput
@@ -55,6 +163,8 @@ export default function RegisterScreen() {
         keyBoardType="visible-password"
         labelText="Confirmar contraseña"
         marginTop={25}
+        onChangeText={(text) => handleRegisterData({ confirmPassword: text })}
+        value={registerData.confirmPassword}
       />
       <View style={styles.registerTextContainer}>
         <Text style={styles.subText}>
@@ -72,8 +182,14 @@ export default function RegisterScreen() {
 
 
       <View style={styles.buttonsContainer}>
-        <Pressable color={MAIN_COLOR} title='Iniciar Sesion' style={styles.button}>
-          <Text style={styles.buttonText}>Crear cuenta</Text>
+        <Pressable
+          color={MAIN_COLOR}
+          title='Iniciar Sesion'
+          style={[styles.button, !validEntries && { opacity: 0.7 }]}
+          disabled={!validEntries}
+          onPress={handleSubmit}
+        >
+          <Text style={styles.buttonText}>{loading ? 'Creando cuenta...' : 'Crear cuenta'}</Text>
         </Pressable>
       </View>
 
