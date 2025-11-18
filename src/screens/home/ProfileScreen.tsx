@@ -1,5 +1,6 @@
 import ProfileRow from "@/components/profile/ProfileRow";
 import { BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
+import { useAuth } from "@/src/context/AuthContext";
 import React from "react";
 import {
   Platform,
@@ -11,11 +12,9 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 
-export default function ProfileScreen() {
-  const handleBack = () => {
-    // TODO: navigation.goBack()
-    console.log("back");
-  };
+export default function ProfileScreen({ navigation }) {
+
+  const { user, signOut } = useAuth();
 
   const handleEditName = () => {
     console.log("editar nombre");
@@ -25,15 +24,12 @@ export default function ProfileScreen() {
     console.log("cambiar contraseña");
   };
 
-  const user = {
-    name: "Alex Morales",
-    email: "alex.morales@email.com",
-  };
+
 
   return (
     <View style={styles.screen}>
       <View style={styles.header}>
-        <Pressable style={styles.headerBtnLeft} onPress={handleBack} hitSlop={8}>
+        <Pressable style={styles.headerBtnLeft} onPress={() => navigation.navigate("Home")} hitSlop={8}>
           <Icon name="arrow-left" size={24} color="#FFFFFF" />
         </Pressable>
 
@@ -87,6 +83,10 @@ export default function ProfileScreen() {
             onRightPress={handleChangePassword}
           />
         </View>
+
+        <Pressable style={styles.closeSessionBtn} onPress={signOut}>
+          <Text style={styles.textCloseSessionBtn}>Cerrar sesión</Text>
+        </Pressable>
       </View>
     </View>
   );
@@ -193,5 +193,20 @@ const styles = StyleSheet.create({
   cards: {
     marginTop: 8,
     paddingBottom: 26,
+  },
+  closeSessionBtn: {
+    backgroundColor: '#8b0000',
+    flexDirection: 'row',
+    gap: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 80,
+    paddingVertical: 10,
+    borderRadius: 10,
+  },
+  textCloseSessionBtn: {
+    color: '#FFFFFF',
+    fontSize: 17,
+    fontWeight: '600',
   }
 });

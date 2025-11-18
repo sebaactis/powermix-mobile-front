@@ -2,7 +2,7 @@ import { View, Text, TextInput, StyleSheet } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 
-export default function FormInput({ iconName, size, color, placeholder, placeholderTextColor, keyBoardType, labelText, marginTop }) {
+export default function FormInput({ iconName, size, color, placeholder, placeholderTextColor, keyBoardType, labelText, marginTop, onChangeText }) {
     return (
         <View style={[styles.inputContainer, { marginTop }]}>
             <Text style={styles.inputLabel}>{labelText}</Text>
@@ -15,6 +15,7 @@ export default function FormInput({ iconName, size, color, placeholder, placehol
                     placeholderTextColor={placeholderTextColor}
                     keyboardType={keyBoardType}
                     autoCapitalize='none'
+                    onChangeText={onChangeText}
                 />
             </View>
         </View>

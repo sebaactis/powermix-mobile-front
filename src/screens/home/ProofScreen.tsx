@@ -49,13 +49,8 @@ const DATA: ReceiptItem[] = [
     },
 ];
 
-export default function ProofScreen() {
+export default function ProofScreen({ navigation }) {
     const [manualCode, setManualCode] = useState("");
-
-    const handleBack = () => {
-        // TODO: navigation.goBack()
-        console.log("back");
-    };
 
     const handleUpload = () => {
         console.log("Subir comprobante. Código manual:", manualCode);
@@ -64,7 +59,7 @@ export default function ProofScreen() {
     return (
         <View style={styles.screen}>
             <View style={styles.header}>
-                <Pressable style={styles.headerBtnLeft} onPress={handleBack} hitSlop={8}>
+                <Pressable style={styles.headerBtnLeft} onPress={() => navigation.navigate("Home")} hitSlop={8}>
                     <Icon name="arrow-left" size={20} color="#FFFFFF" />
                 </Pressable>
 

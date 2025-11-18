@@ -29,7 +29,7 @@ type ContactRequest = {
 
 const categories: Category[] = ['Problema técnico', 'Facturación', 'Consulta general', 'Seguridad/abuso']
 
-export default function SupportScreen() {
+export default function SupportScreen({ navigation }) {
 
     const [contactRequest, setContactRequest] = useState<ContactRequest>({
         name: '',
@@ -76,14 +76,13 @@ export default function SupportScreen() {
                     keyboardShouldPersistTaps="handled"
                 >
 
-                    <Text style={styles.title}>Ayuda y Soporte</Text>
+                    <View style={styles.header}>
+                        <Pressable style={styles.headerBtnLeft} onPress={() => navigation.navigate("Home")} hitSlop={8}>
+                            <Icon name="arrow-left" size={20} color="#FFFFFF" />
+                        </Pressable>
 
-
-                    <View style={styles.searchBox}>
-                        <Icon name="search" size={16} color={SUBTEXT} />
-                        <Text style={styles.searchPlaceholder}>¿En qué podemos ayudarte?</Text>
+                        <Text style={styles.headerTitle}>Ayuda y Soporte</Text>
                     </View>
-
 
                     <View style={styles.card}>
                         <SupportRow
@@ -199,27 +198,26 @@ export default function SupportScreen() {
 
 
 const styles = StyleSheet.create({
-    title: {
+    header: {
+        height: 56,
+        justifyContent: "center",
+        alignItems: "center",
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomColor: "#838383",
+        marginBottom: 20,
+    },
+    headerTitle: {
         color: STRONG_TEXT,
-        fontSize: 22,
-        fontWeight: '700',
-        marginBottom: 12
+        fontSize: 18,
+        fontWeight: "700",
     },
-    searchBox: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: CARD_BG,
-        borderColor: BG,
-        borderWidth: 1,
-        borderRadius: 12,
-        paddingHorizontal: 12,
-        height: 44,
-        marginBottom: 14,
-    },
-    searchPlaceholder:
-    {
-        color: SUBTEXT,
-        marginLeft: 8
+    headerBtnLeft: {
+        position: "absolute",
+        left: 20,
+        height: 40,
+        width: 40,
+        alignItems: "center",
+        justifyContent: "center",
     },
     card: {
         backgroundColor: CARD_BG,
@@ -323,5 +321,5 @@ const styles = StyleSheet.create({
     },
     modalRowText: {
         color: STRONG_TEXT
-    },
+    }
 });

@@ -1,4 +1,5 @@
 import { BG, CARD_BG } from '@/src/constant';
+import { AuthProvider } from '@/src/context/AuthContext';
 import MainNavigator from '@/src/navigation/MainNavigator';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -15,7 +16,9 @@ export default function App() {
         <View style={styles.statusBarBackground} />
       )}
       <SafeAreaProvider style={styles.container}>
-        <MainNavigator />
+        <AuthProvider>
+          <MainNavigator />
+        </AuthProvider>
       </SafeAreaProvider>
     </>
   );
