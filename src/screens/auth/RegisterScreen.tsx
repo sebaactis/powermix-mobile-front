@@ -2,8 +2,10 @@ import Icon from 'react-native-vector-icons/AntDesign';
 
 import FormInput from '@/components/inputs/FormInput';
 import { BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from '@/src/constant';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useState } from 'react';
+
+import Toast from 'react-native-toast-message';
 
 type RegisterData = {
   name: string;
@@ -12,14 +14,17 @@ type RegisterData = {
   confirmPassword: string;
 }
 
+type RegisterErrors = {
+  name?: string;
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
+};
+
 export default function RegisterScreen({ navigation }) {
 
-  const [registerData, setRegisterData] = useState<RegisterData>({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
-  })
+  const [registerData, setRegisterData] = useState<RegisterData>({})
+  const [errors, setErrors] = useState<RegisterErrors>({});
 
   const [loading, setLoading] = useState(false);
 
@@ -27,23 +32,52 @@ export default function RegisterScreen({ navigation }) {
     && registerData.email !== ""
     && registerData.password !== ""
     && registerData.confirmPassword !== ""
-    && registerData.password === registerData.confirmPassword;
 
 
   const handleRegisterData = (patch: Partial<RegisterData>) => {
+    setErrors({});
     setRegisterData((prev) => ({ ...prev, ...patch }))
   }
 
-  const handleSubmit = async () => {
-    if (!registerData.name.trim() || !registerData.email.trim() || !registerData.password.trim()) {
-      Alert.alert('Campos incompletos', 'Completá nombre, email y contraseña.');
-      return;
+  const validateForm = (): boolean => {
+    const newErrors: RegisterErrors = {};
+
+    const name = registerData.name.trim();
+    if (!name) newErrors.name = 'El nombre es obligatorio.';
+    else if (name.length < 6) newErrors.name = 'El nombre debe tener al menos 6 caracteres.';
+
+    const email = registerData.email.trim();
+    if (!email) newErrors.email = 'El email es obligatorio.'
+    else if (email.length < 8) {
+      newErrors.email = 'El email debe tener al menos 8 caracteres.';
+    }
+    else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) newErrors.email = 'Ingresá un email válido.';
     }
 
-    if (registerData.password !== registerData.confirmPassword) {
-      Alert.alert('Contraseñas', 'Las contraseñas no coinciden.');
-      return;
+    if (!registerData.password) {
+      newErrors.password = 'La contraseña es obligatoria.';
+    } else if (registerData.password.length < 8) {
+      newErrors.password = 'La contraseña debe tener al menos 8 caracteres.';
     }
+
+    if (!registerData.confirmPassword) {
+      newErrors.confirmPassword = 'Debés repetir la contraseña.';
+    } else if (registerData.password !== registerData.confirmPassword) {
+      newErrors.confirmPassword = 'Las contraseñas no coinciden.';
+    }
+
+    setErrors(newErrors);
+
+    const hasErrors = Object.values(newErrors).some((v) => v !== undefined);
+    return !hasErrors;
+  };
+
+  const handleSubmit = async () => {
+
+    const isValid = validateForm();
+    if (!isValid) return;
 
     setLoading(true);
 
@@ -63,43 +97,56 @@ export default function RegisterScreen({ navigation }) {
 
       const data = await res.json().catch(() => null);
 
-      console.log('STATUS:', res.status);
-      console.log('BODY:', data);
-
       if (!res.ok) {
 
-        const backendMsg =
+        const backendMsg: string =
           data?.message ||
           data?.error ||
           data?.details?.error ||
           'Ocurrió un error en el servidor.';
 
-        if (res.status === 500 || data?.details?.error === 'el email ya está en uso') {
-          Alert.alert('Email en uso', backendMsg);
+        if (res.status === 409) {
+          Toast.show({
+            type: 'appWarning',
+            text1: 'No pudimos crear el usuario',
+            text2: backendMsg,
+          });
           return;
         }
 
         if (res.status === 400) {
-          Alert.alert('Error de validación', backendMsg);
+          Toast.show({
+            type: 'appWarning',
+            text1: 'No pudimos crear el usuario',
+            text2: backendMsg,
+          });
           return;
         }
 
-        Alert.alert('Error', backendMsg);
+        Toast.show({
+          type: 'appWarning',
+          text1: 'Hubo un problema al intentar crear el usuario',
+          text2: backendMsg,
+        });
         return;
       }
 
-      Alert.alert('Cuenta creada', 'Tu cuenta fue creada correctamente.', [
-        {
-          text: 'OK',
-          onPress: () => {
-            console.log('Usuario creado:', data);
-            navigation.navigate('Login');
-          },
-        },
-      ]);
+      Toast.show({
+        type: 'appSuccess',
+        text1: 'Registro completado exitosamente!',
+      });
+
+      setTimeout(() => {
+        navigation.navigate('Login');
+      }, 1000)
+
+
     } catch (error) {
-      console.error('Error de red:', error);
-      Alert.alert('Error de conexión', 'No se pudo conectar con el servidor. Revisá la URL o tu red.');
+      Toast.show({
+        type: 'appError',
+        text1: 'Error inesperado el intentar registrar un usuario',
+        text2: error
+      });
     } finally {
       setLoading(false);
     }
@@ -126,6 +173,7 @@ export default function RegisterScreen({ navigation }) {
         marginTop={25}
         onChangeText={(text) => handleRegisterData({ name: text })}
         value={registerData.name}
+        error={errors.name}
       />
 
       <FormInput
@@ -139,6 +187,7 @@ export default function RegisterScreen({ navigation }) {
         marginTop={25}
         onChangeText={(text) => handleRegisterData({ email: text })}
         value={registerData.email}
+        error={errors.email}
       />
 
       <FormInput
@@ -152,6 +201,7 @@ export default function RegisterScreen({ navigation }) {
         marginTop={25}
         onChangeText={(text) => handleRegisterData({ password: text })}
         value={registerData.password}
+        error={errors.password}
       />
 
       <FormInput
@@ -165,6 +215,7 @@ export default function RegisterScreen({ navigation }) {
         marginTop={25}
         onChangeText={(text) => handleRegisterData({ confirmPassword: text })}
         value={registerData.confirmPassword}
+        error={errors.confirmPassword}
       />
       <View style={styles.registerTextContainer}>
         <Text style={styles.subText}>

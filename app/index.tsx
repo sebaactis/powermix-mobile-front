@@ -1,8 +1,11 @@
+import { toastConfig } from '@/components/toast/config/toastConfig';
 import { BG, CARD_BG } from '@/src/constant';
 import { AuthProvider } from '@/src/context/AuthContext';
 import MainNavigator from '@/src/navigation/MainNavigator';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+import Toast from 'react-native-toast-message';
 
 export default function App() {
   return (
@@ -18,6 +21,10 @@ export default function App() {
       <SafeAreaProvider style={styles.container}>
         <AuthProvider>
           <MainNavigator />
+          <Toast
+            config={toastConfig}
+            topOffset={60}
+          />
         </AuthProvider>
       </SafeAreaProvider>
     </>

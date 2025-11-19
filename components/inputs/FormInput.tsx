@@ -1,13 +1,34 @@
 import { View, Text, TextInput, StyleSheet } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
+interface FormInputProps {
+    iconName: string;
+    size: number;
+    color: string;
+    placeholder: string;
+    placeholderTextColor: string;
+    keyBoardType: string;
+    labelText: string;
+    marginTop: number;
+    onChangeText: (text: string) => void;
+    value: string;
+    error?: string;
+}
 
-export default function FormInput({ iconName, size, color, placeholder, placeholderTextColor, keyBoardType, labelText, marginTop, onChangeText, value }) {
+export default function FormInput({ iconName, size, color, placeholder, placeholderTextColor, keyBoardType, labelText, marginTop, onChangeText, value, error }: FormInputProps) {
+
+    const hasError = !!error
+
     return (
         <View style={[styles.inputContainer, { marginTop }]}>
             <Text style={styles.inputLabel}>{labelText}</Text>
 
-            <View style={styles.inputRow}>
+            <View
+                style={[
+                    styles.inputRow,
+                    hasError && styles.inputContainerError,
+                ]}
+            >
                 <Icon name={iconName} size={size} color={color} />
                 <TextInput
                     style={styles.emailInput}
@@ -19,6 +40,8 @@ export default function FormInput({ iconName, size, color, placeholder, placehol
                     value={value}
                 />
             </View>
+
+            {hasError && <Text style={styles.errorText}>{error}</Text>}
         </View>
     )
 }
@@ -41,6 +64,9 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
         backgroundColor: "#53535328",
     },
+    inputContainerError: {
+        borderColor: '#f97373',
+    },
     inputLabel: {
         color: "#d6d6d6",
         fontSize: 16,
@@ -53,5 +79,10 @@ const styles = StyleSheet.create({
         color: "#FFFFFF",
         flex: 1,
         fontSize: 16
+    },
+    errorText: {
+        color: '#f97373',
+        fontSize: 13,
+        marginTop: 4,
     },
 })
