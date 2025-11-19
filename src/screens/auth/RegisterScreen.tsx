@@ -23,7 +23,12 @@ type RegisterErrors = {
 
 export default function RegisterScreen({ navigation }) {
 
-  const [registerData, setRegisterData] = useState<RegisterData>({})
+  const [registerData, setRegisterData] = useState<RegisterData>({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
   const [errors, setErrors] = useState<RegisterErrors>({});
 
   const [loading, setLoading] = useState(false);

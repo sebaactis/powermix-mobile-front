@@ -4,10 +4,10 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import CustomTabBar from '@/components/tabbar/CustomTabBar';
 import { MAIN_COLOR } from '../constant';
 import HomeScreen from '../screens/home/HomeScreen';
-import ProfileScreen from '../screens/home/ProfileScreen';
-import ProofScreen from '../screens/home/ProofScreen';
+import ProfileScreen from '../screens/profile/ProfileScreen';
+import ProofScreen from '../screens/proof/ProofScreen';
 import Header from '@/components/header/Header';
-import SupportScreen from '../screens/home/SupportScreen';
+import HelpStackNavigator from './HelpStackNavigator';
 
 const Tab = createBottomTabNavigator();
 
@@ -56,7 +56,7 @@ const TabNavigator = () => {
 
       <Tab.Screen
         name="Help"
-        component={SupportScreen}
+        component={HelpStackNavigator}
         options={{
           title: 'Ayuda',
           tabBarIcon: ({ color }) => (

@@ -88,7 +88,7 @@ export default function SupportScreen({ navigation }) {
                         <SupportRow
                             icon="question-circle"
                             title="Preguntas Frecuentes (FAQs)"
-                            onPress={() => { }}
+                            onPress={() => { navigation.navigate("Faq") }}
                         />
                     </View>
 
