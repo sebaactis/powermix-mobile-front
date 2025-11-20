@@ -1,7 +1,11 @@
 import ProfileRow from "@/components/profile/ProfileRow";
-import { BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
+import EditNameModal from "@/components/profile/EditNameModal";
+import ChangePasswordModal from "@/components/profile/ChangePasswordModal";
+
+import { BG, STRONG_TEXT } from "@/src/constant";
 import { useAuth } from "@/src/context/AuthContext";
-import React from "react";
+
+import React, { useState } from "react";
 import {
   Platform,
   Pressable,
@@ -13,33 +17,26 @@ import {
 import Icon from "react-native-vector-icons/FontAwesome";
 
 export default function ProfileScreen({ navigation }) {
-
   const { user, signOut } = useAuth();
 
-  const handleEditName = () => {
-    console.log("editar nombre");
-  };
-
-  const handleChangePassword = () => {
-    console.log("cambiar contraseña");
-  };
-
-
+  const [showEditName, setShowEditName] = useState(false);
+  const [showChangePassword, setShowChangePassword] = useState(false);
 
   return (
     <View style={styles.screen}>
       <View style={styles.header}>
-        <Pressable style={styles.headerBtnLeft} onPress={() => navigation.navigate("Home")} hitSlop={8}>
+        <Pressable
+          style={styles.headerBtnLeft}
+          onPress={() => navigation.navigate("Home")}
+          hitSlop={8}
+        >
           <Icon name="arrow-left" size={24} color="#FFFFFF" />
         </Pressable>
 
         <Text style={styles.headerTitle}>Mi Perfil</Text>
-
       </View>
 
-
       <View style={styles.content}>
-
         <View style={styles.avatarWrap}>
           <View style={styles.avatarOuter}>
             <View style={styles.avatarInner}>
@@ -47,15 +44,16 @@ export default function ProfileScreen({ navigation }) {
             </View>
           </View>
 
-          <Pressable style={styles.editFab} onPress={() => console.log("editar avatar")}>
+          <Pressable
+            style={styles.editFab}
+            onPress={() => console.log("editar avatar")}
+          >
             <Icon name="pencil" size={16} color="#FFFFFF" />
           </Pressable>
         </View>
 
-
         <Text style={styles.name}>{user.name}</Text>
         <Text style={styles.email}>{user.email}</Text>
-
 
         <View style={styles.cards}>
           <ProfileRow
@@ -64,7 +62,7 @@ export default function ProfileScreen({ navigation }) {
             subtitle={user.name}
             rightType="link"
             rightText="Editar"
-            onRightPress={handleEditName}
+            onRightPress={() => setShowEditName(true)}
           />
 
           <ProfileRow
@@ -80,7 +78,7 @@ export default function ProfileScreen({ navigation }) {
             subtitle="••••••••••"
             rightType="link"
             rightText="Cambiar"
-            onRightPress={handleChangePassword}
+            onRightPress={() => setShowChangePassword(true)}
           />
         </View>
 
@@ -88,6 +86,16 @@ export default function ProfileScreen({ navigation }) {
           <Text style={styles.textCloseSessionBtn}>Cerrar sesión</Text>
         </Pressable>
       </View>
+
+      <EditNameModal
+        visible={showEditName}
+        onClose={() => setShowEditName(false)}
+      />
+
+      <ChangePasswordModal
+        visible={showChangePassword}
+        onClose={() => setShowChangePassword(false)}
+      />
     </View>
   );
 }
@@ -97,7 +105,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: BG,
     paddingTop:
-      Platform.OS === "android" ? (StatusBar.currentHeight || 0) : 0,
+      Platform.OS === "android" ? StatusBar.currentHeight || 0 : 0,
   },
 
   header: {
@@ -106,7 +114,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: "#838383",
-    marginBottom: 30
+    marginBottom: 30,
   },
   headerTitle: {
     color: STRONG_TEXT,
@@ -121,21 +129,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  headerBtnRight: {
-    position: "absolute",
-    right: 20,
-    height: 40,
-    width: 40,
-    alignItems: "center",
-    justifyContent: "center",
-  },
 
-  /** Content */
   content: {
     paddingHorizontal: 20,
   },
 
-  /** Avatar */
   avatarWrap: {
     alignSelf: "center",
     marginTop: 6,
@@ -146,7 +144,7 @@ const styles = StyleSheet.create({
     height: 118,
     borderRadius: 59,
     borderWidth: 4,
-    borderColor: MAIN_COLOR,
+    borderColor: "#ff2b80",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -165,7 +163,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: MAIN_COLOR,
+    backgroundColor: "#ff2b80",
     alignItems: "center",
     justifyContent: "center",
     elevation: 3,
@@ -175,7 +173,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
   },
 
-  /** Name + email */
   name: {
     textAlign: "center",
     color: STRONG_TEXT,
@@ -184,7 +181,7 @@ const styles = StyleSheet.create({
   },
   email: {
     textAlign: "center",
-    color: SUBTEXT,
+    color: "#9e9ea0",
     fontSize: 17,
     marginTop: 6,
     marginBottom: 14,
@@ -194,19 +191,20 @@ const styles = StyleSheet.create({
     marginTop: 8,
     paddingBottom: 26,
   },
+
   closeSessionBtn: {
-    backgroundColor: '#8b0000',
-    flexDirection: 'row',
+    backgroundColor: "#8b0000",
+    flexDirection: "row",
     gap: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginHorizontal: 80,
     paddingVertical: 10,
     borderRadius: 10,
   },
   textCloseSessionBtn: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 17,
-    fontWeight: '600',
-  }
+    fontWeight: "600",
+  },
 });

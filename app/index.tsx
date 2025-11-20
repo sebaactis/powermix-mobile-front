@@ -24,6 +24,7 @@ export default function App() {
           <Toast
             config={toastConfig}
             topOffset={60}
+            
           />
         </AuthProvider>
       </SafeAreaProvider>

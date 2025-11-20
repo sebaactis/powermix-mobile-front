@@ -30,7 +30,6 @@ export default function RegisterScreen({ navigation }) {
     confirmPassword: '',
   });
   const [errors, setErrors] = useState<RegisterErrors>({});
-
   const [loading, setLoading] = useState(false);
 
   const validEntries = registerData.name !== ""

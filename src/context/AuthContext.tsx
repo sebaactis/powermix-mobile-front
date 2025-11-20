@@ -22,6 +22,7 @@ type AuthContextValue = {
     signIn: (email: string, password: string) => Promise<void>;
     signOut: () => Promise<void>;
     user: User;
+    setUser: (user: User) => void;
 };
 
 type AuthResponse = {
@@ -159,6 +160,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         signIn,
         signOut,
         user,
+        setUser
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
