@@ -1,16 +1,18 @@
+import AddProofModal from "@/components/proof/AddProofModal";
 import { RenderItem } from "@/components/proof/RenderItem";
+
 import { BG, CARD_BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
-import { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
-    View,
-    Text,
-    StyleSheet,
-    Pressable,
-    FlatList,
+    Animated,
     Dimensions,
+    FlatList,
     Platform,
+    Pressable,
     StatusBar,
-    TextInput,
+    StyleSheet,
+    Text,
+    View,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 
@@ -50,16 +52,47 @@ const DATA: ReceiptItem[] = [
 ];
 
 export default function ProofScreen({ navigation }) {
-    const [manualCode, setManualCode] = useState("");
+    const [showAddProof, setShowAddProof] = useState(false);
 
-    const handleUpload = () => {
-        console.log("Subir comprobante. Código manual:", manualCode);
+    const headerAnim = useRef(new Animated.Value(0)).current;
+    const buttonScale = useRef(new Animated.Value(1)).current;
+
+    useEffect(() => {
+        Animated.timing(headerAnim, {
+            toValue: 1,
+            duration: 250,
+            useNativeDriver: true,
+        }).start();
+    }, [headerAnim]);
+
+    const handleOpenAddReceipt = () => {
+        Animated.sequence([
+            Animated.timing(buttonScale, {
+                toValue: 0.97,
+                duration: 80,
+                useNativeDriver: true,
+            }),
+            Animated.timing(buttonScale, {
+                toValue: 1,
+                duration: 80,
+                useNativeDriver: true,
+            }),
+        ]).start(() => setShowAddProof(true));
     };
+
+    const headerTranslateY = headerAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [16, 0],
+    });
 
     return (
         <View style={styles.screen}>
             <View style={styles.header}>
-                <Pressable style={styles.headerBtnLeft} onPress={() => navigation.navigate("Home")} hitSlop={8}>
+                <Pressable
+                    style={styles.headerBtnLeft}
+                    onPress={() => navigation.navigate("Home")}
+                    hitSlop={8}
+                >
                     <Icon name="arrow-left" size={20} color="#FFFFFF" />
                 </Pressable>
 
@@ -69,47 +102,41 @@ export default function ProofScreen({ navigation }) {
             <FlatList
                 contentContainerStyle={styles.listContent}
                 ListHeaderComponent={
-                    <View>
-                        {/* Card principal: foto + input */}
+                    <Animated.View
+                        style={{
+                            opacity: headerAnim,
+                            transform: [{ translateY: headerTranslateY }],
+                        }}
+                    >
+
                         <View style={styles.topCard}>
                             <Text style={styles.topCardText}>
-                                Toma una foto o selecciona una imagen de tu galería.
+                                Cargá tus comprobantes para sumar puntos en tu cuenta.
                             </Text>
 
-                            <View style={styles.topInputWrapper}>
-                                <Text style={styles.topInputLabel}>
-                                    O ingresa el número del comprobante:
-                                </Text>
-
-                                <TextInput
-                                    style={styles.topInput}
-                                    placeholder="Ej: 000123-ABC"
-                                    placeholderTextColor="#6B7280"
-                                    value={manualCode}
-                                    onChangeText={setManualCode}
-                                    autoCapitalize="none"
-                                    autoCorrect={false}
-                                    keyboardType="default"
-                                />
-                            </View>
-
-                            <Pressable style={styles.uploadBtn} onPress={handleUpload}>
-                                <View style={styles.uploadBtnIconBox}>
-                                    <Icon name="image" size={22} color="#FFFFFF" />
-                                    <View style={styles.uploadBtnPlus}>
-                                        <Icon name="plus" size={14} color="#FFFFFF" />
-                                    </View>
-                                </View>
-                                <Text style={styles.uploadBtnText}>Subir Nuevo Comprobante</Text>
-                            </Pressable>
+                            <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
+                                <Pressable
+                                    style={styles.uploadBtn}
+                                    onPress={handleOpenAddReceipt}
+                                >
+                                    <Text style={styles.uploadBtnText}>
+                                        Agregar comprobante
+                                    </Text>
+                                </Pressable>
+                            </Animated.View>
                         </View>
 
-                        <Text style={styles.historyTitle}>Historial de Subidas</Text>
-                    </View>
+                        <Text style={styles.historyTitle}>Historial de subidas</Text>
+                    </Animated.View>
                 }
                 data={DATA}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => <RenderItem item={item} />}
+            />
+
+            <AddProofModal
+                visible={showAddProof}
+                onClose={() => setShowAddProof(false)}
             />
         </View>
     );
@@ -169,29 +196,6 @@ const styles = StyleSheet.create({
         marginBottom: 12,
     },
 
-    topInputWrapper: {
-        marginBottom: 14,
-        marginTop: 4,
-    },
-
-    topInputLabel: {
-        color: STRONG_TEXT,
-        fontSize: 15,
-        marginBottom: 6,
-    },
-
-    topInput: {
-        backgroundColor: "#111214",
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: "#30363F",
-        paddingHorizontal: 12,
-        paddingVertical: Platform.OS === "ios" ? 10 : 8,
-        color: STRONG_TEXT,
-        fontSize: 16,
-        marginTop: 5
-    },
-
     uploadBtn: {
         flexDirection: "row",
         alignItems: "center",
@@ -201,33 +205,9 @@ const styles = StyleSheet.create({
         backgroundColor: MAIN_COLOR,
         marginTop: 8,
     },
-    uploadBtnIconBox: {
-        width: 36,
-        height: 36,
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: STRONG_TEXT,
-        alignItems: "center",
-        justifyContent: "center",
-        marginRight: 10,
-        position: "relative",
-    },
-    uploadBtnPlus: {
-        position: "absolute",
-        right: -5,
-        bottom: -5,
-        width: 16,
-        height: 16,
-        borderRadius: 8,
-        backgroundColor: "#00000055",
-        alignItems: "center",
-        justifyContent: "center",
-        borderWidth: 1,
-        borderColor: STRONG_TEXT,
-    },
     uploadBtnText: {
         color: STRONG_TEXT,
-        fontSize: 16,
+        fontSize: 17,
         fontWeight: "800",
     },
     historyTitle: {
@@ -236,5 +216,5 @@ const styles = StyleSheet.create({
         fontWeight: "700",
         marginTop: 12,
         marginBottom: 16,
-    }
+    },
 });
