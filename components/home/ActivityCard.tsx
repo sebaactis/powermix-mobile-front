@@ -1,35 +1,40 @@
-import { MAIN_COLOR } from "@/src/constant";
+import { MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
+import { Proof } from "@/src/types";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import MaterialIcon from "react-native-vector-icons/MaterialCommunityIcons";
 
-type ReceiptCardProps = {
-    title: string;
-    date: string;
-    amount: string;
-    onPress?: () => void;
-};
 
-export default function ActivityCard({
-    title,
-    date,
-    amount,
-    onPress,
-}: ReceiptCardProps) {
+export default function ActivityCard({ proof }: { proof: Proof }) {
     return (
-        <Pressable style={styles.card} onPress={onPress}>
+        <Pressable style={styles.card}>
             <View style={styles.iconWrapper}>
                 <MaterialIcon name="file-document-outline" size={28} color={MAIN_COLOR} />
             </View>
 
-            <View style={styles.textContainer}>
-                <Text style={styles.title} numberOfLines={1}>
-                    {title}
-                </Text>
-                <Text style={styles.date}>{date}</Text>
+            <View style={styles.infoContainer}>
+                <View style={styles.infoRow}>
+                    <Text style={styles.infoLabel}>Comprobante:</Text>
+                    <Text style={styles.infoValue}>{proof.proof_mp_id}</Text>
+                </View>
+
+                <View style={styles.infoRow}>
+                    <Text style={styles.infoLabel}>Fecha de carga:</Text>
+                    <Text style={styles.infoValue}>{proof.proof_date}</Text>
+                </View>
+
+                <View style={styles.infoRow}>
+                    <Text style={styles.infoLabel}>Fecha de pago:</Text>
+                    <Text style={styles.infoValue}>{proof.date_approved_mp}</Text>
+                </View>
+
+                <View style={styles.infoRow}>
+                    <Text style={styles.infoLabel}>Monto:</Text>
+                    <Text style={styles.infoValue}>${proof.amount_mp}</Text>
+                </View>
+
             </View>
 
-            <Text style={styles.amount}>${amount}</Text>
         </Pressable>
     );
 }
@@ -38,11 +43,11 @@ const styles = StyleSheet.create({
     card: {
         flexDirection: "row",
         alignItems: "center",
-        paddingHorizontal: 16,
-        paddingVertical: 20,
+        paddingHorizontal: 14,
+        paddingVertical: 15,
         backgroundColor: "#2f2d2d",
         borderRadius: 10,
-        marginBottom: 10,
+        marginBottom: 13,
     },
     iconWrapper: {
         width: 50,
@@ -53,23 +58,24 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         marginRight: 12,
     },
-    textContainer: {
+    infoContainer: {
+        flexDirection: "column",
         flex: 1,
+        justifyContent: "center"
     },
-    title: {
-        color: "#F9FAFB",
-        fontSize: 16,
+    infoRow: {
+        flexDirection: "row",
+        marginBottom: 3,
+    },
+    infoLabel: {
+        color: SUBTEXT,
+        fontSize: 14,
         fontWeight: "600",
+        marginRight: 4,
     },
-    date: {
-        color: "#9CA3AF",
-        fontSize: 15,
-        marginTop: 2,
-    },
-    amount: {
-        color: "#F9FAFB",
-        fontSize: 17,
-        fontWeight: "700",
-        marginLeft: 8,
-    },
+    infoValue: {
+        color: STRONG_TEXT,
+        fontSize: 14,
+        flexShrink: 1,
+    }
 });

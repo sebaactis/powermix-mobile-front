@@ -9,9 +9,8 @@ import {
     View,
 } from "react-native";
 import Toast from "react-native-toast-message";
-
-import { MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
 import { useAuth } from "@/src/context/AuthContext";
+import { MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
 
 type Props = {
     visible: boolean;
@@ -49,7 +48,7 @@ export default function EditNameModal({ visible, onClose }: Props) {
                 }),
             ]).start();
         }
-    }, [visible, user, opacityAnim, scaleAnim]);
+    }, [visible, user, scaleAnim, opacityAnim]);
 
     const closeWithAnimation = () => {
         Animated.parallel([
@@ -115,7 +114,10 @@ export default function EditNameModal({ visible, onClose }: Props) {
                 text1: "Usuario editado correctamente!",
             });
 
-            setUser({ ...user, name: trimmed });
+            setUser({
+                ...user,
+                name: trimmed,
+            });
 
             closeWithAnimation();
         } catch (error: any) {

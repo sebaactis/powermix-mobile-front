@@ -15,12 +15,21 @@ import {
   View,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
+import Toast from "react-native-toast-message";
 
 export default function ProfileScreen({ navigation }) {
   const { user, signOut } = useAuth();
 
   const [showEditName, setShowEditName] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
+
+  const handleSignOut = () => {
+    signOut();
+    Toast.show({
+      type: "appSuccess",
+      text1: "Sesión cerrada correctamente!",
+    });
+  }
 
   return (
     <View style={styles.screen}>
@@ -82,7 +91,7 @@ export default function ProfileScreen({ navigation }) {
           />
         </View>
 
-        <Pressable style={styles.closeSessionBtn} onPress={signOut}>
+        <Pressable style={styles.closeSessionBtn} onPress={handleSignOut}>
           <Text style={styles.textCloseSessionBtn}>Cerrar sesión</Text>
         </Pressable>
       </View>

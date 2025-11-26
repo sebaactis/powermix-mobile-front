@@ -5,14 +5,15 @@ import {
     useRef,
     useState,
     ReactNode,
-} from 'react';
-import { jwtDecode } from 'jwt-decode';
-import { loadTokens, saveTokens, clearTokens } from '../storage/tokenStorage';
+} from "react";
+import { jwtDecode } from "jwt-decode";
+import { loadTokens, saveTokens, clearTokens } from "../storage/tokenStorage";
+import { loadUser, saveUser, clearUser } from "../storage/userStorage";
 
 type User = {
     email: string;
     name: string;
-}
+};
 
 type AuthContextValue = {
     accessToken: string | null;
@@ -44,18 +45,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const [loading, setLoading] = useState(true);
     const logoutTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const [user, setUser] = useState<User>({
-        email: '',
-        name: '',
-    })
+    const [user, setUserState] = useState<User>({
+        email: "",
+        name: "",
+    });
+
+    const setUser = (newUser: User) => {
+        setUserState(newUser);
+        void saveUser(newUser);
+    };
 
     const signOut = async () => {
         setAccessToken(null);
         setRefreshToken(null);
-        setUser({
-            email: '',
-            name: '',
-        })
+        setUserState({
+            email: "",
+            name: "",
+        });
 
         if (logoutTimerRef.current) {
             clearTimeout(logoutTimerRef.current);
@@ -63,6 +69,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
 
         await clearTokens();
+        await clearUser();
     };
 
     const scheduleAutoLogout = (token: string | null) => {
@@ -72,7 +79,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         try {
             decoded = jwtDecode(token);
         } catch (e) {
-            console.log('No se pudo decodificar el token', e);
+            console.log("No se pudo decodificar el token", e);
             return;
         }
 
@@ -90,7 +97,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
 
         logoutTimerRef.current = setTimeout(() => {
-            console.log('Token vencido, cerrando sesión…');
+            console.log("Token vencido, cerrando sesión…");
             void signOut();
         }, msUntilExpiration);
     };
@@ -103,13 +110,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
                     | null;
 
                 if (tokens?.accessToken) {
-                    // 🔹 acá el fix importante
                     setAccessToken(tokens.accessToken);
                     setRefreshToken(tokens.refreshToken);
                     scheduleAutoLogout(tokens.accessToken);
                 }
+
+                const storedUser = await loadUser();
+                if (storedUser) {
+                    setUserState(storedUser);
+                }
             } catch (e) {
-                console.log('Error cargando tokens desde storage', e);
+                console.log("Error cargando tokens/usuario desde storage", e);
             } finally {
                 setLoading(false);
             }
@@ -125,16 +136,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }, []);
 
     const signIn = async (email: string, password: string) => {
-        const res = await fetch('http://10.0.2.2:8080/api/v1/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+        const res = await fetch("http://10.0.2.2:8080/api/v1/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password }),
         });
 
         if (!res.ok) {
             const txt = await res.text();
-            console.log('Error login:', txt);
-            throw new Error('Credenciales inválidas');
+            console.log("Error login:", txt);
+            throw new Error("Credenciales inválidas");
         }
 
         const data: AuthResponse = await res.json();
@@ -142,10 +153,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
         const access = data.token;
         const refresh = data.refreshToken;
 
-        setUser({
+        const loggedUser: User = {
             email: data.email,
             name: data.name,
-        })
+        };
+
+        setUser(loggedUser);
         setAccessToken(access);
         setRefreshToken(refresh);
         await saveTokens(access, refresh);
@@ -160,7 +173,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         signIn,
         signOut,
         user,
-        setUser
+        setUser,
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -169,7 +182,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 export function useAuth(): AuthContextValue {
     const ctx = useContext(AuthContext);
     if (!ctx) {
-        throw new Error('useAuth debe usarse dentro de un AuthProvider');
+        throw new Error("useAuth debe usarse dentro de un AuthProvider");
     }
     return ctx;
 }

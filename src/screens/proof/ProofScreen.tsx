@@ -2,56 +2,35 @@ import AddProofModal from "@/components/proof/AddProofModal";
 import { RenderItem } from "@/components/proof/RenderItem";
 
 import { BG, CARD_BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
+import { useAuth } from "@/src/context/AuthContext";
+import { Proof } from "@/src/types";
 import React, { useEffect, useRef, useState } from "react";
 import {
+    ActivityIndicator,
     Animated,
     Dimensions,
     FlatList,
     Platform,
     Pressable,
+    RefreshControl,
     StatusBar,
     StyleSheet,
     Text,
     View,
 } from "react-native";
+import Toast from "react-native-toast-message";
 import Icon from "react-native-vector-icons/FontAwesome";
 
 const { width } = Dimensions.get("window");
 
-type ReceiptStatus = "APROBADO" | "PENDIENTE" | "RECHAZADO";
-type ReceiptItem = {
-    id: string;
-    machine: string;
-    date: string;
-    time: string;
-    status: ReceiptStatus;
-};
-
-const DATA: ReceiptItem[] = [
-    {
-        id: "1",
-        machine: "Máquina V-1234",
-        date: "15 de Octubre, 2023",
-        time: "10:30 AM",
-        status: "APROBADO",
-    },
-    {
-        id: "2",
-        machine: "Máquina V-5678",
-        date: "14 de Octubre, 2023",
-        time: "09:15 AM",
-        status: "PENDIENTE",
-    },
-    {
-        id: "3",
-        machine: "Máquina V-9012",
-        date: "13 de Octubre, 2023",
-        time: "04:50 PM",
-        status: "RECHAZADO",
-    },
-];
-
 export default function ProofScreen({ navigation }) {
+
+    const { accessToken } = useAuth();
+
+    const [proofs, setProofs] = useState<Proof[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
+
     const [showAddProof, setShowAddProof] = useState(false);
 
     const headerAnim = useRef(new Animated.Value(0)).current;
@@ -84,6 +63,60 @@ export default function ProofScreen({ navigation }) {
         inputRange: [0, 1],
         outputRange: [16, 0],
     });
+
+    const fetchProofs = async (isRefresh: boolean = false) => {
+        setLoading(true)
+
+        if (isRefresh) {
+            setRefreshing(true)
+        }
+        try {
+            const res = await fetch(`http://10.0.2.2:8080/api/v1/proofs/me`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${accessToken}`
+                }
+            })
+
+            const data = await res.json().catch(() => null);
+
+            if (!res.ok) {
+                const error = data.details?.error || "Error al cargar los comprobantes"
+
+                Toast.show({
+                    type: "appError",
+                    text1: "Ocurrió un error",
+                    text2: error
+                })
+
+                return
+            }
+
+            setProofs(data)
+        } catch {
+            Toast.show({
+                type: "appError",
+                text1: "Ocurrió un error inesperado",
+                text2: "Intente de nuevo mas tarde"
+            })
+        } finally {
+            setLoading(false)
+            setRefreshing(false)
+        }
+    }
+
+    const onRefresh = () => {
+        fetchProofs(true);
+    };
+
+    if (loading) {
+        return (
+            <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+                <ActivityIndicator color={MAIN_COLOR} />
+            </View>
+        );
+    }
 
     return (
         <View style={styles.screen}>
@@ -129,9 +162,16 @@ export default function ProofScreen({ navigation }) {
                         <Text style={styles.historyTitle}>Historial de subidas</Text>
                     </Animated.View>
                 }
-                data={DATA}
-                keyExtractor={(item) => item.id}
+                data={proofs}
+                keyExtractor={(item) => item.proof_mp_id}
                 renderItem={({ item }) => <RenderItem item={item} />}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                        tintColor={MAIN_COLOR}
+                    />
+                }
             />
 
             <AddProofModal

@@ -3,6 +3,7 @@ import ProgressRing from '@/components/home/ProgressRing';
 
 import { BG, CARD_BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from '@/src/constant';
 import { useAuth } from '@/src/context/AuthContext';
+import { Proof } from '@/src/types';
 import { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -33,6 +34,7 @@ export default function HomeScreen({ navigation }) {
   const { accessToken } = useAuth();
 
   const [userHome, setUserHome] = useState<UserHome | null>(null);
+  const [proofs, setProofs] = useState<Proof[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -94,12 +96,59 @@ export default function HomeScreen({ navigation }) {
     [accessToken],
   );
 
+  const fetchProofs = useCallback(
+    async (isRefresh: boolean = false) => {
+      setLoading(true)
+
+      if (isRefresh) {
+        setRefreshing(true)
+      }
+      try {
+        const res = await fetch(`http://10.0.2.2:8080/api/v1/proofs/me/last3`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${accessToken}`
+          }
+        })
+
+        const data = await res.json().catch(() => null);
+
+        if (!res.ok) {
+          const error = data.details?.error || "Error al cargar los comprobantes"
+
+          Toast.show({
+            type: "appError",
+            text1: "Ocurrió un error",
+            text2: error
+          })
+
+          return
+        }
+
+        setProofs(data)
+      } catch {
+        Toast.show({
+          type: "appError",
+          text1: "Ocurrió un error inesperado",
+          text2: "Intente de nuevo mas tarde"
+        })
+      } finally {
+        setLoading(false)
+        setRefreshing(false)
+      }
+    },
+    [accessToken],
+  )
+
   useEffect(() => {
     fetchUser(false);
-  }, [fetchUser]);
+    fetchProofs(false)
+  }, [fetchUser, fetchProofs]);
 
   const onRefresh = () => {
     fetchUser(true);
+    fetchProofs(true);
   };
 
   if (loading) {
@@ -179,9 +228,9 @@ export default function HomeScreen({ navigation }) {
       <View>
         <Text style={styles.actityTitle}>Actividad Reciente</Text>
         <View style={styles.actityCardsContainer}>
-          <ActivityCard title="Comprobante de batido" date="10/11/2025" amount="5500" />
-          <ActivityCard title="Comprobante de batido" date="10/11/2025" amount="5500" />
-          <ActivityCard title="Comprobante de batido" date="10/11/2025" amount="5500" />
+          {proofs.map((proof) => (
+            <ActivityCard key={proof.proof_mp_id} proof={proof} />
+          ))}
         </View>
       </View>
     </ScrollView>
