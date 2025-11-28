@@ -1,30 +1,92 @@
 import React, { useState } from 'react';
 import MaterialIcon from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Pressable, StyleSheet, Text, View, ActivityIndicator } from 'react-native';
 
 import FormInput from '@/components/inputs/FormInput';
 import { BG, CARD_BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from '@/src/constant';
-import { Pressable, StyleSheet, Text, View, ActivityIndicator } from 'react-native';
 import { useAuth } from '@/src/context/AuthContext';
 
-export default function LoginScreen({ navigation }) {
-  const { signIn } = useAuth();
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
+const API_URL = 'http://10.0.2.2:8080';
+
+export default function LoginScreen({ navigation }) {
+  const { signIn, signInWithTokens } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleLogin = async () => {
     try {
       setError(null);
       setLoading(true);
       await signIn(email, password);
-    } catch (e) {
+    } catch (e: any) {
       setError(e.message || 'Error al iniciar sesión');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      setError(null);
+      setGoogleLoading(true);
+
+      console.log('🚀 Iniciando Google Login (native)...');
+
+      // 1) Verificar Google Play Services
+      await GoogleSignin.hasPlayServices({
+        showPlayServicesUpdateDialog: true,
+      });
+
+      // 2) Login con Google
+      const userInfo = await GoogleSignin.signIn();
+      console.log('👤 User info Google:', userInfo);
+
+      // 3) Obtener los tokens de Google
+      const tokens = await GoogleSignin.getTokens();
+      console.log('🔑 Tokens de Google:', {
+        hasAccessToken: !!tokens.accessToken,
+        hasIdToken: !!tokens.idToken,
+      });
+
+      if (!tokens.accessToken) {
+        setError('No se pudo obtener el access token de Google');
+        return;
+      }
+
+      // 4) Mandar access_token al backend
+      console.log('📤 Enviando access_token al backend...');
+      const res = await fetch(`${API_URL}/api/v1/login-google`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ access_token: tokens.accessToken }),
+      });
+
+      const data = await res.json().catch(() => null);
+      console.log('📥 Respuesta backend:', res.status, data);
+
+      if (!res.ok) {
+        throw new Error(data?.message || 'Error al iniciar sesión con Google');
+      }
+
+      // 5) Guardar tus propios JWT en AuthContext
+      await signInWithTokens(data.accessToken, data.refreshToken, {
+        email: data.user.email,
+        name: data.user.name,
+      });
+
+      console.log('✅ Login con Google completado');
+    } catch (e: any) {
+      console.error('❌ Error en login Google:', e);
+      setError(e.message || 'Error al iniciar sesión con Google');
+    } finally {
+      setGoogleLoading(false);
     }
   };
 
@@ -82,9 +144,19 @@ export default function LoginScreen({ navigation }) {
 
         <Text style={styles.oText}>o</Text>
 
-        <Pressable style={styles.googleButton}>
-          <MaterialIcon style={styles.icon} name="google" size={30} color={STRONG_TEXT} />
-          <Text style={styles.buttonText}>Iniciar sesion con Google</Text>
+        <Pressable
+          style={[styles.googleButton, googleLoading && { opacity: 0.7 }]}
+          onPress={handleGoogleLogin}
+          disabled={googleLoading}
+        >
+          {googleLoading ? (
+            <ActivityIndicator color={STRONG_TEXT} />
+          ) : (
+            <>
+              <MaterialIcon style={styles.icon} name="google" size={30} color={STRONG_TEXT} />
+              <Text style={styles.buttonText}>Iniciar sesión con Google</Text>
+            </>
+          )}
         </Pressable>
       </View>
 
@@ -97,7 +169,6 @@ export default function LoginScreen({ navigation }) {
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -142,7 +213,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
     textAlign: 'center',
     fontSize: 16,
-    fontWeight: '500'
+    fontWeight: '500',
+    paddingHorizontal: 20,
   },
   button: {
     backgroundColor: MAIN_COLOR,

@@ -4,10 +4,15 @@
     "slug": "powermix",
     "version": "1.0.0",
     "orientation": "portrait",
-    "scheme": "powermix",
+    "scheme": "com.anonymous.powermix",
     "userInterfaceStyle": "dark",
     "backgroundColor": "#1E1E1E",
     "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#be185d"
+    },
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
@@ -21,30 +26,40 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.powermix"
+      "package": "com.anonymous.powermix",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "com.anonymous.powermix"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
     },
     "web": {
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "output": "static"
     },
     "plugins": [
       "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#be185d",
-          "dark": {
-            "backgroundColor": "#be185d"
-          }
-        }
-      ],
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-web-browser",
+      "@react-native-google-signin/google-signin"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "b7425fc1-2129-4284-9733-ab110be8b2a3"
+      }
     }
   }
 }

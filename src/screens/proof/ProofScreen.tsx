@@ -4,7 +4,7 @@ import { RenderItem } from "@/components/proof/RenderItem";
 import { BG, CARD_BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
 import { useAuth } from "@/src/context/AuthContext";
 import { Proof } from "@/src/types";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
     ActivityIndicator,
     Animated,
@@ -42,7 +42,7 @@ export default function ProofScreen({ navigation }) {
             duration: 250,
             useNativeDriver: true,
         }).start();
-    }, [headerAnim]);
+    }, [headerAnim, loading]);
 
     const handleOpenAddReceipt = () => {
         Animated.sequence([
@@ -105,6 +105,10 @@ export default function ProofScreen({ navigation }) {
             setRefreshing(false)
         }
     }
+    
+    useEffect(() => {
+        fetchProofs();
+    }, [])
 
     const onRefresh = () => {
         fetchProofs(true);

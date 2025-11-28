@@ -7,7 +7,16 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import Toast from 'react-native-toast-message';
 
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+
 export default function App() {
+
+  GoogleSignin.configure({
+    webClientId: 'XXX', // TO DO: env variables
+    offlineAccess: false,
+  });
+
+
   return (
     <>
       <StatusBar
@@ -24,7 +33,7 @@ export default function App() {
           <Toast
             config={toastConfig}
             topOffset={60}
-            
+
           />
         </AuthProvider>
       </SafeAreaProvider>

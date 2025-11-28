@@ -21,6 +21,7 @@ type AuthContextValue = {
     isAuthenticated: boolean;
     loading: boolean;
     signIn: (email: string, password: string) => Promise<void>;
+    signInWithTokens: (accessToken: string, refreshToken: string, user: User) => Promise<void>;
     signOut: () => Promise<void>;
     user: User;
     setUser: (user: User) => void;
@@ -135,6 +136,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
         };
     }, []);
 
+    const signInWithTokens = async (access: string, refresh: string, loggedUser: User) => {
+        setUser(loggedUser);
+        setAccessToken(access);
+        setRefreshToken(refresh);
+        await saveTokens(access, refresh);
+        scheduleAutoLogout(access);
+    };
+
     const signIn = async (email: string, password: string) => {
         const res = await fetch("http://10.0.2.2:8080/api/v1/login", {
             method: "POST",
@@ -158,11 +167,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             name: data.name,
         };
 
-        setUser(loggedUser);
-        setAccessToken(access);
-        setRefreshToken(refresh);
-        await saveTokens(access, refresh);
-        scheduleAutoLogout(access);
+        await signInWithTokens(access, refresh, loggedUser);
     };
 
     const value: AuthContextValue = {
@@ -171,6 +176,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         isAuthenticated: !!accessToken,
         loading,
         signIn,
+        signInWithTokens,
         signOut,
         user,
         setUser,
