@@ -166,7 +166,7 @@ export default function AddProofModal({ visible, onClose }: Props) {
 
       if (paymentMethod === "MERCADO_PAGO") {
 
-        const res = await fetch(`http://10.0.2.2:8080/api/v1/proof`, {
+        const res = await fetch(`${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/proof`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -191,7 +191,7 @@ export default function AddProofModal({ visible, onClose }: Props) {
         }
       } else {
 
-        const res = await fetch(`http://10.0.2.2:8080/api/v1/proof/others`, {
+        const res = await fetch(`${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/proof/others`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

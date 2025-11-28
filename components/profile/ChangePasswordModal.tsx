@@ -116,7 +116,7 @@ export default function ChangePasswordModal({ visible, onClose }: Props) {
             // Falta implementar el endpoint real
             setLoading(true);
             const res = await fetch(
-                "http://10.0.2.2:8080/api/v1/user/change-password",
+                `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/user/change-password`,
                 {
                     method: "PUT",
                     headers: {

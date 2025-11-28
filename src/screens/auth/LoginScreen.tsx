@@ -9,7 +9,6 @@ import { useAuth } from '@/src/context/AuthContext';
 
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
-const API_URL = 'http://10.0.2.2:8080';
 
 export default function LoginScreen({ navigation }) {
   const { signIn, signInWithTokens } = useAuth();
@@ -37,18 +36,15 @@ export default function LoginScreen({ navigation }) {
       setError(null);
       setGoogleLoading(true);
 
-      console.log('🚀 Iniciando Google Login (native)...');
+      console.log('🚀 Iniciando Google Login');
 
-      // 1) Verificar Google Play Services
       await GoogleSignin.hasPlayServices({
         showPlayServicesUpdateDialog: true,
       });
 
-      // 2) Login con Google
       const userInfo = await GoogleSignin.signIn();
       console.log('👤 User info Google:', userInfo);
 
-      // 3) Obtener los tokens de Google
       const tokens = await GoogleSignin.getTokens();
       console.log('🔑 Tokens de Google:', {
         hasAccessToken: !!tokens.accessToken,
@@ -60,9 +56,7 @@ export default function LoginScreen({ navigation }) {
         return;
       }
 
-      // 4) Mandar access_token al backend
-      console.log('📤 Enviando access_token al backend...');
-      const res = await fetch(`${API_URL}/api/v1/login-google`, {
+      const res = await fetch(`${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/login-google`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ access_token: tokens.accessToken }),
@@ -75,7 +69,6 @@ export default function LoginScreen({ navigation }) {
         throw new Error(data?.message || 'Error al iniciar sesión con Google');
       }
 
-      // 5) Guardar tus propios JWT en AuthContext
       await signInWithTokens(data.accessToken, data.refreshToken, {
         email: data.user.email,
         name: data.user.name,
@@ -117,7 +110,6 @@ export default function LoginScreen({ navigation }) {
         color={SUBTEXT}
         placeholder="Contraseña"
         placeholderTextColor={SUBTEXT}
-        keyBoardType="visible-password"
         labelText="Contraseña"
         marginTop={35}
         secureTextEntry

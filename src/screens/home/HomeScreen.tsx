@@ -60,7 +60,7 @@ export default function HomeScreen({ navigation }) {
           setLoading(true);
         }
 
-        const res = await fetch(`http://10.0.2.2:8080/api/v1/user/me`, {
+        const res = await fetch(`${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/user/me`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -104,7 +104,7 @@ export default function HomeScreen({ navigation }) {
         setRefreshing(true)
       }
       try {
-        const res = await fetch(`http://10.0.2.2:8080/api/v1/proofs/me/last3`, {
+        const res = await fetch(`${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/proofs/me/last3`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

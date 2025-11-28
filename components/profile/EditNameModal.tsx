@@ -82,7 +82,7 @@ export default function EditNameModal({ visible, onClose }: Props) {
 
         try {
             setLoading(true);
-            const res = await fetch("http://10.0.2.2:8080/api/v1/user/update", {
+            const res = await fetch(`${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/user/update`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

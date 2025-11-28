@@ -145,7 +145,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
 
     const signIn = async (email: string, password: string) => {
-        const res = await fetch("http://10.0.2.2:8080/api/v1/login", {
+        const res = await fetch(`${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password }),

@@ -12,7 +12,7 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 export default function App() {
 
   GoogleSignin.configure({
-    webClientId: 'XXX', // TO DO: env variables
+    webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
     offlineAccess: false,
   });
 

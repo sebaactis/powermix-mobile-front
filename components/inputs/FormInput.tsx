@@ -7,7 +7,8 @@ interface FormInputProps {
     color: string;
     placeholder: string;
     placeholderTextColor: string;
-    keyBoardType: string;
+    keyBoardType?: string;
+    secureTextEntry?: boolean;
     labelText: string;
     marginTop: number;
     onChangeText: (text: string) => void;
@@ -15,7 +16,7 @@ interface FormInputProps {
     error?: string;
 }
 
-export default function FormInput({ iconName, size, color, placeholder, placeholderTextColor, keyBoardType, labelText, marginTop, onChangeText, value, error }: FormInputProps) {
+export default function FormInput({ iconName, size, color, placeholder, placeholderTextColor, keyBoardType, secureTextEntry, labelText, marginTop, onChangeText, value, error }: FormInputProps) {
 
     const hasError = !!error
 
@@ -37,6 +38,7 @@ export default function FormInput({ iconName, size, color, placeholder, placehol
                     keyboardType={keyBoardType}
                     autoCapitalize='none'
                     onChangeText={onChangeText}
+                    secureTextEntry={secureTextEntry}
                     value={value}
                 />
             </View>
