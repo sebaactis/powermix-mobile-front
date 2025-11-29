@@ -12,6 +12,7 @@ import {
     StatusBar,
     StyleSheet,
     Text,
+    TextInput,
     View,
 } from "react-native";
 import Toast from "react-native-toast-message";
@@ -23,6 +24,14 @@ type PaginatedProofsResponse = {
     pageSize: number;
     total: number;
     hasMore: boolean;
+};
+
+type FiltersState = {
+    id_mp: string;
+    fromProofDate: string;
+    toProofDate: string;
+    minAmount: string;
+    maxAmount: string;
 };
 
 export default function ProofsFullListScreen({ navigation }) {
@@ -37,7 +46,49 @@ export default function ProofsFullListScreen({ navigation }) {
     const [hasMore, setHasMore] = useState(true);
     const PAGE_SIZE = 20;
 
-    const fetchProofs = async ({ pageToLoad = 1, isRefresh = false, isLoadMore = false }) => {
+    const [filters, setFilters] = useState<FiltersState>({
+        id_mp: "",
+        fromProofDate: "",
+        toProofDate: "",
+        minAmount: "",
+        maxAmount: "",
+    });
+
+    const handleChangeFilter = (field: keyof FiltersState, value: string) => {
+        setFilters(prev => ({ ...prev, [field]: value }));
+    };
+
+    const buildUrlWithFilters = (pageToLoad: number) => {
+        let url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/proofs/me/paginated?page=${pageToLoad}&pageSize=${PAGE_SIZE}`;
+
+        if (filters.id_mp.trim()) {
+            url += `&id_mp=${encodeURIComponent(filters.id_mp.trim())}`;
+        }
+        if (filters.fromProofDate.trim()) {
+            url += `&fromProofDate=${encodeURIComponent(filters.fromProofDate.trim())}`;
+        }
+        if (filters.toProofDate.trim()) {
+            url += `&toProofDate=${encodeURIComponent(filters.toProofDate.trim())}`;
+        }
+        if (filters.minAmount.trim()) {
+            url += `&minAmount=${encodeURIComponent(filters.minAmount.trim())}`;
+        }
+        if (filters.maxAmount.trim()) {
+            url += `&maxAmount=${encodeURIComponent(filters.maxAmount.trim())}`;
+        }
+
+        return url;
+    };
+
+    const fetchProofs = async ({
+        pageToLoad = 1,
+        isRefresh = false,
+        isLoadMore = false,
+    }: {
+        pageToLoad?: number;
+        isRefresh?: boolean;
+        isLoadMore?: boolean;
+    }) => {
         if (loadingInitial || loadingMore) return;
 
         if (isRefresh) {
@@ -49,16 +100,15 @@ export default function ProofsFullListScreen({ navigation }) {
         }
 
         try {
-            const res = await fetch(
-                `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/proofs/me/paginated?page=${pageToLoad}&pageSize=${PAGE_SIZE}`,
-                {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${accessToken}`,
-                    },
+            const url = buildUrlWithFilters(pageToLoad);
+
+            const res = await fetch(url, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${accessToken}`,
                 },
-            );
+            });
 
             const data: PaginatedProofsResponse = await res.json().catch(
                 () => null as any,
@@ -113,6 +163,28 @@ export default function ProofsFullListScreen({ navigation }) {
         fetchProofs({ pageToLoad: page + 1, isLoadMore: true });
     };
 
+    const handleApplyFilters = () => {
+        setHasMore(true);
+        setPage(1);
+        setProofs([]);
+        fetchProofs({ pageToLoad: 1 });
+    };
+
+    const handleClearFilters = () => {
+        setFilters({
+            id_mp: "",
+            fromProofDate: "",
+            toProofDate: "",
+            minAmount: "",
+            maxAmount: "",
+        });
+        setHasMore(true);
+        setPage(1);
+        setProofs([]);
+        fetchProofs({ pageToLoad: 1 });
+        
+    };
+
     if (loadingInitial && proofs.length === 0) {
         return (
             <View style={styles.loaderContainer}>
@@ -123,8 +195,8 @@ export default function ProofsFullListScreen({ navigation }) {
 
     return (
         <View style={styles.screen}>
-            {/* Header propio */}
-            <View className="header" style={styles.header}>
+
+            <View style={styles.header}>
                 <Pressable
                     style={styles.headerBtnLeft}
                     onPress={() => navigation.goBack()}
@@ -136,12 +208,81 @@ export default function ProofsFullListScreen({ navigation }) {
                 <Text style={styles.headerTitle}>Listado completo</Text>
             </View>
 
-            {/* TO DO FILTERS ---- */}
+
             <View style={styles.filtersContainer}>
-                <Text style={styles.filtersTitle}>Filtros (próximo paso)</Text>
-                <Text style={styles.filtersSubtitle}>
-                    Acá vamos a agregar filtros por fecha, monto, etc.
-                </Text>
+                <Text style={styles.filtersTitle}>Filtros</Text>
+
+                <View style={styles.filterRow}>
+                    <TextInput
+                        style={styles.filterInput}
+                        placeholder="Buscar por comprobante"
+                        placeholderTextColor={SUBTEXT}
+                        value={filters.id_mp}
+                        onChangeText={text => handleChangeFilter("id_mp", text)}
+                    />
+                </View>
+
+
+                <View style={styles.filterRow}>
+                    <TextInput
+                        style={[styles.filterInput, styles.filterInputHalf, { marginRight: 6 }]}
+                        placeholder="Desde (YYYY-MM-DD)"
+                        placeholderTextColor={SUBTEXT}
+                        value={filters.fromProofDate}
+                        onChangeText={text =>
+                            handleChangeFilter("fromProofDate", text)
+                        }
+                    />
+                    <TextInput
+                        style={[styles.filterInput, styles.filterInputHalf, { marginLeft: 6 }]}
+                        placeholder="Hasta (YYYY-MM-DD)"
+                        placeholderTextColor={SUBTEXT}
+                        value={filters.toProofDate}
+                        onChangeText={text =>
+                            handleChangeFilter("toProofDate", text)
+                        }
+                    />
+                </View>
+
+                <View style={styles.filterRow}>
+                    <TextInput
+                        style={[styles.filterInput, styles.filterInputHalf, { marginRight: 6 }]}
+                        placeholder="Monto mín."
+                        placeholderTextColor={SUBTEXT}
+                        keyboardType="numeric"
+                        value={filters.minAmount}
+                        onChangeText={text =>
+                            handleChangeFilter("minAmount", text)
+                        }
+                    />
+                    <TextInput
+                        style={[styles.filterInput, styles.filterInputHalf, { marginLeft: 6 }]}
+                        placeholder="Monto máx."
+                        placeholderTextColor={SUBTEXT}
+                        keyboardType="numeric"
+                        value={filters.maxAmount}
+                        onChangeText={text =>
+                            handleChangeFilter("maxAmount", text)
+                        }
+                    />
+                </View>
+
+
+                <View style={styles.filterButtonsRow}>
+                    <Pressable
+                        style={styles.applyBtn}
+                        onPress={handleApplyFilters}
+                    >
+                        <Text style={styles.applyBtnText}>Aplicar filtros</Text>
+                    </Pressable>
+
+                    <Pressable
+                        style={styles.clearBtn}
+                        onPress={handleClearFilters}
+                    >
+                        <Text style={styles.clearBtnText}>Limpiar</Text>
+                    </Pressable>
+                </View>
             </View>
 
             <FlatList
@@ -191,7 +332,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         borderBottomWidth: StyleSheet.hairlineWidth,
         borderBottomColor: "#838383",
-        marginBottom: 8,
+        marginBottom: 4,
     },
     headerTitle: {
         color: STRONG_TEXT,
@@ -210,21 +351,70 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingBottom: 24,
     },
+
     filtersContainer: {
         paddingHorizontal: 20,
         paddingVertical: 12,
-        borderBottomColor: "#3a3a3a",
+        borderBottomColor: "#8a8a8a",
         borderBottomWidth: StyleSheet.hairlineWidth,
-        marginBottom: 4,
+        marginBottom: 20,
     },
     filtersTitle: {
         color: STRONG_TEXT,
         fontSize: 15,
         fontWeight: "600",
-        marginBottom: 4,
+        marginBottom: 8,
     },
-    filtersSubtitle: {
+    filterRow: {
+        flexDirection: "row",
+        marginBottom: 10,
+        marginTop: 5
+    },
+    filterInput: {
+        flex: 1,
+        borderRadius: 10,
+        borderWidth: StyleSheet.hairlineWidth,
+        borderColor: "#6b6b6b",
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+        color: STRONG_TEXT,
+        fontSize: 13,
+        backgroundColor: "#1e1e1e",
+    },
+    filterInputHalf: {
+        flex: 1,
+    },
+    filterButtonsRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginTop: 5,
+    },
+    applyBtn: {
+        flex: 1,
+        backgroundColor: MAIN_COLOR,
+        paddingVertical: 10,
+        borderRadius: 10,
+        alignItems: "center",
+        justifyContent: "center",
+        marginRight: 6,
+    },
+    applyBtnText: {
+        color: STRONG_TEXT,
+        fontSize: 13,
+        fontWeight: "700",
+    },
+    clearBtn: {
+        width: 90,
+        borderRadius: 10,
+        borderWidth: StyleSheet.hairlineWidth,
+        borderColor: "#555",
+        alignItems: "center",
+        justifyContent: "center",
+        paddingVertical: 10,
+    },
+    clearBtnText: {
         color: SUBTEXT,
         fontSize: 12,
+        fontWeight: "500",
     },
 });

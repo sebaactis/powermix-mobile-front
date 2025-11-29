@@ -52,13 +52,6 @@ export default function ProfileScreen({ navigation }) {
               <Icon name="user" size={58} color="#EDEDED" />
             </View>
           </View>
-
-          <Pressable
-            style={styles.editFab}
-            onPress={() => console.log("editar avatar")}
-          >
-            <Icon name="pencil" size={16} color="#FFFFFF" />
-          </Pressable>
         </View>
 
         <Text style={styles.name}>{user.name}</Text>
