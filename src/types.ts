@@ -12,3 +12,11 @@ export type Proof = {
     status_mp: string;
     amount_mp: number;
 }
+
+export type PaginatedProofs = {
+    items: Proof[]
+    page: number;
+    pageSize: number;
+    total: number;
+    hasMore: boolean;
+}

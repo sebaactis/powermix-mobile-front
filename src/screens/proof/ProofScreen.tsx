@@ -3,7 +3,7 @@ import { RenderItem } from "@/components/proof/RenderItem";
 
 import { BG, CARD_BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
 import { useAuth } from "@/src/context/AuthContext";
-import { Proof } from "@/src/types";
+import { PaginatedProofs, Proof } from "@/src/types";
 import { useEffect, useRef, useState } from "react";
 import {
     ActivityIndicator,
@@ -24,11 +24,17 @@ import Icon from "react-native-vector-icons/FontAwesome";
 const { width } = Dimensions.get("window");
 
 export default function ProofScreen({ navigation }) {
+    const PAGE_SIZE = 5
 
     const { accessToken } = useAuth();
 
     const [proofs, setProofs] = useState<Proof[]>([]);
-    const [loading, setLoading] = useState(false);
+
+    const [loadingInitial, setLoadingInitial] = useState(false)
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [page, setPage] = useState(1)
+    const [hasMore, setHasMore] = useState(true)
+
     const [refreshing, setRefreshing] = useState(false);
 
     const [showAddProof, setShowAddProof] = useState(false);
@@ -42,7 +48,7 @@ export default function ProofScreen({ navigation }) {
             duration: 250,
             useNativeDriver: true,
         }).start();
-    }, [headerAnim, loading]);
+    }, [headerAnim, loadingInitial]);
 
     const handleOpenAddReceipt = () => {
         Animated.sequence([
@@ -64,14 +70,21 @@ export default function ProofScreen({ navigation }) {
         outputRange: [16, 0],
     });
 
-    const fetchProofs = async (isRefresh: boolean = false) => {
-        setLoading(true)
+    const fetchProofs = async (pageToLoad = 1, isRefresh = false, isLoadMore = false) => {
+
+        if (loadingInitial || loadingMore) return;
 
         if (isRefresh) {
-            setRefreshing(true)
+            setRefreshing(true);
+        } else if (isLoadMore) {
+            setLoadingMore(true);
+        } else {
+            setLoadingInitial(true);
         }
+
+
         try {
-            const res = await fetch(`${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/proofs/me`, {
+            const res = await fetch(`${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/proofs/me/paginated?page=${pageToLoad}&pageSize=${PAGE_SIZE}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -79,7 +92,7 @@ export default function ProofScreen({ navigation }) {
                 }
             })
 
-            const data = await res.json().catch(() => null);
+            const data: PaginatedProofs = await res.json().catch(() => null);
 
             if (!res.ok) {
                 const error = data.details?.error || "Error al cargar los comprobantes"
@@ -93,7 +106,22 @@ export default function ProofScreen({ navigation }) {
                 return
             }
 
-            setProofs(data)
+            const newItems = data.items ?? [];
+            setHasMore(data.hasMore)
+            setPage(data.page)
+
+            setProofs(prev => {
+                if (pageToLoad === 1) {
+                    return newItems;
+                }
+
+                const existingIds = new Set(prev.map(p => p.proof_mp_id));
+                const filtered = newItems.filter(
+                    p => !existingIds.has(p.proof_mp_id),
+                );
+
+                return [...prev, ...filtered];
+            });
         } catch {
             Toast.show({
                 type: "appError",
@@ -101,22 +129,38 @@ export default function ProofScreen({ navigation }) {
                 text2: "Intente de nuevo mas tarde"
             })
         } finally {
-            setLoading(false)
-            setRefreshing(false)
+            setLoadingInitial(false);
+            setLoadingMore(false);
+            setRefreshing(false);
         }
     }
 
+    const handleLoadMore = () => {
+        if (!hasMore || loadingMore || loadingInitial || refreshing) return;
+
+        fetchProofs({ pageToLoad: page + 1, isLoadMore: true })
+    }
+
     useEffect(() => {
-        fetchProofs();
+        fetchProofs({ pageToLoad: 1 });
     }, [])
 
     const onRefresh = () => {
-        fetchProofs(true);
+        setHasMore(true);
+        setPage(1);
+        fetchProofs({ pageToLoad: 1, isRefresh: true });
     };
 
-    if (loading) {
+    if (loadingInitial && proofs.length === 0) {
         return (
-            <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+            <View
+                style={{
+                    flex: 1,
+                    backgroundColor: BG,
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}
+            >
                 <ActivityIndicator color={MAIN_COLOR} />
             </View>
         );
@@ -163,7 +207,13 @@ export default function ProofScreen({ navigation }) {
                             </Animated.View>
                         </View>
 
-                        <Text style={styles.historyTitle}>Historial de subidas</Text>
+                        <View style={styles.historyHeaderRow}>
+                            <Text style={styles.historyTitle}>Historial de subidas</Text>
+
+                            <Pressable onPress={() => navigation.navigate("FullListProofs")}>
+                                <Text style={styles.historyLinkText}>Ver listado completo</Text>
+                            </Pressable>
+                        </View>
                     </Animated.View>
                 }
                 data={proofs}
@@ -176,6 +226,8 @@ export default function ProofScreen({ navigation }) {
                         tintColor={MAIN_COLOR}
                     />
                 }
+                onEndReached={handleLoadMore}
+                onEndReachedThreshold={0.4}
             />
 
             <AddProofModal
@@ -260,5 +312,17 @@ const styles = StyleSheet.create({
         fontWeight: "700",
         marginTop: 12,
         marginBottom: 16,
+    },
+    historyHeaderRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        marginTop: 12,
+        marginBottom: 16,
+    },
+    historyLinkText: {
+        color: MAIN_COLOR,
+        fontSize: 15,
+        fontWeight: "600",
     },
 });

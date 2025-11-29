@@ -8,6 +8,7 @@ import ProfileScreen from '../screens/profile/ProfileScreen';
 import ProofScreen from '../screens/proof/ProofScreen';
 import Header from '@/components/header/Header';
 import HelpStackNavigator from './HelpStackNavigator';
+import ProofsNavigator from './ProofsNavigator';
 
 const Tab = createBottomTabNavigator();
 
@@ -45,7 +46,7 @@ const TabNavigator = () => {
 
       <Tab.Screen
         name="Proofs"
-        component={ProofScreen}
+        component={ProofsNavigator}
         options={{
           title: 'Comprobantes',
           tabBarIcon: ({ color }) => (
