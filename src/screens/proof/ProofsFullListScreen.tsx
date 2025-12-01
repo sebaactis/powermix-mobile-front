@@ -1,8 +1,9 @@
 import { RenderItem } from "@/components/proof/RenderItem";
 import { BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
 import { useAuth } from "@/src/context/AuthContext";
+import { ApiHelper } from "@/src/helpers/apiHelper";
 import { Proof } from "@/src/types";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
     ActivityIndicator,
     FlatList,
@@ -58,7 +59,7 @@ export default function ProofsFullListScreen({ navigation }) {
         setFilters(prev => ({ ...prev, [field]: value }));
     };
 
-    const buildUrlWithFilters = (pageToLoad: number) => {
+    const buildUrlWithFilters = useCallback((pageToLoad: number) => {
         let url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/proofs/me/paginated?page=${pageToLoad}&pageSize=${PAGE_SIZE}`;
 
         if (filters.id_mp.trim()) {
@@ -78,9 +79,9 @@ export default function ProofsFullListScreen({ navigation }) {
         }
 
         return url;
-    };
+    }, [filters, PAGE_SIZE]);
 
-    const fetchProofs = async ({
+    const fetchProofs = useCallback(async ({
         pageToLoad = 1,
         isRefresh = false,
         isLoadMore = false,
@@ -102,33 +103,29 @@ export default function ProofsFullListScreen({ navigation }) {
         try {
             const url = buildUrlWithFilters(pageToLoad);
 
-            const res = await fetch(url, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
+            const res = await ApiHelper<PaginatedProofsResponse>(
+                url,
+                "GET",
+                undefined,
+                {
                     Authorization: `Bearer ${accessToken}`,
-                },
-            });
-
-            const data: PaginatedProofsResponse = await res.json().catch(
-                () => null as any,
+                }
             );
 
-            if (!res.ok || !data) {
-                const error =
-                    (data as any)?.details?.error ||
-                    "Error al cargar los comprobantes";
+            if (!res.success || !res.data) {
+                const errorMsg =
+                    res.error?.message || "Error al cargar los comprobantes";
 
                 Toast.show({
                     type: "appError",
                     text1: "Ocurrió un error",
-                    text2: error,
+                    text2: errorMsg,
                 });
                 return;
             }
 
-            const newItems = data.items ?? [];
-            setHasMore(data.hasMore);
+            const newItems = res.data.items ?? [];
+            setHasMore(res.data.hasMore);
             setPage(pageToLoad);
 
             setProofs(prev =>
@@ -145,11 +142,12 @@ export default function ProofsFullListScreen({ navigation }) {
             setLoadingMore(false);
             setRefreshing(false);
         }
-    };
+    }, [accessToken, loadingInitial, loadingMore, buildUrlWithFilters]);
+
 
     useEffect(() => {
         fetchProofs({ pageToLoad: 1 });
-    }, []);
+    }, [fetchProofs]);
 
     const onRefresh = () => {
         setHasMore(true);
@@ -182,7 +180,7 @@ export default function ProofsFullListScreen({ navigation }) {
         setPage(1);
         setProofs([]);
         fetchProofs({ pageToLoad: 1 });
-        
+
     };
 
     if (loadingInitial && proofs.length === 0) {

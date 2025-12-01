@@ -9,6 +9,8 @@ import {
 import { jwtDecode } from "jwt-decode";
 import { loadTokens, saveTokens, clearTokens } from "../storage/tokenStorage";
 import { loadUser, saveUser, clearUser } from "../storage/userStorage";
+import { ApiHelper } from "../helpers/apiHelper";
+import Toast from "react-native-toast-message";
 
 type User = {
     email: string;
@@ -32,7 +34,9 @@ type AuthResponse = {
     name: string;
     token: string;
     refreshToken: string;
+    stampsCounter: number;
 };
+
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
@@ -145,29 +149,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
 
     const signIn = async (email: string, password: string) => {
-        const res = await fetch(`${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password }),
-        });
+        const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/login`;
 
-        if (!res.ok) {
-            const txt = await res.text();
-            console.log("Error login:", txt);
-            throw new Error("Credenciales inválidas");
+        const res = await ApiHelper<AuthResponse>(url, "POST", {
+            email,
+            password
+        })
+
+        if (!res.success || !res.data) {
+            Toast.show({
+                type: "appError",
+                text1: "Error al iniciar sesión",
+                text2: res.error?.message
+            })
         }
 
-        const data: AuthResponse = await res.json();
+        const { token, refreshToken, email: emailResponse, name } = res.data;
 
-        const access = data.token;
-        const refresh = data.refreshToken;
 
         const loggedUser: User = {
-            email: data.email,
-            name: data.name,
+            email: emailResponse,
+            name: name,
         };
 
-        await signInWithTokens(access, refresh, loggedUser);
+        await signInWithTokens(token, refreshToken, loggedUser);
     };
 
     const value: AuthContextValue = {

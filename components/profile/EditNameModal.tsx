@@ -11,6 +11,7 @@ import {
 import Toast from "react-native-toast-message";
 import { useAuth } from "@/src/context/AuthContext";
 import { MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
+import { ApiHelper } from "@/src/helpers/apiHelper";
 
 type Props = {
     visible: boolean;
@@ -82,23 +83,14 @@ export default function EditNameModal({ visible, onClose }: Props) {
 
         try {
             setLoading(true);
-            const res = await fetch(`${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/user/update`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${accessToken}`,
-                },
-                body: JSON.stringify({ name: trimmed }),
-            });
 
-            const data = await res.json().catch(() => null);
+            const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/user/update`
+            const res = await ApiHelper(url, "PUT", { name: trimmed }, {
+                Authorization: `Bearer ${accessToken}`,
+            })
 
-            if (!res.ok) {
-                const backendMsg: string =
-                    data?.message ||
-                    data?.error ||
-                    data?.details?.error ||
-                    "Ocurrió un error en el servidor.";
+            if (!res.success || !res.data) {
+                const backendMsg: string = res.error?.message
 
                 Toast.show({
                     type: "appWarning",

@@ -12,6 +12,7 @@ import Toast from "react-native-toast-message";
 
 import { MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
 import { useAuth } from "@/src/context/AuthContext";
+import { ApiHelper } from "@/src/helpers/apiHelper";
 
 type Props = {
     visible: boolean;
@@ -38,6 +39,9 @@ export default function ChangePasswordModal({ visible, onClose }: Props) {
         newPassword: "",
         confirmNewPassword: "",
     });
+
+    console.log(form)
+
     const [errors, setErrors] = useState<PasswordErrors>({});
     const [loading, setLoading] = useState(false);
 
@@ -46,7 +50,11 @@ export default function ChangePasswordModal({ visible, onClose }: Props) {
 
     useEffect(() => {
         if (visible) {
-            setForm({ current: "", next: "", confirm: "" });
+            setForm({
+                current: "",
+                newPassword: "",
+                confirmNewPassword: "",
+            });
             setErrors({});
 
             scaleAnim.setValue(0.9);
@@ -97,13 +105,13 @@ export default function ChangePasswordModal({ visible, onClose }: Props) {
             newErrors.currentPassword = "Debes ingresar tu contraseña actual.";
         }
 
-        if (!form.next.trim()) {
+        if (!form.newPassword.trim()) {
             newErrors.password = "La nueva contraseña es obligatoria.";
-        } else if (form.next.length < 8) {
+        } else if (form.newPassword.length < 8) {
             newErrors.password = "La nueva contraseña debe tener al menos 8 caracteres.";
         }
 
-        if (form.next !== form.confirm) {
+        if (form.newPassword !== form.confirmNewPassword) {
             newErrors.confirmPassword = "Las contraseñas no coinciden.";
         }
 
@@ -113,32 +121,17 @@ export default function ChangePasswordModal({ visible, onClose }: Props) {
         }
 
         try {
-            // Falta implementar el endpoint real
             setLoading(true);
-            const res = await fetch(
-                `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/user/change-password`,
-                {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                    body: JSON.stringify({
-                        currentPassword: form.current,
-                        newPassword: form.next,
-                        confirmPassword: form.confirm,
-                    }),
-                }
-            );
 
-            const data = await res.json().catch(() => null);
+            const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/user/change-password`;
+            const res = await ApiHelper(url, "PUT", {
+                currentPassword: form.current,
+                newPassword: form.newPassword,
+                confirmPassword: form.confirmNewPassword,
+            }, { Authorization: `Bearer ${accessToken}` })
 
-            if (!res.ok) {
-                const backendMsg: string =
-                    data?.message ||
-                    data?.error ||
-                    data?.details?.error ||
-                    "Ocurrió un error en el servidor.";
+            if (!res.success | !res.data) {
+                const backendMsg: string = res.error?.message
 
                 Toast.show({
                     type: "appWarning",

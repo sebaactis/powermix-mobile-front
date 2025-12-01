@@ -3,6 +3,7 @@ import ProgressRing from '@/components/home/ProgressRing';
 
 import { BG, CARD_BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from '@/src/constant';
 import { useAuth } from '@/src/context/AuthContext';
+import { ApiHelper } from '@/src/helpers/apiHelper';
 import { Proof } from '@/src/types';
 import { useCallback, useEffect, useState } from 'react';
 import {
@@ -14,12 +15,22 @@ import {
   Text,
   View,
 } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 type UserHome = {
   email: string;
   name: string;
   stampsCounter: number;
   loginAttempt: number;
+};
+
+type UserMeResponse = {
+  id: string;
+  name: string;
+  email: string;
+  login_attempt: number;
+  locked_until: string;
+  stamps_counter: number;
 };
 
 const TOTAL_STAMPS = 10;
@@ -46,7 +57,7 @@ export default function HomeScreen({ navigation }) {
     async (isRefresh: boolean = false) => {
       try {
         if (!accessToken) {
-          setError('No hay accessToken');
+          setError("No hay accessToken");
           if (!isRefresh) setLoading(false);
           setRefreshing(false);
           return;
@@ -60,31 +71,28 @@ export default function HomeScreen({ navigation }) {
           setLoading(true);
         }
 
-        const res = await fetch(`${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/user/me`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
+        const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/user/me`;
+        const res = await ApiHelper<UserMeResponse>(url, "GET", undefined, { Authorization: `Bearer ${accessToken}` });
 
-        if (!res.ok) {
-          const txt = await res.text();
-          console.log('Error al traer el usuario', txt);
-          throw new Error('Error al traer el usuario');
+
+        if (!res.success || !res.data) {
+          throw new Error(
+            res.error?.message || "Error al traer el usuario"
+          );
         }
 
-        const data = await res.json();
+        const { email, name, stamps_counter, login_attempt } = res.data
 
         setUserHome({
-          email: data.email,
-          name: data.name,
-          stampsCounter: data.stamps_counter,
-          loginAttempt: data.login_attemp,
+          email: email,
+          name: name,
+          stampsCounter: stamps_counter,
+          loginAttempt: login_attempt,
         });
+
       } catch (e: any) {
-        console.log('Error inesperado al traer el usuario', e);
-        setError(e.message || 'Error cargando informacion del usuario');
+        console.log("Error inesperado al traer el usuario", e);
+        setError(e.message || "Error cargando informacion del usuario");
       } finally {
         if (isRefresh) {
           setRefreshing(false);
@@ -93,53 +101,55 @@ export default function HomeScreen({ navigation }) {
         }
       }
     },
-    [accessToken],
+    [accessToken]
   );
+
 
   const fetchProofs = useCallback(
     async (isRefresh: boolean = false) => {
-      setLoading(true)
+      setLoading(true);
 
       if (isRefresh) {
-        setRefreshing(true)
+        setRefreshing(true);
       }
+
       try {
-        const res = await fetch(`${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/proofs/me/last3`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${accessToken}`
-          }
-        })
+        const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/proofs/me/last3`;
+        const res = await ApiHelper<Proof[]>(url, "GET", undefined, {
+          Authorization: `Bearer ${accessToken}`,
+        });
 
-        const data = await res.json().catch(() => null);
+        console.log("📥 Respuesta backend (proofs):", res);
 
-        if (!res.ok) {
-          const error = data.details?.error || "Error al cargar los comprobantes"
+        if (!res.success || !res.data) {
+          const errorMsg =
+            res.error?.message || "Error al cargar los comprobantes";
 
           Toast.show({
             type: "appError",
             text1: "Ocurrió un error",
-            text2: error
-          })
+            text2: errorMsg,
+          });
 
-          return
+          return;
         }
 
-        setProofs(data)
-      } catch {
+        setProofs(res.data);
+      } catch (e) {
+        console.error("❌ Error inesperado al cargar comprobantes:", e);
         Toast.show({
           type: "appError",
           text1: "Ocurrió un error inesperado",
-          text2: "Intente de nuevo mas tarde"
-        })
+          text2: e.message,
+        });
       } finally {
-        setLoading(false)
-        setRefreshing(false)
+        setLoading(false);
+        setRefreshing(false);
       }
     },
-    [accessToken],
-  )
+    [accessToken]
+  );
+
 
   useEffect(() => {
     fetchUser(false);

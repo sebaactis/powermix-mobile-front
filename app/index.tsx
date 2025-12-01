@@ -33,6 +33,7 @@ export default function App() {
           <Toast
             config={toastConfig}
             topOffset={60}
+            autoHide={false}
 
           />
         </AuthProvider>

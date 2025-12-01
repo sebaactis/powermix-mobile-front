@@ -195,18 +195,16 @@ const styles = StyleSheet.create({
   },
 
   closeSessionBtn: {
-    backgroundColor: "#8b0000",
     flexDirection: "row",
-    gap: 10,
     justifyContent: "center",
     alignItems: "center",
     marginHorizontal: 80,
-    paddingVertical: 10,
+    paddingTop: 20,
     borderRadius: 10,
   },
   textCloseSessionBtn: {
-    color: "#FFFFFF",
-    fontSize: 17,
-    fontWeight: "600",
+    color: "#ff0000",
+    fontSize: 18,
+    fontWeight: "500",
   },
 });

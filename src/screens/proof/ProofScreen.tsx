@@ -3,6 +3,7 @@ import { RenderItem } from "@/components/proof/RenderItem";
 
 import { BG, CARD_BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
 import { useAuth } from "@/src/context/AuthContext";
+import { ApiHelper } from "@/src/helpers/apiHelper";
 import { PaginatedProofs, Proof } from "@/src/types";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -70,8 +71,11 @@ export default function ProofScreen({ navigation }) {
         outputRange: [16, 0],
     });
 
-    const fetchProofs = async (pageToLoad = 1, isRefresh = false, isLoadMore = false) => {
-
+    const fetchProofs = async (
+        pageToLoad = 1,
+        isRefresh = false,
+        isLoadMore = false
+    ) => {
         if (loadingInitial || loadingMore) return;
 
         if (isRefresh) {
@@ -82,58 +86,62 @@ export default function ProofScreen({ navigation }) {
             setLoadingInitial(true);
         }
 
-
         try {
-            const res = await fetch(`${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/proofs/me/paginated?page=${pageToLoad}&pageSize=${PAGE_SIZE}`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${accessToken}`
+            const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/proofs/me/paginated?page=${pageToLoad}&pageSize=${PAGE_SIZE}`;
+
+            const res = await ApiHelper<PaginatedProofs>(
+                url,
+                "GET",
+                undefined,
+                {
+                    Authorization: `Bearer ${accessToken}`,
                 }
-            })
+            );
 
-            const data: PaginatedProofs = await res.json().catch(() => null);
+            console.log("📥 Respuesta backend /proofs paginated:", res);
 
-            if (!res.ok) {
-                const error = data.details?.error || "Error al cargar los comprobantes"
+            if (!res.success || !res.data) {
+                const errorMsg =
+                    res.error?.message || "Error al cargar los comprobantes";
 
                 Toast.show({
                     type: "appError",
                     text1: "Ocurrió un error",
-                    text2: error
-                })
+                    text2: errorMsg,
+                });
 
-                return
+                return;
             }
 
-            const newItems = data.items ?? [];
-            setHasMore(data.hasMore)
-            setPage(data.page)
+            const newItems = res.data.items ?? [];
+            setHasMore(res.data.hasMore);
+            setPage(res.data.page);
 
-            setProofs(prev => {
+            setProofs((prev) => {
                 if (pageToLoad === 1) {
                     return newItems;
                 }
 
-                const existingIds = new Set(prev.map(p => p.proof_mp_id));
+                const existingIds = new Set(prev.map((p) => p.proof_mp_id));
                 const filtered = newItems.filter(
-                    p => !existingIds.has(p.proof_mp_id),
+                    (p) => !existingIds.has(p.proof_mp_id)
                 );
 
                 return [...prev, ...filtered];
             });
-        } catch {
+        } catch (e) {
             Toast.show({
                 type: "appError",
                 text1: "Ocurrió un error inesperado",
-                text2: "Intente de nuevo mas tarde"
-            })
+                text2: e.message,
+            });
         } finally {
             setLoadingInitial(false);
             setLoadingMore(false);
             setRefreshing(false);
         }
-    }
+    };
+
 
     const handleLoadMore = () => {
         if (!hasMore || loadingMore || loadingInitial || refreshing) return;
@@ -208,7 +216,7 @@ export default function ProofScreen({ navigation }) {
                         </View>
 
                         <View style={styles.historyHeaderRow}>
-                            <Text style={styles.historyTitle}>Historial de subidas</Text>
+                            <Text style={styles.historyTitle}>Historial de subidas recientes</Text>
 
                             <Pressable onPress={() => navigation.navigate("FullListProofs")}>
                                 <Text style={styles.historyLinkText}>Ver listado completo</Text>
@@ -308,9 +316,9 @@ const styles = StyleSheet.create({
     },
     historyTitle: {
         color: STRONG_TEXT,
-        fontSize: 19,
+        fontSize: 16,
         fontWeight: "700",
-        marginTop: 12,
+        marginTop: 14,
         marginBottom: 16,
     },
     historyHeaderRow: {
@@ -321,8 +329,8 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     historyLinkText: {
-        color: MAIN_COLOR,
-        fontSize: 15,
-        fontWeight: "600",
+        color: "#ff006a",
+        fontSize: 14,
+        fontWeight: "500",
     },
 });

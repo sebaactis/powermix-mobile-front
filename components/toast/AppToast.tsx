@@ -16,7 +16,7 @@ const VARIANT_STYLES: Record<
     { color: string; bg: string; icon: string; defaultTitle: string }
 > = {
     success: {
-        color: '#22c55e',
+        color: '#00a33c',
         bg: 'rgba(34, 197, 94, 0.16)',
         icon: 'check-circle',
         defaultTitle: 'Saved successfully',
@@ -28,7 +28,7 @@ const VARIANT_STYLES: Record<
         defaultTitle: 'Error occurred',
     },
     warning: {
-        color: '#eab308',
+        color: '#a57c00',
         bg: 'rgba(234, 179, 8, 0.16)',
         icon: 'warning-amber',
         defaultTitle: 'Action required',
@@ -41,25 +41,24 @@ export function AppToast({ text1, text2, variant }: Props) {
     return (
         <View style={styles.wrapper}>
             <View style={styles.container}>
-                {/* icono con fondo circular */}
+
                 <View style={[styles.iconCircle, { backgroundColor: v.bg }]}>
-                    <Icon name={v.icon} size={22} color={v.color} />
+                    <Icon name={v.icon} size={26} color={v.color} />
                 </View>
 
-                {/* textos */}
                 <View style={styles.textContainer}>
                     <Text style={[styles.title, { color: v.color }]}>
                         {text1 || v.defaultTitle}
                     </Text>
                     {text2 ? (
-                        <Text style={styles.message} numberOfLines={2}>
+                        <Text style={[styles.message, { color: v.color }]} numberOfLines={2}>
                             {text2}
                         </Text>
                     ) : null}
                 </View>
             </View>
 
-            {/* “barra” de color abajo tipo glow */}
+
             <View style={[styles.bottomAccent, { backgroundColor: v.color }]} />
         </View>
     );
@@ -76,7 +75,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingVertical: 12,
         borderRadius: 14,
-        backgroundColor: "#040303",
+        borderBottomEndRadius: 5,
+        borderBottomStartRadius: 5,
+        backgroundColor: "#ffffff",
         shadowColor: '#000',
         shadowOpacity: 0.35,
         shadowRadius: 8,
@@ -101,13 +102,11 @@ const styles = StyleSheet.create({
     message: {
         marginTop: 2,
         fontSize: 14,
-        color: "#FFFFFF",
     },
     bottomAccent: {
         height: 3,
-        borderRadius: 14,
+        borderRadius: 2,
         alignSelf: 'center',
-        width: '90%',
-        opacity: 0.9,
+        width: '98%',
     },
 });

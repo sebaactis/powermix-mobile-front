@@ -8,6 +8,17 @@ import { BG, CARD_BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from '@/src/constant';
 import { useAuth } from '@/src/context/AuthContext';
 
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { ApiHelper } from '@/src/helpers/apiHelper';
+import Toast from 'react-native-toast-message';
+
+type LoginGoogleResponse = {
+  accessToken: string;
+  refreshToken: string;
+  user: {
+    email: string;
+    name: string;
+  };
+};
 
 
 export default function LoginScreen({ navigation }) {
@@ -36,48 +47,53 @@ export default function LoginScreen({ navigation }) {
       setError(null);
       setGoogleLoading(true);
 
-      console.log('🚀 Iniciando Google Login');
+      console.log("🚀 Iniciando Google Login");
 
       await GoogleSignin.hasPlayServices({
         showPlayServicesUpdateDialog: true,
       });
 
       const userInfo = await GoogleSignin.signIn();
-      console.log('👤 User info Google:', userInfo);
+      console.log("👤 User info Google:", userInfo);
 
       const tokens = await GoogleSignin.getTokens();
-      console.log('🔑 Tokens de Google:', {
+      console.log("🔑 Tokens de Google:", {
         hasAccessToken: !!tokens.accessToken,
         hasIdToken: !!tokens.idToken,
       });
 
       if (!tokens.accessToken) {
-        setError('No se pudo obtener el access token de Google');
+        setError("No se pudo obtener el access token de Google");
         return;
       }
 
-      const res = await fetch(`${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/login-google`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ access_token: tokens.accessToken }),
+      const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/login-google`;
+
+      // ⬇️ USAMOS ApiHelper EN LUGAR DE fetch
+      const res = await ApiHelper<LoginGoogleResponse>(url, "POST", {
+        access_token: tokens.accessToken,
       });
 
-      const data = await res.json().catch(() => null);
-      console.log('📥 Respuesta backend:', res.status, data);
-
-      if (!res.ok) {
-        throw new Error(data?.message || 'Error al iniciar sesión con Google');
+      if (!res.success || !res.data) {
+        Toast.show({
+          type: "appError",
+          text1: "Error al iniciar sesión con Google",
+          text2: res.error?.message
+        })
+        return;
       }
 
-      await signInWithTokens(data.accessToken, data.refreshToken, {
-        email: data.user.email,
-        name: data.user.name,
+      const { accessToken, refreshToken, user } = res.data;
+
+      await signInWithTokens(accessToken, refreshToken, {
+        email: user.email,
+        name: user.name,
       });
 
-      console.log('✅ Login con Google completado');
+      console.log("✅ Login con Google completado");
     } catch (e: any) {
-      console.error('❌ Error en login Google:', e);
-      setError(e.message || 'Error al iniciar sesión con Google');
+      console.error("❌ Error en login Google:", e);
+      setError(e.message || "Error al iniciar sesión con Google");
     } finally {
       setGoogleLoading(false);
     }
