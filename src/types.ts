@@ -11,6 +11,10 @@ export type Proof = {
     operation_type_mp: string;
     status_mp: string;
     amount_mp: number;
+    card_type?: string;
+    last4_card?: string;
+    external_id: string;
+    product_name: string;
 }
 
 export type PaginatedProofs = {

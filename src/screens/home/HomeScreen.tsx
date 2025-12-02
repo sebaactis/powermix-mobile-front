@@ -16,6 +16,7 @@ import {
   View,
 } from 'react-native';
 import Toast from 'react-native-toast-message';
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 type UserHome = {
   email: string;
@@ -121,7 +122,7 @@ export default function HomeScreen({ navigation }) {
 
         console.log("📥 Respuesta backend (proofs):", res);
 
-        if (!res.success || !res.data) {
+        if (!res.success) {
           const errorMsg =
             res.error?.message || "Error al cargar los comprobantes";
 
@@ -133,7 +134,6 @@ export default function HomeScreen({ navigation }) {
 
           return;
         }
-
         setProofs(res.data);
       } catch (e) {
         console.error("❌ Error inesperado al cargar comprobantes:", e);
@@ -237,11 +237,20 @@ export default function HomeScreen({ navigation }) {
 
       <View>
         <Text style={styles.actityTitle}>Actividad Reciente</Text>
-        <View style={styles.actityCardsContainer}>
-          {proofs.map((proof) => (
-            <ActivityCard key={proof.proof_mp_id} proof={proof} />
-          ))}
-        </View>
+        {!proofs ?
+          <View style={styles.noProofsContainer}>
+            <Icon name="file-document-remove-outline" size={80} color="#9e9e9e" />
+            <Text style={styles.noProofsText}>Aun no cargaste ningún comprobante</Text>
+          </View>
+          :
+          <View style={styles.actityCardsContainer}>
+
+            {proofs?.map((proof) => (
+              <ActivityCard key={proof.proof_mp_id} proof={proof} />
+            ))}
+          </View>
+        }
+
       </View>
     </ScrollView>
   );
@@ -318,4 +327,15 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 90,
   },
+  noProofsContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 50
+  },
+  noProofsText: {
+    color: "#9e9e9e",
+    fontSize: 17,
+    fontWeight: 700,
+    marginTop: 5
+  }
 });

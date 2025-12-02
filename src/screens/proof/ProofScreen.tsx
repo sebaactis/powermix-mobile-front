@@ -21,6 +21,7 @@ import {
 } from "react-native";
 import Toast from "react-native-toast-message";
 import Icon from "react-native-vector-icons/FontAwesome";
+import MaterialIcon from "react-native-vector-icons/MaterialCommunityIcons";
 
 const { width } = Dimensions.get("window");
 
@@ -100,7 +101,7 @@ export default function ProofScreen({ navigation }) {
 
             console.log("📥 Respuesta backend /proofs paginated:", res);
 
-            if (!res.success || !res.data) {
+            if (!res.success) {
                 const errorMsg =
                     res.error?.message || "Error al cargar los comprobantes";
 
@@ -222,6 +223,11 @@ export default function ProofScreen({ navigation }) {
                                 <Text style={styles.historyLinkText}>Ver listado completo</Text>
                             </Pressable>
                         </View>
+
+                        {proofs?.length === 0 && <View style={styles.noProofsContainer}>
+                            <MaterialIcon name="file-document-remove-outline" size={80} color="#9e9e9e" />
+                            <Text style={styles.noProofsText}>Aun no cargaste ningún comprobante</Text>
+                        </View>}
                     </Animated.View>
                 }
                 data={proofs}
@@ -333,4 +339,15 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: "500",
     },
+    noProofsContainer: {
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 50
+    },
+    noProofsText: {
+        color: "#9e9e9e",
+        fontSize: 17,
+        fontWeight: 700,
+        marginTop: 10
+    }
 });

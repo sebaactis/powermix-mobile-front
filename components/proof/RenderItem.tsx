@@ -68,7 +68,7 @@ export const RenderItem = ({ item }: { item: Proof }) => {
                         color={SUBTEXT}
                         style={styles.metaIcon}
                     />
-                    <Text style={styles.metaLabel}>Fecha de pago</Text>
+                    <Text style={styles.metaLabel}>Fecha de pago:</Text>
                     <Text style={styles.metaValue} numberOfLines={1}>
                         {item.date_approved_mp}
                     </Text>
@@ -81,9 +81,22 @@ export const RenderItem = ({ item }: { item: Proof }) => {
                         color={SUBTEXT}
                         style={styles.metaIcon}
                     />
-                    <Text style={styles.metaLabel}>Fecha de subida</Text>
+                    <Text style={styles.metaLabel}>Fecha de subida:</Text>
                     <Text style={styles.metaValue} numberOfLines={1}>
                         {item.proof_date}
+                    </Text>
+                </View>
+
+                <View style={styles.metaRow}>
+                    <Icon
+                        name="cart-variant"
+                        size={14}
+                        color={SUBTEXT}
+                        style={styles.metaIcon}
+                    />
+                    <Text style={styles.metaLabel}>Producto:</Text>
+                    <Text style={styles.metaValue} numberOfLines={1}>
+                        {item.product_name}
                     </Text>
                 </View>
             </View>
@@ -160,18 +173,18 @@ const styles = StyleSheet.create({
     metaRow: {
         flexDirection: "row",
         alignItems: "center",
-        marginBottom: 2,
+        marginBottom: 4,
     },
     metaIcon: {
         marginRight: 4,
     },
     metaLabel: {
-        fontSize: 12,
+        fontSize: 13,
         color: SUBTEXT,
         marginRight: 4,
     },
     metaValue: {
-        fontSize: 12,
+        fontSize: 13,
         color: STRONG_TEXT,
         flexShrink: 1,
     },

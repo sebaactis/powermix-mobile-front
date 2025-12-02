@@ -18,6 +18,7 @@ import {
 } from "react-native";
 import Toast from "react-native-toast-message";
 import Icon from "react-native-vector-icons/FontAwesome";
+import MaterialIcon from "react-native-vector-icons/MaterialCommunityIcons";
 
 type PaginatedProofsResponse = {
     items: Proof[];
@@ -147,7 +148,7 @@ export default function ProofsFullListScreen({ navigation }) {
 
     useEffect(() => {
         fetchProofs({ pageToLoad: 1 });
-    }, [fetchProofs]);
+    }, []);
 
     const onRefresh = () => {
         setHasMore(true);
@@ -282,7 +283,10 @@ export default function ProofsFullListScreen({ navigation }) {
                     </Pressable>
                 </View>
             </View>
-
+            {proofs?.length === 0 && <View style={styles.noProofsContainer}>
+                <MaterialIcon name="file-document-remove-outline" size={80} color="#9e9e9e" />
+                <Text style={styles.noProofsText}>Aun no cargaste ningún comprobante</Text>
+            </View>}
             <FlatList
                 data={proofs}
                 keyExtractor={item => item.proof_mp_id}
@@ -415,4 +419,15 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: "500",
     },
+    noProofsContainer: {
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 50
+    },
+    noProofsText: {
+        color: "#9e9e9e",
+        fontSize: 17,
+        fontWeight: 700,
+        marginTop: 10
+    }
 });

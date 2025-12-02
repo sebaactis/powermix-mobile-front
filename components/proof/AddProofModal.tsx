@@ -179,7 +179,7 @@ export default function AddProofModal({ visible, onClose }: Props) {
         const data = await res.json().catch(() => null);
 
         if (!res.ok) {
-          const error = data.details?.error || "Error al cargar el comprobante"
+          const error = data.error?.fields["error"]
 
           Toast.show({
             type: "appWarning",

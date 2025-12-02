@@ -1,11 +1,10 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { MAIN_COLOR } from '../constant';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import CustomTabBar from '@/components/tabbar/CustomTabBar';
-import { MAIN_COLOR } from '../constant';
 import HomeScreen from '../screens/home/HomeScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
-import ProofScreen from '../screens/proof/ProofScreen';
 import Header from '@/components/header/Header';
 import HelpStackNavigator from './HelpStackNavigator';
 import ProofsNavigator from './ProofsNavigator';

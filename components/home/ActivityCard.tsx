@@ -67,6 +67,19 @@ export default function ActivityCard({ proof, onPress }: Props) {
                 {proof.date_approved_mp}
               </Text>
             </View>
+
+            <View style={styles.metaItem}>
+              <MaterialIcon
+                name="cart-variant"
+                size={14}
+                color={SUBTEXT}
+                style={styles.metaIcon}
+              />
+              <Text style={styles.metaLabel}>Producto</Text>
+              <Text style={styles.metaValue} numberOfLines={1}>
+                {proof.product_name }
+              </Text>
+            </View>
           </View>
         </View>
       </View>
@@ -120,9 +133,9 @@ const styles = StyleSheet.create({
   },
   title: {
     color: STRONG_TEXT,
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: "600",
-    marginBottom: 6,
+    marginBottom: 7,
   },
   row: {
     flexDirection: "column",
@@ -139,12 +152,12 @@ const styles = StyleSheet.create({
   },
   metaLabel: {
     color: SUBTEXT,
-    fontSize: 11,
+    fontSize: 12,
     marginRight: 4,
   },
   metaValue: {
     color: STRONG_TEXT,
-    fontSize: 11,
+    fontSize: 12,
     flexShrink: 1,
   },
   amountContainer: {
@@ -154,12 +167,12 @@ const styles = StyleSheet.create({
   },
   amountLabel: {
     color: SUBTEXT,
-    fontSize: 11,
+    fontSize: 12,
     marginBottom: 2,
   },
   amountValue: {
     color: MAIN_COLOR,
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: "700",
   },
 });
