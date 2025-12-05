@@ -69,7 +69,6 @@ export default function LoginScreen({ navigation }) {
 
       const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/login-google`;
 
-      // ⬇️ USAMOS ApiHelper EN LUGAR DE fetch
       const res = await ApiHelper<LoginGoogleResponse>(url, "POST", {
         access_token: tokens.accessToken,
       });

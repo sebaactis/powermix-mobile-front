@@ -13,10 +13,12 @@ import Toast from "react-native-toast-message";
 
 import { CARD_BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
 import { useAuth } from "@/src/context/AuthContext";
+import { ApiHelper } from "@/src/helpers/apiHelper";
 
 type Props = {
   visible: boolean;
   onClose: () => void;
+  setProofs: (proofs: Proof[]) => void
 };
 
 type PaymentMethod = "MERCADO_PAGO" | "OTRO";
@@ -38,7 +40,7 @@ type Errors = {
   last4?: string;
 };
 
-export default function AddProofModal({ visible, onClose }: Props) {
+export default function AddProofModal({ visible, onClose, setProofs }: Props) {
 
   const { accessToken } = useAuth()
 
@@ -166,19 +168,12 @@ export default function AddProofModal({ visible, onClose }: Props) {
 
       if (paymentMethod === "MERCADO_PAGO") {
 
-        const res = await fetch(`${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/proof`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${accessToken}`
-          },
-          body: JSON.stringify({
-            proof_mp_id: mpReceipt
-          })
+        const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/proof`
+        const res = await ApiHelper(url, "POST", { proof_mp_id: mpReceipt }, {
+          Authorization: `Bearer ${accessToken}`,
         })
-        const data = await res.json().catch(() => null);
 
-        if (!res.ok) {
+        if (!res.success || !res.data) {
           const error = data.error?.fields["error"]
 
           Toast.show({
@@ -189,26 +184,22 @@ export default function AddProofModal({ visible, onClose }: Props) {
 
           return
         }
+
+        setProofs((prev) => [...prev, res.data])
       } else {
 
-        const res = await fetch(`${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/proof/others`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${accessToken}`
-          },
-          body: JSON.stringify({
-            date: other.date,
-            time: other.time,
-            amount: Number(other.amount),
-            dni: other.dni
-          })
+        const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/proof/others`
+        const res = await ApiHelper(url, "POST", {
+          date: other.date,
+          time: other.time,
+          amount: Number(other.amount),
+          dni: other.dni
+        }, {
+          Authorization: `Bearer ${accessToken}`,
         })
 
-        
-        const data = await res.json().catch(() => null);
 
-        if (!res.ok) {
+        if (!res.success || !res.data) {
           const error = data.details?.error || "Error al cargar el comprobante"
 
           Toast.show({
@@ -218,6 +209,8 @@ export default function AddProofModal({ visible, onClose }: Props) {
           })
           return
         }
+
+        setProofs((prev) => [...prev, res.data])
 
       }
 
@@ -353,7 +346,6 @@ export default function AddProofModal({ visible, onClose }: Props) {
                     setMpReceipt(t);
                     setErrors({});
                   }}
-                  placeholder="Ej: 1234-5678-ABCD"
                   placeholderTextColor={SUBTEXT}
                   autoCapitalize="none"
                 />

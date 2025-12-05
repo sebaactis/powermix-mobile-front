@@ -115,6 +115,10 @@ export default function ProofScreen({ navigation }) {
             }
 
             const newItems = res.data.items ?? [];
+
+            if (newItems.length === 0) {
+                setProofs([])
+            }
             setHasMore(res.data.hasMore);
             setPage(res.data.page);
 
@@ -154,10 +158,10 @@ export default function ProofScreen({ navigation }) {
         fetchProofs({ pageToLoad: 1 });
     }, [])
 
-    const onRefresh = () => {
+    const onRefresh = async () => {
         setHasMore(true);
         setPage(1);
-        fetchProofs({ pageToLoad: 1, isRefresh: true });
+        await fetchProofs({ pageToLoad: 1, isRefresh: true });
     };
 
     if (loadingInitial && proofs.length === 0) {
@@ -247,6 +251,7 @@ export default function ProofScreen({ navigation }) {
             <AddProofModal
                 visible={showAddProof}
                 onClose={() => setShowAddProof(false)}
+                setProofs={setProofs}
             />
         </View>
     );

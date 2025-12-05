@@ -8,6 +8,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { useEffect, useState } from 'react';
+import AnimatedSplash from './AnimatedSplash';
 
 export default function App() {
 
@@ -16,6 +18,18 @@ export default function App() {
     offlineAccess: false,
   });
 
+
+
+  const [isAppReady, setIsAppReady] = useState(false)
+  const [showSplash, setShowSplash] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsAppReady(true)
+    }, 2000)
+
+    return () => clearTimeout(timer)
+  }, [])
 
   return (
     <>
@@ -33,9 +47,16 @@ export default function App() {
           <Toast
             config={toastConfig}
             topOffset={60}
-            autoHide={false}
+            visibilityTime={2500}
 
           />
+
+          {showSplash && (
+            <AnimatedSplash
+              isAppReady={isAppReady}
+              onAnimationEnd={() => setShowSplash(false)}
+            />
+          )}
         </AuthProvider>
       </SafeAreaProvider>
     </>

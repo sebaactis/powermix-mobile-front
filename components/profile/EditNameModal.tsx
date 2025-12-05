@@ -90,8 +90,15 @@ export default function EditNameModal({ visible, onClose }: Props) {
             })
 
             if (!res.success || !res.data) {
-                const backendMsg: string = res.error?.message
 
+                if (res.error?.fields && res.error?.fields?.Name !== "") {
+                    setError(res.error?.fields?.Name);
+                    return;
+                }
+
+                const backendMsg: string = res.error?.message
+                
+                onClose();
                 Toast.show({
                     type: "appWarning",
                     text1: "No pudimos actualizar el usuario",
