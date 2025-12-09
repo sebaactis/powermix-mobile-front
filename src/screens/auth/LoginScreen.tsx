@@ -132,7 +132,12 @@ export default function LoginScreen({ navigation }) {
         onChangeText={setPassword}
       />
 
-      <Text style={styles.forgotPassword}>¿Olvidaste tu contraseña?</Text>
+      <Text
+        style={styles.forgotPassword}
+        onPress={() => navigation.navigate('ForgotPassword')}
+      >
+        ¿Olvidaste tu contraseña?
+      </Text>
 
       {error && <Text style={styles.errorMessage}>{error}</Text>}
 
