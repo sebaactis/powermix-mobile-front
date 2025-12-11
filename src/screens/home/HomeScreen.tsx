@@ -72,6 +72,7 @@ export default function HomeScreen({ navigation }) {
           setLoading(true);
         }
 
+
         const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/user/me`;
         const res = await ApiHelper<UserMeResponse>(url, "GET", undefined, { Authorization: `Bearer ${accessToken}` });
 
@@ -92,6 +93,7 @@ export default function HomeScreen({ navigation }) {
         });
 
       } catch (e: any) {
+        console.log(e.message)
         console.log("Error inesperado al traer el usuario", e);
         setError(e.message || "Error cargando informacion del usuario");
       } finally {

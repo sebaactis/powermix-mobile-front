@@ -6,6 +6,7 @@ import { BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
 import Toast from "react-native-toast-message";
 import { ApiHelper } from "@/src/helpers/apiHelper";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { toastConfig } from "@/components/toast/config/toastConfig";
 
 type ResetPasswordRouteParams = {
     token?: string | string[];
@@ -60,7 +61,7 @@ export default function ResetPasswordScreen({ navigation }) {
         try {
             setLoading(true);
 
-            const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/updatePasswordRecovery`; // ajustá path
+            const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/updatePasswordRecovery`;
             const res = await ApiHelper<any>(url, "POST", {
                 token,
                 password,
@@ -82,7 +83,15 @@ export default function ResetPasswordScreen({ navigation }) {
                 text2: "Ya podés iniciar sesión con tu nueva contraseña.",
             });
 
-            router.replace("/login")
+            setTimeout(() => {
+                router.replace({
+                    pathname: "/",
+                    params: {
+                        screen: "Login"
+                    }
+                });
+            }, 1500);
+
         } catch (e: any) {
             Toast.show({
                 type: "appError",
@@ -96,6 +105,12 @@ export default function ResetPasswordScreen({ navigation }) {
 
     return (
         <View style={styles.container}>
+            <Toast
+                config={toastConfig}
+                topOffset={60}
+                visibilityTime={2500}
+
+            />
             <Text style={styles.title}>Crear nueva contraseña</Text>
             {email && <Text style={styles.subtitle}>{email}</Text>}
 
