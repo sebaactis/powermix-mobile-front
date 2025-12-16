@@ -8,6 +8,7 @@ import ProfileScreen from '../screens/profile/ProfileScreen';
 import Header from '@/components/header/Header';
 import HelpStackNavigator from './HelpStackNavigator';
 import ProofsNavigator from './ProofsNavigator';
+import VoucherScreen from '../screens/voucher/VoucherScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -50,6 +51,17 @@ const TabNavigator = () => {
           title: 'Comprobantes',
           tabBarIcon: ({ color }) => (
             <Icon name="wpforms" size={25} color={color} />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="Vouchers"
+        component={VoucherScreen}
+        options={{
+          title: 'QRs',
+          tabBarIcon: ({ color }) => (
+            <Icon name="qrcode" size={25} color={color} />
           ),
         }}
       />

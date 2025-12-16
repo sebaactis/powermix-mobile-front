@@ -29,7 +29,6 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigat
         ]}
       />
 
-      {/* Botones de cada tab */}
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const isFocused = state.index === index;
@@ -108,6 +107,6 @@ const styles = StyleSheet.create({
   },
   tabBarLabel: {
     marginTop: 1,
-    fontSize: 13,
+    fontSize: 12,
   },
 });
