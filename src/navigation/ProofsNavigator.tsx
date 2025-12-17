@@ -7,7 +7,7 @@ const ProofStack = createNativeStackNavigator();
 
 export default function ProofsNavigator() {
     return (
-        <ProofStack.Navigator screenOptions={{ headerShown: false }}>
+        <ProofStack.Navigator screenOptions={{ headerShown: false }} initialRouteName='ProofsMain' >
             <ProofStack.Screen name="ProofsMain" component={ProofScreen} />
             <ProofStack.Screen name="FullListProofs" component={ProofsFullListScreen} />
         </ProofStack.Navigator>

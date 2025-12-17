@@ -1,6 +1,8 @@
 import Field from '@/components/support/Field';
 import SupportRow from '@/components/support/SupportRow';
 import { CARD_BG, STRONG_TEXT, SUBTEXT, BG, MAIN_COLOR } from '@/src/constant';
+import { useAuth } from '@/src/context/AuthContext';
+import { ApiHelper } from '@/src/helpers/apiHelper';
 import { useState } from 'react';
 import {
     View,
@@ -15,54 +17,89 @@ import {
     StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-type Category = 'Problema técnico' | 'Facturación' | 'Consulta general' | 'Seguridad/abuso';
+type Category = 'Cuenta' | 'Problema técnico' | 'Comprobantes' | 'Consulta general' | 'Seguridad/abuso' | 'Otras consultas';
 
 type ContactRequest = {
     name: string;
     email: string;
     category: Category;
     message: string;
-    attachmentName: string | null;
 }
 
-const categories: Category[] = ['Problema técnico', 'Facturación', 'Consulta general', 'Seguridad/abuso']
+const categories: Category[] = ['Cuenta', 'Problema técnico', 'Comprobantes', 'Consulta general', 'Seguridad/abuso', 'Otras consultas']
 
 export default function SupportScreen({ navigation }) {
+
+    const { accessToken } = useAuth();
 
     const [contactRequest, setContactRequest] = useState<ContactRequest>({
         name: '',
         email: '',
         category: 'Problema técnico',
         message: '',
-        attachmentName: null,
     })
 
-    const { name, email, category, message, attachmentName } = contactRequest;
+    const [loading, setLoading] = useState(false);
+
+    const { name, email, category, message } = contactRequest;
 
     const [showCat, setShowCat] = useState(false);
-    const canSend = name.trim() && emailValid && message.trim();
+    const canSend = name.trim() && message.trim();
 
     const handlerContactRequest = (patch: Partial<ContactRequest>) => {
         setContactRequest((prev) => ({ ...prev, ...patch }))
     }
 
-    const handlePickFile = async () => {
-        // TO DO -> tengo que agregar para subir archivos, algo asi:
-        handlerContactRequest({ attachmentName: 'captura_error.png' });
-    };
-
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!canSend) return;
+        setLoading(true)
 
-        console.log({
-            name,
-            email,
-            category,
-            message,
-            attachmentName,
-        });
+        try {
+            const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/user/contact`;
+
+            const res = await ApiHelper(url, 'POST', { name, email, category, message }, {
+                Authorization: `Bearer ${accessToken}`,
+            })
+
+            if (!res.success || !res.data) {
+                const backendMsg: string = res.error?.message
+
+                Toast.show({
+                    type: "appWarning",
+                    text1: "No pudimos enviar tu consulta",
+                    text2: backendMsg,
+                })
+                return
+            }
+
+            Toast.show({
+                type: "appSuccess",
+                text1: "Consulta enviada correctamente!",
+                text2: "Te responderemos lo antes posible",
+            })
+
+            setContactRequest({
+                name: "",
+                email: "",
+                category: "Problema técnico",
+                message: "",
+
+            })
+
+
+        } catch {
+            Toast.show({
+                type: "appWarning",
+                text1: "No pudimos enviar tu consulta",
+                text2: "Por favor intente mas tarde",
+            })
+            return
+        } finally {
+            setLoading(false)
+        }
     };
 
     return (
@@ -142,15 +179,6 @@ export default function SupportScreen({ navigation }) {
                             />
                         </Field>
 
-
-                        <Pressable style={styles.attach} onPress={handlePickFile}>
-                            <Icon name="paperclip" size={16} color={SUBTEXT} />
-                            <Text style={[styles.attachText, { marginLeft: 8 }]}>
-                                {attachmentName ?? 'Adjuntar archivo (opcional)'}
-                            </Text>
-                        </Pressable>
-
-
                         <Pressable
                             onPress={handleSubmit}
                             disabled={!canSend}
@@ -160,7 +188,7 @@ export default function SupportScreen({ navigation }) {
                                 pressed && { transform: [{ scale: 0.99 }] },
                             ]}
                         >
-                            <Text style={styles.ctaText}>Enviar Mensaje</Text>
+                            <Text style={styles.ctaText}>{loading ? "Enviando consulta..." : "Enviar"}</Text>
                         </Pressable>
                     </View>
                 </ScrollView>

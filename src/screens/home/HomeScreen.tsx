@@ -229,10 +229,17 @@ export default function HomeScreen({ navigation }) {
       </Text>
 
       <View style={styles.btnContainer}>
-        <Pressable style={[styles.button, { backgroundColor: CARD_BG }]}>
+        <Pressable style={[styles.button, { backgroundColor: CARD_BG }]} 
+        onPress={
+          () => navigation.navigate("Proofs", {
+          screen: "FullListProofs",
+        })}>
           <Text style={styles.buttonText}>Historial de comprobantes</Text>
         </Pressable>
-        <Pressable style={[styles.button, { backgroundColor: MAIN_COLOR }]} onPress={() => navigation.navigate("Proofs")}>
+        <Pressable style={[styles.button, { backgroundColor: MAIN_COLOR }]} onPress={
+          () => navigation.navigate("Proofs", {
+          screen: "ProofsMain",
+        })}>
           <Text style={styles.buttonText}>Subir nuevo comprobante</Text>
         </Pressable>
       </View>
