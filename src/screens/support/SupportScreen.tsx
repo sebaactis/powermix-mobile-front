@@ -21,6 +21,7 @@ import Toast from 'react-native-toast-message';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 type Category = 'Cuenta' | 'Problema técnico' | 'Comprobantes' | 'Consulta general' | 'Seguridad/abuso' | 'Otras consultas';
+const categories: Category[] = ['Cuenta', 'Problema técnico', 'Comprobantes', 'Consulta general', 'Seguridad/abuso', 'Otras consultas']
 
 type ContactRequest = {
     name: string;
@@ -29,7 +30,13 @@ type ContactRequest = {
     message: string;
 }
 
-const categories: Category[] = ['Cuenta', 'Problema técnico', 'Comprobantes', 'Consulta general', 'Seguridad/abuso', 'Otras consultas']
+type ErrorsFields = {
+    name?: string;
+    email?: string;
+    category?: string;
+    message?: string;
+}
+
 
 export default function SupportScreen({ navigation }) {
 
@@ -41,20 +48,67 @@ export default function SupportScreen({ navigation }) {
         category: 'Problema técnico',
         message: '',
     })
+    const [errors, setErrors] = useState<ErrorsFields>({
+        name: '',
+        email: '',
+        category: '',
+        message: '',
+    })
 
     const [loading, setLoading] = useState(false);
 
     const { name, email, category, message } = contactRequest;
 
     const [showCat, setShowCat] = useState(false);
-    const canSend = name.trim() && message.trim();
+    const canSend = name.trim() && message.trim() && category.trim() && email.trim();
+
+    const validateErrors = () => {
+        const newErrors: ErrorsFields = {};
+
+        const name = contactRequest.name.trim();
+        if (!name) newErrors.name = 'El nombre es obligatorio.';
+        else if (name.length < 6) newErrors.name = 'El nombre debe tener al menos 6 caracteres.'
+        else if (name.length > 30) newErrors.name = 'El nombre debe tener como maximo 30 caracteres';
+
+        const email = contactRequest.email.trim();
+        if (!email) newErrors.email = 'El email es obligatorio.'
+        else if (email.length < 8) {
+            newErrors.email = 'El email debe tener al menos 8 caracteres.';
+        }
+        else if (email.length > 30) {
+            newErrors.email = 'El email debe tener como maximo 30 caracteres.';
+        }
+        else {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) newErrors.email = 'Ingresá un email válido.';
+        }
+
+        const category = contactRequest.category.trim();
+        if (!category) newErrors.category = 'Debés seleccionar una categoría.';
+
+        const message = contactRequest.message.trim();
+        if (!message) newErrors.message = 'Debés escribir un mensaje.';
+
+        setErrors(newErrors);
+
+        const hasErrors = Object.values(newErrors).some((v) => v !== undefined);
+        return !hasErrors;
+    }
 
     const handlerContactRequest = (patch: Partial<ContactRequest>) => {
+        setErrors({
+            name: '',
+            email: '',
+            category: '',
+            message: '',
+        })
         setContactRequest((prev) => ({ ...prev, ...patch }))
     }
 
     const handleSubmit = async () => {
-        if (!canSend) return;
+        const isValid = validateErrors();
+        if (!isValid) return
+
         setLoading(true)
 
         try {
@@ -145,6 +199,7 @@ export default function SupportScreen({ navigation }) {
                                 onChangeText={(text) => handlerContactRequest({ name: text })}
                                 style={styles.input}
                             />
+                            {errors.name !== "" && <Text style={styles.errorText}>{errors.name}</Text>}
                         </Field>
 
                         <Field label="Email">
@@ -157,6 +212,7 @@ export default function SupportScreen({ navigation }) {
                                 onChangeText={(text) => handlerContactRequest({ email: text })}
                                 style={styles.input}
                             />
+                            {errors.email !== "" && <Text style={styles.errorText}>{errors.email}</Text>}
                         </Field>
 
                         <Field label="Categoría del problema">
@@ -164,6 +220,7 @@ export default function SupportScreen({ navigation }) {
                                 <Text style={styles.selectText}>{category}</Text>
                                 <Icon name="chevron-down" size={14} color={SUBTEXT} />
                             </Pressable>
+                            {errors.category !== "" && <Text style={styles.errorText}>{errors.category}</Text>}
                         </Field>
 
                         <Field label="Mensaje">
@@ -177,6 +234,7 @@ export default function SupportScreen({ navigation }) {
                                 numberOfLines={5}
                                 textAlignVertical="top"
                             />
+                            {errors.message !== "" && <Text style={styles.errorText}>{errors.message}</Text>}
                         </Field>
 
                         <Pressable
@@ -272,6 +330,11 @@ const styles = StyleSheet.create({
         color: STRONG_TEXT,
         paddingHorizontal: 12,
         height: 44,
+    },
+    errorText: {
+        color: '#f97373',
+        fontSize: 13,
+        marginTop: 4,
     },
     multiline:
     {

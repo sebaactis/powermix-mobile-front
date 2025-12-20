@@ -29,6 +29,7 @@ export default function RegisterScreen({ navigation }) {
     password: '',
     confirmPassword: '',
   });
+
   const [errors, setErrors] = useState<RegisterErrors>({});
   const [loading, setLoading] = useState(false);
 
@@ -48,12 +49,16 @@ export default function RegisterScreen({ navigation }) {
 
     const name = registerData.name.trim();
     if (!name) newErrors.name = 'El nombre es obligatorio.';
-    else if (name.length < 6) newErrors.name = 'El nombre debe tener al menos 6 caracteres.';
+    else if (name.length < 6) newErrors.name = 'El nombre debe tener al menos 6 caracteres.'
+    else if (name.length > 30) newErrors.name = 'El nombre debe tener como maximo 30 caracteres';
 
     const email = registerData.email.trim();
     if (!email) newErrors.email = 'El email es obligatorio.'
     else if (email.length < 8) {
       newErrors.email = 'El email debe tener al menos 8 caracteres.';
+    }
+    else if (email.length > 30) {
+      newErrors.email = 'El email debe tener como maximo 30 caracteres.';
     }
     else {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -64,6 +69,8 @@ export default function RegisterScreen({ navigation }) {
       newErrors.password = 'La contraseña es obligatoria.';
     } else if (registerData.password.length < 8) {
       newErrors.password = 'La contraseña debe tener al menos 8 caracteres.';
+    } else if (registerData.password.length > 30) {
+      newErrors.password = 'La contraseña debe tener como maximo 30 caracteres.';
     }
 
     if (!registerData.confirmPassword) {

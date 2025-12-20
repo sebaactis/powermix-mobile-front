@@ -35,8 +35,8 @@ type Errors = {
   mpReceipt?: string;
   date?: string;
   time?: string;
-  amount?: string;
-  dni?: string;
+  amount?: number;
+  dni?: number;
   last4?: string;
 };
 
@@ -51,8 +51,8 @@ export default function AddProofModal({ visible, onClose, setProofs }: Props) {
   const [other, setOther] = useState<OtherFields>({
     date: "",
     time: "",
-    amount: "",
-    dni: "",
+    amount: 0,
+    dni: 0,
     last4: "",
   });
 
@@ -148,7 +148,8 @@ export default function AddProofModal({ visible, onClose, setProofs }: Props) {
       if (!other.date.trim()) newErrors.date = "La fecha es obligatoria.";
       if (!other.time.trim()) newErrors.time = "La hora es obligatoria.";
       if (!other.amount.trim()) newErrors.amount = "El monto es obligatorio.";
-      if (!other.dni.trim()) newErrors.dni = "El DNI es obligatorio.";
+      if (!other.amount < 0)
+        if (!other.dni.trim()) newErrors.dni = "El DNI es obligatorio.";
       if (other.last4 && other.last4.length !== 4) {
         newErrors.last4 = "Debe tener exactamente 4 dígitos.";
       }
@@ -193,7 +194,8 @@ export default function AddProofModal({ visible, onClose, setProofs }: Props) {
           date: other.date,
           time: other.time,
           amount: Number(other.amount),
-          dni: other.dni
+          dni: other.dni.toString(),
+          last4: other.last4.toString(),
         }, {
           Authorization: `Bearer ${accessToken}`,
         })
