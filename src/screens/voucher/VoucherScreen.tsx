@@ -23,13 +23,18 @@ import MaterialIcon from "react-native-vector-icons/MaterialCommunityIcons";
 
 const { width } = Dimensions.get("window");
 
-type QrStatus = "ACTIVO" | "UTILIZADO";
+type QrStatus = "ACTIVE" | "USED";
+
+const statusBind = {
+    ACTIVE: "ACTIVO",
+    USED: "UTILIZADO",
+}
 
 type VoucherApiItem = {
     UserID: string;
     QRCode: string;
     ImageURL: string;
-    // Status?: QrStatus; // to do en el backend
+    Status?: QrStatus;
 };
 
 type ApiResponse<T> = {
@@ -76,7 +81,7 @@ function FullQrModal({ visible, onClose, item }: { visible: boolean; onClose: ()
                     </View>
 
                     <View style={{ marginTop: 15, alignItems: "center" }}>
-                        <StatusPill status={"ACTIVO"} />
+                        <StatusPill status={statusBind[item?.Status]} />
                     </View>
                 </View>
             </View>
@@ -150,8 +155,7 @@ export default function VoucherScreen({ navigation }) {
     };
 
     const renderItem = ({ item }: { item: VoucherApiItem }) => {
-        const status: QrStatus = "ACTIVO";
-        const canDelete = status === "UTILIZADO";
+        const canDelete = item.Status === "USED";
 
         return (
             <Pressable onPress={() => openQr(item)} style={styles.qrCard}>
@@ -165,7 +169,7 @@ export default function VoucherScreen({ navigation }) {
                         </Text>
 
                         <View style={{ marginTop: 13, flexDirection: "row", alignItems: "center", gap: 10 }}>
-                            <StatusPill status={status} />
+                            <StatusPill status={statusBind[item.Status]} />
 
                             {canDelete ? (
                                 <Pressable onPress={() => handleDelete(item)} hitSlop={10} style={styles.deleteBtn}>
