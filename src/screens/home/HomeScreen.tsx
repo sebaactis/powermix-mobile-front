@@ -3,7 +3,7 @@ import ProgressRing from '@/components/home/ProgressRing';
 
 import { BG, CARD_BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from '@/src/constant';
 import { useAuth } from '@/src/context/AuthContext';
-import { ApiHelper } from '@/src/helpers/apiHelper';
+import { AuthApi } from '@/src/helpers/authApi';
 import { Proof } from '@/src/types';
 import { useCallback, useEffect, useState } from 'react';
 import {
@@ -43,7 +43,7 @@ enum ProgressMessages {
 }
 
 export default function HomeScreen({ navigation }) {
-  const { accessToken } = useAuth();
+  const { accessToken, signOut } = useAuth();
 
   const [userHome, setUserHome] = useState<UserHome | null>(null);
   const [proofs, setProofs] = useState<Proof[]>([]);
@@ -74,7 +74,7 @@ export default function HomeScreen({ navigation }) {
 
 
         const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/user/me`;
-        const res = await ApiHelper<UserMeResponse>(url, "GET", undefined, { Authorization: `Bearer ${accessToken}` });
+        const res = await AuthApi<UserMeResponse>(url, "GET", signOut)
 
 
         if (!res.success || !res.data) {
@@ -104,7 +104,7 @@ export default function HomeScreen({ navigation }) {
         }
       }
     },
-    [accessToken]
+    [accessToken, signOut]
   );
 
 
@@ -118,9 +118,7 @@ export default function HomeScreen({ navigation }) {
 
       try {
         const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/proofs/me/last3`;
-        const res = await ApiHelper<Proof[]>(url, "GET", undefined, {
-          Authorization: `Bearer ${accessToken}`,
-        });
+        const res = await AuthApi(url, "GET", signOut)
 
         console.log("📥 Respuesta backend (proofs):", res);
 
@@ -149,7 +147,7 @@ export default function HomeScreen({ navigation }) {
         setRefreshing(false);
       }
     },
-    [accessToken]
+    [signOut]
   );
 
 
@@ -229,17 +227,17 @@ export default function HomeScreen({ navigation }) {
       </Text>
 
       <View style={styles.btnContainer}>
-        <Pressable style={[styles.button, { backgroundColor: CARD_BG }]} 
-        onPress={
-          () => navigation.navigate("Proofs", {
-          screen: "FullListProofs",
-        })}>
+        <Pressable style={[styles.button, { backgroundColor: CARD_BG }]}
+          onPress={
+            () => navigation.navigate("Proofs", {
+              screen: "FullListProofs",
+            })}>
           <Text style={styles.buttonText}>Historial de comprobantes</Text>
         </Pressable>
         <Pressable style={[styles.button, { backgroundColor: MAIN_COLOR }]} onPress={
           () => navigation.navigate("Proofs", {
-          screen: "ProofsMain",
-        })}>
+            screen: "ProofsMain",
+          })}>
           <Text style={styles.buttonText}>Subir nuevo comprobante</Text>
         </Pressable>
       </View>

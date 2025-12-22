@@ -1,6 +1,6 @@
 import { BG, CARD_BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
 import { useAuth } from "@/src/context/AuthContext";
-import { ApiHelper } from "@/src/helpers/apiHelper";
+import { AuthApi } from "@/src/helpers/authApi";
 import { useEffect, useState } from "react";
 import {
     ActivityIndicator,
@@ -85,7 +85,7 @@ function FullQrModal({ visible, onClose, item }: { visible: boolean; onClose: ()
 }
 
 export default function VoucherScreen({ navigation }) {
-    const { accessToken } = useAuth();
+    const { signOut } = useAuth();
 
     const [items, setItems] = useState<VoucherApiItem[]>([]);
     const [loading, setLoading] = useState(false);
@@ -103,13 +103,8 @@ export default function VoucherScreen({ navigation }) {
         else setLoading(true);
 
         try {
+            const res = await AuthApi<ApiResponse<VoucherApiItem[]>>(url, "GET", signOut);
 
-            const res = await ApiHelper<ApiResponse<VoucherApiItem[]>>(
-                url,
-                "GET",
-                undefined,
-                { Authorization: `Bearer ${accessToken}` }
-            );
 
             if (!res.success) {
                 Toast.show({

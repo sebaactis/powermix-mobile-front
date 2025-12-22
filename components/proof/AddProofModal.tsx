@@ -13,7 +13,7 @@ import Toast from "react-native-toast-message";
 
 import { CARD_BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
 import { useAuth } from "@/src/context/AuthContext";
-import { ApiHelper } from "@/src/helpers/apiHelper";
+import { AuthApi } from "@/src/helpers/authApi";
 
 type Props = {
   visible: boolean;
@@ -42,7 +42,7 @@ type Errors = {
 
 export default function AddProofModal({ visible, onClose, setProofs }: Props) {
 
-  const { accessToken } = useAuth()
+  const { signOut } = useAuth()
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("MERCADO_PAGO");
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -170,9 +170,12 @@ export default function AddProofModal({ visible, onClose, setProofs }: Props) {
       if (paymentMethod === "MERCADO_PAGO") {
 
         const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/proof`
-        const res = await ApiHelper(url, "POST", { proof_mp_id: mpReceipt }, {
-          Authorization: `Bearer ${accessToken}`,
-        })
+        const res = await AuthApi(
+          url,
+          "POST",
+          signOut,
+          { proof_mp_id: mpReceipt }
+        );
 
         if (!res.success || !res.data) {
           const error = data.error?.fields["error"]
@@ -190,15 +193,18 @@ export default function AddProofModal({ visible, onClose, setProofs }: Props) {
       } else {
 
         const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/proof/others`
-        const res = await ApiHelper(url, "POST", {
-          date: other.date,
-          time: other.time,
-          amount: Number(other.amount),
-          dni: other.dni.toString(),
-          last4: other.last4.toString(),
-        }, {
-          Authorization: `Bearer ${accessToken}`,
-        })
+        const res = await AuthApi<any>(
+          url,
+          "POST",
+          signOut,
+          {
+            date: other.date,
+            time: other.time,
+            amount: Number(other.amount),
+            dni: other.dni.toString(),
+            last4: other.last4.toString(),
+          }
+        );
 
 
         if (!res.success || !res.data) {

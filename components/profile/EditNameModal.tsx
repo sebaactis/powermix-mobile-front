@@ -11,7 +11,8 @@ import {
 import Toast from "react-native-toast-message";
 import { useAuth } from "@/src/context/AuthContext";
 import { MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
-import { ApiHelper } from "@/src/helpers/apiHelper";
+
+import { AuthApi } from "@/src/helpers/authApi";
 
 type Props = {
     visible: boolean;
@@ -19,7 +20,7 @@ type Props = {
 };
 
 export default function EditNameModal({ visible, onClose }: Props) {
-    const { user, setUser, accessToken } = useAuth();
+    const { user, setUser, signOut } = useAuth();
 
     const [nameDraft, setNameDraft] = useState(user?.name ?? "");
     const [error, setError] = useState<string | undefined>();
@@ -85,9 +86,12 @@ export default function EditNameModal({ visible, onClose }: Props) {
             setLoading(true);
 
             const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/user/update`
-            const res = await ApiHelper(url, "PUT", { name: trimmed }, {
-                Authorization: `Bearer ${accessToken}`,
-            })
+            const res = await AuthApi(
+                url,
+                "PUT",
+                signOut,
+                { name: trimmed }
+            )
 
             if (!res.success || !res.data) {
 
@@ -97,7 +101,7 @@ export default function EditNameModal({ visible, onClose }: Props) {
                 }
 
                 const backendMsg: string = res.error?.message
-                
+
                 onClose();
                 Toast.show({
                     type: "appWarning",

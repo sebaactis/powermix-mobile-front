@@ -2,7 +2,7 @@ import Field from '@/components/support/Field';
 import SupportRow from '@/components/support/SupportRow';
 import { CARD_BG, STRONG_TEXT, SUBTEXT, BG, MAIN_COLOR } from '@/src/constant';
 import { useAuth } from '@/src/context/AuthContext';
-import { ApiHelper } from '@/src/helpers/apiHelper';
+import { AuthApi } from '@/src/helpers/authApi';
 import { useState } from 'react';
 import {
     View,
@@ -40,7 +40,7 @@ type ErrorsFields = {
 
 export default function SupportScreen({ navigation }) {
 
-    const { accessToken } = useAuth();
+    const { signOut } = useAuth();
 
     const [contactRequest, setContactRequest] = useState<ContactRequest>({
         name: '',
@@ -113,10 +113,7 @@ export default function SupportScreen({ navigation }) {
 
         try {
             const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/user/contact`;
-
-            const res = await ApiHelper(url, 'POST', { name, email, category, message }, {
-                Authorization: `Bearer ${accessToken}`,
-            })
+            const res = AuthApi(url, "POST", signOut, { name, email, category, message })
 
             if (!res.success || !res.data) {
                 const backendMsg: string = res.error?.message

@@ -3,7 +3,7 @@ import { RenderItem } from "@/components/proof/RenderItem";
 
 import { BG, CARD_BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
 import { useAuth } from "@/src/context/AuthContext";
-import { ApiHelper } from "@/src/helpers/apiHelper";
+import { AuthApi } from "@/src/helpers/authApi";
 import { PaginatedProofs, Proof } from "@/src/types";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -28,7 +28,7 @@ const { width } = Dimensions.get("window");
 export default function ProofScreen({ navigation }) {
     const PAGE_SIZE = 5
 
-    const { accessToken } = useAuth();
+    const { signOut } = useAuth();
 
     const [proofs, setProofs] = useState<Proof[]>([]);
 
@@ -89,15 +89,7 @@ export default function ProofScreen({ navigation }) {
 
         try {
             const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/proofs/me/paginated?page=${pageToLoad}&pageSize=${PAGE_SIZE}`;
-
-            const res = await ApiHelper<PaginatedProofs>(
-                url,
-                "GET",
-                undefined,
-                {
-                    Authorization: `Bearer ${accessToken}`,
-                }
-            );
+            const res = await AuthApi<PaginatedProofs>(url, "GET", signOut)
 
             console.log("📥 Respuesta backend /proofs paginated:", res);
 

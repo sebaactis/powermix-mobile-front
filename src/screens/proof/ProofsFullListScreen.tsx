@@ -2,6 +2,7 @@ import { RenderItem } from "@/components/proof/RenderItem";
 import { BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
 import { useAuth } from "@/src/context/AuthContext";
 import { ApiHelper } from "@/src/helpers/apiHelper";
+import { AuthApi } from "@/src/helpers/authApi";
 import { Proof } from "@/src/types";
 import { useEffect, useState, useCallback } from "react";
 import {
@@ -37,7 +38,7 @@ type FiltersState = {
 };
 
 export default function ProofsFullListScreen({ navigation }) {
-    const { accessToken } = useAuth();
+    const { signOut } = useAuth();
 
     const [proofs, setProofs] = useState<Proof[]>([]);
     const [loadingInitial, setLoadingInitial] = useState(false);
@@ -103,15 +104,7 @@ export default function ProofsFullListScreen({ navigation }) {
 
         try {
             const url = buildUrlWithFilters(pageToLoad);
-
-            const res = await ApiHelper<PaginatedProofsResponse>(
-                url,
-                "GET",
-                undefined,
-                {
-                    Authorization: `Bearer ${accessToken}`,
-                }
-            );
+            const res = AuthApi<PaginatedProofsResponse>(url, "GET", signOut)
 
             if (!res.success || !res.data) {
                 const errorMsg =
@@ -143,7 +136,7 @@ export default function ProofsFullListScreen({ navigation }) {
             setLoadingMore(false);
             setRefreshing(false);
         }
-    }, [accessToken, loadingInitial, loadingMore, buildUrlWithFilters]);
+    }, [loadingInitial, loadingMore, buildUrlWithFilters, signOut]);
 
 
     useEffect(() => {

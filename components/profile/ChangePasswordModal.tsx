@@ -12,7 +12,6 @@ import Toast from "react-native-toast-message";
 
 import { MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
 import { useAuth } from "@/src/context/AuthContext";
-import { ApiHelper } from "@/src/helpers/apiHelper";
 
 type Props = {
     visible: boolean;
@@ -32,7 +31,7 @@ type PasswordErrors = {
 };
 
 export default function ChangePasswordModal({ visible, onClose }: Props) {
-    const { accessToken } = useAuth();
+    const { signOut } = useAuth();
 
     const [form, setForm] = useState<PasswordForm>({
         current: "",
@@ -124,12 +123,16 @@ export default function ChangePasswordModal({ visible, onClose }: Props) {
             setLoading(true);
 
             const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/user/change-password`;
-            const res = await ApiHelper(url, "PUT", {
-                currentPassword: form.current,
-                newPassword: form.newPassword,
-                confirmPassword: form.confirmNewPassword,
-            }, { Authorization: `Bearer ${accessToken}` })
-
+            const res = await AuthApi(
+                url,
+                "PUT",
+                signOut,
+                {
+                    currentPassword: form.current,
+                    newPassword: form.newPassword,
+                    confirmPassword: form.confirmNewPassword,
+                }
+            );
             if (!res.success | !res.data) {
                 const backendMsg: string = res.error?.message
 
