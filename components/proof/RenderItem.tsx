@@ -2,6 +2,7 @@ import { Dimensions, StyleSheet, Text, View } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { CARD_BG, STRONG_TEXT, SUBTEXT } from "@/src/constant";
 import { Proof } from "@/src/types";
+import { getResponsiveFontSize } from "@/src/helpers/responsive";
 
 const { width } = Dimensions.get("window");
 
@@ -145,12 +146,12 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     labelSmall: {
-        fontSize: 12,
+        fontSize: getResponsiveFontSize(12, 11),
         color: SUBTEXT,
         marginBottom: 1,
     },
     proofId: {
-        fontSize: 15,
+        fontSize: getResponsiveFontSize(15, 13),
         color: STRONG_TEXT,
         fontWeight: "600",
     },
@@ -159,12 +160,12 @@ const styles = StyleSheet.create({
         justifyContent: "center",
     },
     amountHeaderLabel: {
-        fontSize: 12,
+        fontSize: getResponsiveFontSize(12, 11),
         color: SUBTEXT,
         marginBottom: 2,
     },
     amountHeaderValue: {
-        fontSize: 18,
+        fontSize: getResponsiveFontSize(18, 16),
         fontWeight: "700",
     },
     metaBlock: {
@@ -179,12 +180,12 @@ const styles = StyleSheet.create({
         marginRight: 4,
     },
     metaLabel: {
-        fontSize: 13,
+        fontSize: getResponsiveFontSize(13, 12),
         color: SUBTEXT,
         marginRight: 4,
     },
     metaValue: {
-        fontSize: 13,
+        fontSize: getResponsiveFontSize(13, 12),
         color: STRONG_TEXT,
         flexShrink: 1,
     },

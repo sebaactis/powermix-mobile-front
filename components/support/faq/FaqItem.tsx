@@ -2,13 +2,14 @@ import { BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
 import { useRef, useState } from "react";
 import { Animated, Easing, Pressable, StyleSheet, Text, View } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { getResponsiveFontSize } from "@/src/helpers/responsive";
 
 export default function FaqItem({ question, answer }: FaqItemProps) {
     const [expanded, setExpanded] = useState(false);
     const animation = useRef(new Animated.Value(0)).current;
 
     const toggle = () => {
-        const toValue = expanded ? 0 : 1;
+        const toValue = expanded ? 0 :1;
 
         Animated.timing(animation, {
             toValue,
@@ -85,9 +86,9 @@ const styles = StyleSheet.create({
         marginRight: 8,
     },
     faqQuestion: {
-        flex: 1,
+        flex:1,
         color: STRONG_TEXT,
-        fontSize: 15,
+        fontSize: getResponsiveFontSize(15, 13),
         fontWeight: '400',
         maxWidth: '80%',
     },
@@ -98,7 +99,7 @@ const styles = StyleSheet.create({
     },
     faqAnswer: {
         color: SUBTEXT,
-        fontSize: 14,
+        fontSize: getResponsiveFontSize(14, 13),
         lineHeight: 16,
         fontWeight: '500',
     },

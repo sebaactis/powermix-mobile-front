@@ -1,14 +1,13 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { MAIN_COLOR } from '../constant';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { MAIN_COLOR } from '../constant';
 
 import CustomTabBar from '@/components/tabbar/CustomTabBar';
 import HomeScreen from '../screens/home/HomeScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
-import Header from '@/components/header/Header';
+import VoucherScreen from '../screens/voucher/VoucherScreen';
 import HelpStackNavigator from './HelpStackNavigator';
 import ProofsNavigator from './ProofsNavigator';
-import VoucherScreen from '../screens/voucher/VoucherScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -19,7 +18,7 @@ const TabNavigator = () => {
         tabBarActiveTintColor: MAIN_COLOR,
         tabBarInactiveTintColor: '#CCCCCC',
         tabBarShowLabel: false,
-        header: () => <Header />
+        headerShown: false,
       }}
       tabBar={(props) => <CustomTabBar {...props} />}
     >

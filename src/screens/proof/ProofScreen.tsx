@@ -4,6 +4,7 @@ import { RenderItem } from "@/components/proof/RenderItem";
 import { BG, CARD_BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
 import { useAuth } from "@/src/context/AuthContext";
 import { AuthApi } from "@/src/helpers/authApi";
+import { getResponsiveFontSize } from "@/src/helpers/responsive";
 import { PaginatedProofs, Proof } from "@/src/types";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -299,7 +300,7 @@ const styles = StyleSheet.create({
     topCardText: {
         color: SUBTEXT,
         textAlign: "center",
-        fontSize: 16,
+        fontSize: getResponsiveFontSize(16, 14),
         marginBottom: 12,
     },
 
@@ -314,12 +315,12 @@ const styles = StyleSheet.create({
     },
     uploadBtnText: {
         color: STRONG_TEXT,
-        fontSize: 17,
+        fontSize: getResponsiveFontSize(17, 15),
         fontWeight: "800",
     },
     historyTitle: {
         color: STRONG_TEXT,
-        fontSize: 16,
+        fontSize: getResponsiveFontSize(16, 14),
         fontWeight: "700",
         marginTop: 14,
         marginBottom: 16,
@@ -333,7 +334,7 @@ const styles = StyleSheet.create({
     },
     historyLinkText: {
         color: "#ff006a",
-        fontSize: 14,
+        fontSize: getResponsiveFontSize(14, 13),
         fontWeight: "500",
     },
     noProofsContainer: {
@@ -343,7 +344,7 @@ const styles = StyleSheet.create({
     },
     noProofsText: {
         color: "#9e9e9e",
-        fontSize: 17,
+        fontSize: getResponsiveFontSize(17, 15),
         fontWeight: 700,
         marginTop: 10
     }

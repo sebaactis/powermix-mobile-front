@@ -1,6 +1,7 @@
 import { BG, CARD_BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
 import { useAuth } from "@/src/context/AuthContext";
 import { AuthApi } from "@/src/helpers/authApi";
+import { getResponsiveFontSize, getResponsiveSize } from "@/src/helpers/responsive";
 import { useEffect, useState } from "react";
 import {
     ActivityIndicator,
@@ -162,31 +163,33 @@ export default function VoucherScreen({ navigation }) {
                 <View style={styles.qrRow}>
                     <Image source={{ uri: item.ImageURL }} style={styles.qrThumb} resizeMode="contain" />
 
-                    <View style={{ flex: 1, marginLeft: 12 }}>
-
+                    <View style={styles.qrInfoContainer}>
                         <Text style={styles.qrCode} numberOfLines={1}>
                             #{item.QRCode}
                         </Text>
 
-                        <View style={{ marginTop: 13, flexDirection: "row", alignItems: "center", gap: 10 }}>
+                        <View style={styles.statusAndActionsContainer}>
                             <StatusPill status={statusBind[item.Status]} />
 
                             {canDelete ? (
                                 <Pressable onPress={() => handleDelete(item)} hitSlop={10} style={styles.deleteBtn}>
-                                    <MaterialIcon name="trash-can-outline" size={20} color="#ff4d6d" />
+                                    <MaterialIcon name="trash-can-outline" size={getResponsiveSize(20, 18, 22)} color="#ff4d6d" />
                                     <Text style={styles.deleteBtnText}>Borrar</Text>
                                 </Pressable>
                             ) : (
                                 <View style={styles.deleteDisabled}>
-                                    <MaterialIcon name="trash-can-outline" size={20} color="#6f6f6f" />
+                                    <MaterialIcon name="trash-can-outline" size={getResponsiveSize(20, 18, 22)} color="#6f6f6f" />
                                     <Text style={styles.deleteDisabledText}>Solo usado</Text>
                                 </View>
                             )}
+
+                            <MaterialIcon name="chevron-right" size={getResponsiveSize(26, 20, 26)} color="#7f7f7f" style={styles.qrChevron} />
                         </View>
                     </View>
-
-                    <MaterialIcon name="chevron-right" size={26} color="#7f7f7f" />
+                    
                 </View>
+
+                
             </Pressable>
         );
     };
@@ -292,7 +295,8 @@ const styles = StyleSheet.create({
     topCardText: {
         color: SUBTEXT,
         textAlign: "center",
-        fontSize: 16,
+        fontSize: getResponsiveFontSize(16, 14),
+        marginBottom: 12,
     },
 
     historyHeaderRow: {
@@ -304,7 +308,7 @@ const styles = StyleSheet.create({
     },
     historyTitle: {
         color: STRONG_TEXT,
-        fontSize: 16,
+        fontSize: getResponsiveFontSize(16, 14),
         fontWeight: "700",
         marginTop: 14,
         marginBottom: 16,
@@ -317,7 +321,7 @@ const styles = StyleSheet.create({
     },
     noItemsText: {
         color: "#9e9e9e",
-        fontSize: 17,
+        fontSize: getResponsiveFontSize(17, 15),
         fontWeight: "700",
         marginTop: 10,
     },
@@ -325,35 +329,56 @@ const styles = StyleSheet.create({
     qrCard: {
         backgroundColor: CARD_BG,
         borderRadius: 18,
-        padding: 14,
-        marginBottom: 12,
+        padding: 12,
+        marginBottom: 10,
         borderWidth: StyleSheet.hairlineWidth,
         borderColor: "#2c2c2c",
     },
     qrRow: {
         flexDirection: "row",
         alignItems: "center",
+        justifyContent: "space-between",
     },
     qrThumb: {
-        width: 95,
-        height: 95,
+        width: getResponsiveSize(95, 80, 100),
+        height: getResponsiveSize(95, 80, 100),
         borderRadius: 10,
         backgroundColor: "#1b1b1b",
     },
 
     qrCode: {
         color: SUBTEXT,
-        fontSize: 15,
+        fontSize: getResponsiveFontSize(15, 13),
         marginTop: 4,
+        flex: 1,
+        marginLeft: 8,
+    },
+
+    qrInfoContainer: {
+        flex: 1,
+        marginLeft: 8,
+        maxWidth: "100%",
+    },
+
+    statusAndActionsContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
+    },
+
+    qrChevron: {
+        marginLeft: 8,
+        flexShrink: 0,
     },
 
     pill: {
         flexDirection: "row",
         alignItems: "center",
         paddingHorizontal: 10,
-        paddingVertical: 7,
+        paddingVertical: 9,
         borderRadius: 999,
         borderWidth: 1,
+        flexShrink: 1
     },
     pillDot: {
         width: 8,
@@ -362,8 +387,16 @@ const styles = StyleSheet.create({
         marginRight: 8,
     },
     pillText: {
-        fontSize: 12,
+        fontSize: getResponsiveFontSize(11, 9),
         fontWeight: "800",
+    },
+
+    deleteWrapper: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 10,
+        marginTop: 13,
+        flexShrink: 0,
     },
 
     deleteBtn: {
@@ -378,7 +411,7 @@ const styles = StyleSheet.create({
     },
     deleteBtnText: {
         color: "#ff4d6d",
-        fontSize: 12,
+        fontSize: getResponsiveFontSize(12, 10),
         fontWeight: "800",
     },
     deleteDisabled: {
@@ -394,7 +427,7 @@ const styles = StyleSheet.create({
     },
     deleteDisabledText: {
         color: "#6f6f6f",
-        fontSize: 12,
+        fontSize: getResponsiveFontSize(12, 10),
         fontWeight: "800",
     },
 
@@ -419,7 +452,7 @@ const styles = StyleSheet.create({
     },
     modalTitle: {
         color: STRONG_TEXT,
-        fontSize: 16,
+        fontSize: getResponsiveFontSize(16, 14),
         fontWeight: "800",
     },
     modalQr: {
@@ -438,12 +471,12 @@ const styles = StyleSheet.create({
     },
     modalCodeLabel: {
         color: SUBTEXT,
-        fontSize: 13,
+        fontSize: getResponsiveFontSize(13, 12),
         fontWeight: "700",
     },
     modalCodeValue: {
         color: STRONG_TEXT,
-        fontSize: 13,
+        fontSize: getResponsiveFontSize(13, 12),
         fontWeight: "800",
     },
 });

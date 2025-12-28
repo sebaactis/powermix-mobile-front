@@ -1,6 +1,7 @@
 import { MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
 import { Pressable, View, Text, StyleSheet } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { getResponsiveFontSize } from "@/src/helpers/responsive";
 
 export default function SupportRow({
     icon,
@@ -39,8 +40,8 @@ const styles = StyleSheet.create({
     },
     rowText: {
         color: STRONG_TEXT,
-        flex: 1,
-        fontSize: 15,
+        flex:1,
+        fontSize: getResponsiveFontSize(15, 13),
         fontWeight: '600'
     },
 })

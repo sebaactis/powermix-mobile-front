@@ -8,6 +8,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
 import AnimatedSplash from './AnimatedSplash';
 
@@ -18,7 +19,10 @@ export default function App() {
     offlineAccess: false,
   });
 
-
+  // Evita que el splash nativo se oculte hasta que lo controlemos
+  useEffect(() => {
+    SplashScreen.preventAutoHideAsync().catch(() => {});
+  }, []);
 
   const [isAppReady, setIsAppReady] = useState(false)
   const [showSplash, setShowSplash] = useState(true)
@@ -30,6 +34,14 @@ export default function App() {
 
     return () => clearTimeout(timer)
   }, [])
+
+  // Handler que ejecuta al terminar la animación: primero oculta el splash nativo, luego oculta el JS-splash
+  const handleAnimationEnd = async () => {
+    try {
+      await SplashScreen.hideAsync();
+    } catch (e) {}
+    setShowSplash(false);
+  };
 
   return (
     <>
@@ -54,7 +66,7 @@ export default function App() {
           {showSplash && (
             <AnimatedSplash
               isAppReady={isAppReady}
-              onAnimationEnd={() => setShowSplash(false)}
+              onAnimationEnd={handleAnimationEnd}
             />
           )}
         </AuthProvider>

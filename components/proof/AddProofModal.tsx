@@ -3,6 +3,7 @@ import {
   Animated,
   Modal,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -272,195 +273,201 @@ export default function AddProofModal({ visible, onClose, setProofs }: Props) {
             Seleccioná el medio de pago y completá los datos del comprobante.
           </Text>
 
-          <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>Medio de pago</Text>
-
-            <Pressable
-              style={styles.dropdownSelector}
-              onPress={toggleDropdown}
-            >
-              <Text style={styles.dropdownSelectorText}>
-                {labelPayment(paymentMethod)}
-              </Text>
-              <Animated.View
-                style={{
-                  transform: [
-                    {
-                      rotate: dropdownAnim.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: ["0deg", "180deg"],
-                      }),
-                    },
-                  ],
-                }}
-              >
-                <Icon name="chevron-down" size={14} color={SUBTEXT} />
-              </Animated.View>
-            </Pressable>
-
-            {dropdownOpen && (
-              <Animated.View
-                style={[
-                  styles.dropdownList,
-                  {
-                    opacity: dropdownAnim,
-                    transform: [{ scaleY: dropdownScaleY }],
-                  },
-                ]}
-              >
-                <Pressable
-                  style={styles.dropdownItem}
-                  onPress={() => {
-                    setPaymentMethod("MERCADO_PAGO");
-                    setDropdownOpen(false);
-                    setErrors({});
-                  }}
-                >
-                  <Text style={styles.dropdownItemText}>Mercado Pago</Text>
-                </Pressable>
-                <Pressable
-                  style={styles.dropdownItem}
-                  onPress={() => {
-                    setPaymentMethod("OTRO");
-                    setDropdownOpen(false);
-                    setErrors({});
-                  }}
-                >
-                  <Text style={styles.dropdownItemText}>Otro medio de pago</Text>
-                </Pressable>
-              </Animated.View>
-            )}
-          </View>
-
-
-          <Animated.View
-            style={{
-              opacity: contentAnim,
-              transform: [{ translateY: fieldsTranslateY }],
-            }}
+          <ScrollView
+            style={styles.modalScrollView}
+            showsVerticalScrollIndicator={false}
+            nestedScrollEnabled={true}
           >
-            {paymentMethod === "MERCADO_PAGO" ? (
-              <View style={styles.fieldGroup}>
-                <Text style={styles.fieldLabel}>
-                  Número de comprobante de Mercado Pago
+            <View style={styles.fieldGroup}>
+              <Text style={styles.fieldLabel}>Medio de pago</Text>
+
+              <Pressable
+                style={styles.dropdownSelector}
+                onPress={toggleDropdown}
+              >
+                <Text style={styles.dropdownSelectorText}>
+                  {labelPayment(paymentMethod)}
                 </Text>
-                <TextInput
-                  style={[
-                    styles.input,
-                    errors.mpReceipt && styles.inputError,
-                  ]}
-                  value={mpReceipt}
-                  onChangeText={(t) => {
-                    setMpReceipt(t);
-                    setErrors({});
+                <Animated.View
+                  style={{
+                    transform: [
+                      {
+                        rotate: dropdownAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: ["0deg", "180deg"],
+                        }),
+                      },
+                    ],
                   }}
-                  placeholderTextColor={SUBTEXT}
-                  autoCapitalize="none"
-                />
-                {errors.mpReceipt && (
-                  <Text style={styles.errorText}>{errors.mpReceipt}</Text>
-                )}
-              </View>
-            ) : (
-              <>
-                <View style={styles.row}>
-                  <View style={[styles.fieldGroup, styles.rowItem]}>
-                    <Text style={styles.fieldLabel}>Fecha</Text>
-                    <TextInput
-                      style={[
-                        styles.input,
-                        errors.date && styles.inputError,
-                      ]}
-                      value={other.date}
-                      onChangeText={(t) => handleChangeOther("date", t)}
-                      placeholder="DD/MM/AAAA"
-                      placeholderTextColor={SUBTEXT}
-                    />
-                    {errors.date && (
-                      <Text style={styles.errorText}>{errors.date}</Text>
-                    )}
-                  </View>
+                >
+                  <Icon name="chevron-down" size={14} color={SUBTEXT} />
+                </Animated.View>
+              </Pressable>
 
-                  <View style={[styles.fieldGroup, styles.rowItem]}>
-                    <Text style={styles.fieldLabel}>Hora</Text>
-                    <TextInput
-                      style={[
-                        styles.input,
-                        errors.time && styles.inputError,
-                      ]}
-                      value={other.time}
-                      onChangeText={(t) => handleChangeOther("time", t)}
-                      placeholder="HH:MM"
-                      placeholderTextColor={SUBTEXT}
-                    />
-                    {errors.time && (
-                      <Text style={styles.errorText}>{errors.time}</Text>
-                    )}
-                  </View>
-                </View>
+              {dropdownOpen && (
+                <Animated.View
+                  style={[
+                    styles.dropdownList,
+                    {
+                      opacity: dropdownAnim,
+                      transform: [{ scaleY: dropdownScaleY }],
+                    },
+                  ]}
+                >
+                  <Pressable
+                    style={styles.dropdownItem}
+                    onPress={() => {
+                      setPaymentMethod("MERCADO_PAGO");
+                      setDropdownOpen(false);
+                      setErrors({});
+                    }}
+                  >
+                    <Text style={styles.dropdownItemText}>Mercado Pago</Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.dropdownItem}
+                    onPress={() => {
+                      setPaymentMethod("OTRO");
+                      setDropdownOpen(false);
+                      setErrors({});
+                    }}
+                  >
+                    <Text style={styles.dropdownItemText}>Otro medio de pago</Text>
+                  </Pressable>
+                </Animated.View>
+              )}
+            </View>
 
-                <View style={styles.fieldGroup}>
-                  <Text style={styles.fieldLabel}>Monto</Text>
-                  <TextInput
-                    style={[
-                      styles.input,
-                      errors.amount && styles.inputError,
-                    ]}
-                    value={other.amount}
-                    onChangeText={(t) => handleChangeOther("amount", t)}
-                    placeholder="Ej: 2500.00"
-                    placeholderTextColor={SUBTEXT}
-                    keyboardType="decimal-pad"
-                  />
-                  {errors.amount && (
-                    <Text style={styles.errorText}>{errors.amount}</Text>
-                  )}
-                </View>
 
-                <View style={styles.fieldGroup}>
-                  <Text style={styles.fieldLabel}>DNI</Text>
-                  <TextInput
-                    style={[
-                      styles.input,
-                      errors.dni && styles.inputError,
-                    ]}
-                    value={other.dni}
-                    onChangeText={(t) => handleChangeOther("dni", t)}
-                    placeholder="Sin puntos ni guiones"
-                    placeholderTextColor={SUBTEXT}
-                    keyboardType="number-pad"
-                  />
-                  {errors.dni && (
-                    <Text style={styles.errorText}>{errors.dni}</Text>
-                  )}
-                </View>
-
+            <Animated.View
+              style={{
+                opacity: contentAnim,
+                transform: [{ translateY: fieldsTranslateY }],
+              }}
+            >
+              {paymentMethod === "MERCADO_PAGO" ? (
                 <View style={styles.fieldGroup}>
                   <Text style={styles.fieldLabel}>
-                    Últimos 4 dígitos de la tarjeta{" "}
-                    <Text style={{ color: SUBTEXT }}>(opcional)</Text>
+                    Número de comprobante de Mercado Pago
                   </Text>
                   <TextInput
                     style={[
                       styles.input,
-                      errors.last4 && styles.inputError,
+                      errors.mpReceipt && styles.inputError,
                     ]}
-                    value={other.last4}
-                    onChangeText={(t) =>
-                      handleChangeOther("last4", t.replace(/[^0-9]/g, ""))
-                    }
-                    placeholder="Ej: 1234"
+                    value={mpReceipt}
+                    onChangeText={(t) => {
+                      setMpReceipt(t);
+                      setErrors({});
+                    }}
                     placeholderTextColor={SUBTEXT}
-                    keyboardType="number-pad"
-                    maxLength={4}
+                    autoCapitalize="none"
                   />
-                  {errors.last4 && (
-                    <Text style={styles.errorText}>{errors.last4}</Text>
+                  {errors.mpReceipt && (
+                    <Text style={styles.errorText}>{errors.mpReceipt}</Text>
                   )}
                 </View>
-              </>
-            )}
-          </Animated.View>
+              ) : (
+                <>
+                  <View style={styles.row}>
+                    <View style={[styles.fieldGroup, styles.rowItem]}>
+                      <Text style={styles.fieldLabel}>Fecha</Text>
+                      <TextInput
+                        style={[
+                          styles.input,
+                          errors.date && styles.inputError,
+                        ]}
+                        value={other.date}
+                        onChangeText={(t) => handleChangeOther("date", t)}
+                        placeholder="DD/MM/AAAA"
+                        placeholderTextColor={SUBTEXT}
+                      />
+                      {errors.date && (
+                        <Text style={styles.errorText}>{errors.date}</Text>
+                      )}
+                    </View>
+
+                    <View style={[styles.fieldGroup, styles.rowItem]}>
+                      <Text style={styles.fieldLabel}>Hora</Text>
+                      <TextInput
+                        style={[
+                          styles.input,
+                          errors.time && styles.inputError,
+                        ]}
+                        value={other.time}
+                        onChangeText={(t) => handleChangeOther("time", t)}
+                        placeholder="HH:MM"
+                        placeholderTextColor={SUBTEXT}
+                      />
+                      {errors.time && (
+                        <Text style={styles.errorText}>{errors.time}</Text>
+                      )}
+                    </View>
+                  </View>
+
+                  <View style={styles.fieldGroup}>
+                    <Text style={styles.fieldLabel}>Monto</Text>
+                    <TextInput
+                      style={[
+                        styles.input,
+                        errors.amount && styles.inputError,
+                      ]}
+                      value={other.amount}
+                      onChangeText={(t) => handleChangeOther("amount", t)}
+                      placeholder="Ej: 2500.00"
+                      placeholderTextColor={SUBTEXT}
+                      keyboardType="decimal-pad"
+                    />
+                    {errors.amount && (
+                      <Text style={styles.errorText}>{errors.amount}</Text>
+                    )}
+                  </View>
+
+                  <View style={styles.fieldGroup}>
+                    <Text style={styles.fieldLabel}>DNI</Text>
+                    <TextInput
+                      style={[
+                        styles.input,
+                        errors.dni && styles.inputError,
+                      ]}
+                      value={other.dni}
+                      onChangeText={(t) => handleChangeOther("dni", t)}
+                      placeholder="Sin puntos ni guiones"
+                      placeholderTextColor={SUBTEXT}
+                      keyboardType="number-pad"
+                    />
+                    {errors.dni && (
+                      <Text style={styles.errorText}>{errors.dni}</Text>
+                    )}
+                  </View>
+
+                  <View style={styles.fieldGroup}>
+                    <Text style={styles.fieldLabel}>
+                      Últimos 4 dígitos de la tarjeta{" "}
+                      <Text style={{ color: SUBTEXT }}>(opcional)</Text>
+                    </Text>
+                    <TextInput
+                      style={[
+                        styles.input,
+                        errors.last4 && styles.inputError,
+                      ]}
+                      value={other.last4}
+                      onChangeText={(t) =>
+                        handleChangeOther("last4", t.replace(/[^0-9]/g, ""))
+                      }
+                      placeholder="Ej: 1234"
+                      placeholderTextColor={SUBTEXT}
+                      keyboardType="number-pad"
+                      maxLength={4}
+                    />
+                    {errors.last4 && (
+                      <Text style={styles.errorText}>{errors.last4}</Text>
+                    )}
+                  </View>
+                </>
+              )}
+            </Animated.View>
+          </ScrollView>
 
           <View style={styles.buttonsRow}>
             <Pressable
@@ -501,6 +508,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 18,
     backgroundColor: CARD_BG,
+    maxHeight: "85%",
+  },
+
+  modalScrollView: {
+    flex: 1,
+    marginTop: 4,
   },
 
   modalTitle: {

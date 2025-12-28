@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { getResponsiveFontSize } from "@/src/helpers/responsive";
 
 
 type Variant = 'success' | 'error' | 'warning';
@@ -58,7 +59,6 @@ export function AppToast({ text1, text2, variant }: Props) {
                 </View>
             </View>
 
-
             <View style={[styles.bottomAccent, { backgroundColor: v.color }]} />
         </View>
     );
@@ -96,12 +96,12 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     title: {
-        fontSize: 16,
+        fontSize: getResponsiveFontSize(16, 14),
         fontWeight: '700',
     },
     message: {
         marginTop: 2,
-        fontSize: 14,
+        fontSize: getResponsiveFontSize(14, 13),
     },
     bottomAccent: {
         height: 3,

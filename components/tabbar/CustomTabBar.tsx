@@ -2,6 +2,7 @@ import { MAIN_COLOR } from "@/src/constant";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { useEffect, useRef } from "react";
 import { Animated, Dimensions, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { getResponsiveFontSize } from "@/src/helpers/responsive";
 
 const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
   const translateX = useRef(new Animated.Value(0)).current;
@@ -107,6 +108,6 @@ const styles = StyleSheet.create({
   },
   tabBarLabel: {
     marginTop: 1,
-    fontSize: 12,
+    fontSize: getResponsiveFontSize(12, 11),
   },
 });

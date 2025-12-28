@@ -10,6 +10,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { BG, CARD_BG, STRONG_TEXT, SUBTEXT } from '@/src/constant';
+import { getResponsiveFontSize } from '@/src/helpers/responsive';
 import FaqItem from '@/components/support/faq/FaqItem';
 
 type FAQItem = {
@@ -124,18 +125,18 @@ const styles = StyleSheet.create({
     },
     sectionTitle: {
         color: STRONG_TEXT,
-        fontSize: 20,
-        fontWeight: '700',
-        textAlign: 'center',
+        fontSize: getResponsiveFontSize(20, 18),
+        fontWeight: "700",
+        textAlign: "center",
         marginVertical: 10,
     },
     sectionHelp: {
         color: SUBTEXT,
         marginVertical: 10,
-        fontSize: 14,
+        fontSize: getResponsiveFontSize(14, 13),
     },
     faqQuestionContainer: {
         marginTop: 10,
-        
+
     }
 });

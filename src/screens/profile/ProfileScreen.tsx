@@ -4,6 +4,7 @@ import ChangePasswordModal from "@/components/profile/ChangePasswordModal";
 
 import { BG, STRONG_TEXT } from "@/src/constant";
 import { useAuth } from "@/src/context/AuthContext";
+import { RESPONSIVE_SIZES } from "@/src/helpers/responsive";
 
 import React, { useState } from "react";
 import {
@@ -13,6 +14,7 @@ import {
   StyleSheet,
   Text,
   View,
+  ScrollView,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Toast from "react-native-toast-message";
@@ -45,7 +47,11 @@ export default function ProfileScreen({ navigation }) {
         <Text style={styles.headerTitle}>Mi Perfil</Text>
       </View>
 
-      <View style={styles.content}>
+      <ScrollView
+        style={styles.content}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.avatarWrap}>
           <View style={styles.avatarOuter}>
             <View style={styles.avatarInner}>
@@ -87,7 +93,7 @@ export default function ProfileScreen({ navigation }) {
         <Pressable style={styles.closeSessionBtn} onPress={handleSignOut}>
           <Text style={styles.textCloseSessionBtn}>Cerrar sesión</Text>
         </Pressable>
-      </View>
+      </ScrollView>
 
       <EditNameModal
         visible={showEditName}
@@ -134,6 +140,9 @@ const styles = StyleSheet.create({
 
   content: {
     paddingHorizontal: 20,
+  },
+  scrollContent: {
+    paddingBottom: RESPONSIVE_SIZES.header.paddingTop,
   },
 
   avatarWrap: {

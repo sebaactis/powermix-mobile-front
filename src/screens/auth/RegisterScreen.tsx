@@ -2,7 +2,8 @@ import Icon from 'react-native-vector-icons/AntDesign';
 
 import FormInput from '@/components/inputs/FormInput';
 import { BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from '@/src/constant';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { isSmallScreen, RESPONSIVE_SIZES } from '@/src/helpers/responsive';
+import { Pressable, StyleSheet, Text, View, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useState } from 'react';
 
 import Toast from 'react-native-toast-message';
@@ -166,105 +167,116 @@ export default function RegisterScreen({ navigation }) {
 
 
   return (
-    <View style={styles.container}>
-      <View style={styles.iconContainer}>
-        <Icon style={styles.icon} name="user-add" size={55} color={MAIN_COLOR} />
-      </View>
-      <Text style={styles.title}>Crear una cuenta nueva</Text>
-      <Text style={styles.subtitle}>Unite para empezar a disfrutar de nuestro servicio</Text>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.iconContainer}>
+          <Icon style={styles.icon} name="user-add" size={55} color={MAIN_COLOR} />
+        </View>
+        <Text style={styles.title}>Crear una cuenta nueva</Text>
+        <Text style={styles.subtitle}>Unite para empezar a disfrutar de nuestro servicio</Text>
 
-      <FormInput
-        iconName="abc"
-        size={24}
-        color={SUBTEXT}
-        placeholder="Introduce tu nombre y apellido"
-        placeholderTextColor={SUBTEXT}
-        keyBoardType="visible-password"
-        labelText="Nombre y Apellido"
-        marginTop={25}
-        onChangeText={(text) => handleRegisterData({ name: text })}
-        value={registerData.name}
-        error={errors.name}
-      />
+        <FormInput
+          iconName="abc"
+          size={24}
+          color={SUBTEXT}
+          placeholder="Introduce tu nombre y apellido"
+          placeholderTextColor={SUBTEXT}
+          keyBoardType="visible-password"
+          labelText="Nombre y Apellido"
+          marginTop={isSmallScreen ? 20 : 25}
+          onChangeText={(text) => handleRegisterData({ name: text })}
+          value={registerData.name}
+          error={errors.name}
+        />
 
-      <FormInput
-        iconName="email"
-        size={24}
-        color={SUBTEXT}
-        placeholder="ejemplo@correo.com"
-        placeholderTextColor={SUBTEXT}
-        keyBoardType="email-address"
-        labelText="Correo electronico"
-        marginTop={25}
-        onChangeText={(text) => handleRegisterData({ email: text })}
-        value={registerData.email}
-        error={errors.email}
-      />
+        <FormInput
+          iconName="email"
+          size={24}
+          color={SUBTEXT}
+          placeholder="ejemplo@correo.com"
+          placeholderTextColor={SUBTEXT}
+          keyBoardType="email-address"
+          labelText="Correo electronico"
+          marginTop={isSmallScreen ? 20 : 25}
+          onChangeText={(text) => handleRegisterData({ email: text })}
+          value={registerData.email}
+          error={errors.email}
+        />
 
-      <FormInput
-        iconName="lock-outline"
-        size={24}
-        color={SUBTEXT}
-        placeholder="Crea una contraseña segura"
-        placeholderTextColor={SUBTEXT}
-        keyBoardType="visible-password"
-        labelText="Contraseña"
-        marginTop={25}
-        onChangeText={(text) => handleRegisterData({ password: text })}
-        value={registerData.password}
-        error={errors.password}
-      />
+        <FormInput
+          iconName="lock-outline"
+          size={24}
+          color={SUBTEXT}
+          placeholder="Crea una contraseña segura"
+          placeholderTextColor={SUBTEXT}
+          keyBoardType="visible-password"
+          labelText="Contraseña"
+          marginTop={isSmallScreen ? 20 : 25}
+          onChangeText={(text) => handleRegisterData({ password: text })}
+          value={registerData.password}
+          error={errors.password}
+        />
 
-      <FormInput
-        iconName="lock-outline"
-        size={24}
-        color={SUBTEXT}
-        placeholder="Repite la contraseña"
-        placeholderTextColor={SUBTEXT}
-        keyBoardType="visible-password"
-        labelText="Confirmar contraseña"
-        marginTop={25}
-        onChangeText={(text) => handleRegisterData({ confirmPassword: text })}
-        value={registerData.confirmPassword}
-        error={errors.confirmPassword}
-      />
-      <View style={styles.registerTextContainer}>
-        <Text style={styles.subText}>
-          Al crear tu cuenta, aceptás nuestros
-          <Text
-            style={styles.link}>
+        <FormInput
+          iconName="lock-outline"
+          size={24}
+          color={SUBTEXT}
+          placeholder="Repite la contraseña"
+          placeholderTextColor={SUBTEXT}
+          keyBoardType="visible-password"
+          labelText="Confirmar contraseña"
+          marginTop={isSmallScreen ? 20 : 25}
+          onChangeText={(text) => handleRegisterData({ confirmPassword: text })}
+          value={registerData.confirmPassword}
+          error={errors.confirmPassword}
+        />
+        <View style={styles.registerTextContainer}>
+          <Text style={styles.subText}>
+            Al crear tu cuenta, aceptás nuestros
+            <Text
+              style={styles.link}>
             {' '}Términos
           </Text>
           <Text> y </Text>
           <Text style={styles.link}>
             Política de Privacidad
           </Text>
-        </Text>
-      </View>
+          </Text>
+        </View>
 
 
-      <View style={styles.buttonsContainer}>
-        <Pressable
-          color={MAIN_COLOR}
-          title='Iniciar Sesion'
-          style={[styles.button, !validEntries && { opacity: 0.7 }]}
-          disabled={!validEntries}
-          onPress={handleSubmit}
-        >
-          <Text style={styles.buttonText}>{loading ? 'Creando cuenta...' : 'Crear cuenta'}</Text>
-        </Pressable>
-      </View>
-
-    </View>
+        <View style={styles.buttonsContainer}>
+          <Pressable
+            style={[styles.button, !validEntries && { opacity: 0.7 }]}
+            disabled={!validEntries}
+            onPress={handleSubmit}
+          >
+            <Text style={styles.buttonText}>{loading ? 'Creando cuenta...' : 'Crear cuenta'}</Text>
+          </Pressable>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: BG
+  },
+  scrollContent: {
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: BG
+    paddingVertical: RESPONSIVE_SIZES.header.paddingTop,
+    paddingHorizontal: RESPONSIVE_SIZES.padding.horizontal,
   },
   iconContainer: {
     backgroundColor: '#8b003a7c',

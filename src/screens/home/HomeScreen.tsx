@@ -5,6 +5,7 @@ import { BG, CARD_BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from '@/src/constant';
 import { useAuth } from '@/src/context/AuthContext';
 import { AuthApi } from '@/src/helpers/authApi';
 import { Proof } from '@/src/types';
+import { getResponsiveSize, getResponsiveFontSize, RESPONSIVE_SIZES } from '@/src/helpers/responsive';
 import { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -204,8 +205,8 @@ export default function HomeScreen({ navigation }) {
 
       <View style={styles.circleWrapper}>
         <ProgressRing
-          size={210}
-          strokeWidth={20}
+          size={getResponsiveSize(210, 180, 230)}
+          strokeWidth={getResponsiveSize(20, 18)}
           progress={progress}
           trackColor="#202633"
           progressColor={MAIN_COLOR}
@@ -267,8 +268,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: BG,
-    paddingHorizontal: 24,
-    paddingTop: 70,
+    paddingHorizontal: RESPONSIVE_SIZES.padding.horizontal,
+    paddingTop: RESPONSIVE_SIZES.header.paddingTop,
+  },
+  sectionTitle: {
+    height: 0,
   },
   circleWrapper: {
     alignSelf: 'center',
@@ -297,7 +301,7 @@ const styles = StyleSheet.create({
   },
   caption: {
     color: SUBTEXT,
-    fontSize: 18,
+    fontSize: getResponsiveFontSize(18, 15),
     marginTop: 4,
   },
   message: {

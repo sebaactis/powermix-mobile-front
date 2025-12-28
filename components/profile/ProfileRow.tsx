@@ -6,6 +6,7 @@ import {
     Text,
     View
 } from "react-native";
+import { getResponsiveFontSize } from "@/src/helpers/responsive";
 
 import Icon from "react-native-vector-icons/FontAwesome";
 
@@ -84,12 +85,12 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     color: STRONG_TEXT,
-    fontSize: 17,
+    fontSize: getResponsiveFontSize(17, 15),
     fontWeight: "700",
   },
   cardSubtitle: {
     color: SUBTEXT,
-    fontSize: 15,
+    fontSize: getResponsiveFontSize(15, 13),
     marginTop: 4,
   },
   cardRight: {
@@ -97,7 +98,7 @@ const styles = StyleSheet.create({
   },
   link: {
     color: MAIN_COLOR,
-    fontSize: 16,
+    fontSize: getResponsiveFontSize(16, 14),
     fontWeight: "700",
   },
 })

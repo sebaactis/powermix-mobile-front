@@ -3,6 +3,7 @@ import SupportRow from '@/components/support/SupportRow';
 import { CARD_BG, STRONG_TEXT, SUBTEXT, BG, MAIN_COLOR } from '@/src/constant';
 import { useAuth } from '@/src/context/AuthContext';
 import { AuthApi } from '@/src/helpers/authApi';
+import { getResponsiveFontSize } from '@/src/helpers/responsive';
 import { useState } from 'react';
 import {
     View,
@@ -312,7 +313,7 @@ const styles = StyleSheet.create({
     sectionTitle:
     {
         color: STRONG_TEXT,
-        fontSize: 18,
+        fontSize: getResponsiveFontSize(18, 16),
         fontWeight: '700'
     },
     sectionHelp: {
@@ -324,13 +325,12 @@ const styles = StyleSheet.create({
         borderColor: CARD_BG,
         borderWidth: 1,
         borderRadius: 12,
-        color: STRONG_TEXT,
         paddingHorizontal: 12,
         height: 44,
     },
     errorText: {
         color: '#f97373',
-        fontSize: 13,
+        fontSize: getResponsiveFontSize(13, 12),
         marginTop: 4,
     },
     multiline:
@@ -376,7 +376,7 @@ const styles = StyleSheet.create({
     ctaText: {
         color: 'white',
         fontWeight: '800',
-        fontSize: 16
+        fontSize: getResponsiveFontSize(16, 14)
     },
     modalBackdrop: {
         position: 'absolute',
@@ -395,7 +395,7 @@ const styles = StyleSheet.create({
     modalTitle: {
         color: STRONG_TEXT,
         fontWeight: '700',
-        fontSize: 16,
+        fontSize: getResponsiveFontSize(16, 14),
         marginBottom: 10
     },
     modalRow: {

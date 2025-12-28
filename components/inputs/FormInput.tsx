@@ -1,5 +1,6 @@
 import { View, Text, TextInput, StyleSheet } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { getResponsiveFontSize } from '@/src/helpers/responsive';
 
 interface FormInputProps {
     iconName: string;
@@ -71,7 +72,7 @@ const styles = StyleSheet.create({
     },
     inputLabel: {
         color: "#d6d6d6",
-        fontSize: 16,
+        fontSize: getResponsiveFontSize(16, 14),
         fontWeight: '400',
     },
     emailInput: {
@@ -80,11 +81,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         color: "#FFFFFF",
         flex: 1,
-        fontSize: 16
+        fontSize: getResponsiveFontSize(16, 14)
     },
     errorText: {
         color: '#f97373',
-        fontSize: 13,
+        fontSize: getResponsiveFontSize(13, 12),
         marginTop: 4,
     },
 })

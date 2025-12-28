@@ -1,9 +1,9 @@
 import { RenderItem } from "@/components/proof/RenderItem";
 import { BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
 import { useAuth } from "@/src/context/AuthContext";
-import { ApiHelper } from "@/src/helpers/apiHelper";
 import { AuthApi } from "@/src/helpers/authApi";
 import { Proof } from "@/src/types";
+import { getResponsiveFontSize } from "@/src/helpers/responsive";
 import { useEffect, useState, useCallback } from "react";
 import {
     ActivityIndicator,
@@ -104,9 +104,12 @@ export default function ProofsFullListScreen({ navigation }) {
 
         try {
             const url = buildUrlWithFilters(pageToLoad);
-            const res = AuthApi<PaginatedProofsResponse>(url, "GET", signOut)
+            const res = await AuthApi<PaginatedProofsResponse>(url, "GET", signOut)
+
+
 
             if (!res.success || !res.data) {
+                            console.log(res)
                 const errorMsg =
                     res.error?.message || "Error al cargar los comprobantes";
 
@@ -356,7 +359,7 @@ const styles = StyleSheet.create({
     },
     filtersTitle: {
         color: STRONG_TEXT,
-        fontSize: 15,
+        fontSize: getResponsiveFontSize(15, 13),
         fontWeight: "600",
         marginBottom: 8,
     },
@@ -373,7 +376,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 8,
         color: STRONG_TEXT,
-        fontSize: 13,
+        fontSize: getResponsiveFontSize(13, 12),
         backgroundColor: "#1e1e1e",
     },
     filterInputHalf: {
@@ -395,7 +398,7 @@ const styles = StyleSheet.create({
     },
     applyBtnText: {
         color: STRONG_TEXT,
-        fontSize: 13,
+        fontSize: getResponsiveFontSize(13, 12),
         fontWeight: "700",
     },
     clearBtn: {
@@ -409,7 +412,7 @@ const styles = StyleSheet.create({
     },
     clearBtnText: {
         color: SUBTEXT,
-        fontSize: 12,
+        fontSize: getResponsiveFontSize(12, 11),
         fontWeight: "500",
     },
     noProofsContainer: {
@@ -419,7 +422,7 @@ const styles = StyleSheet.create({
     },
     noProofsText: {
         color: "#9e9e9e",
-        fontSize: 17,
+        fontSize: getResponsiveFontSize(17, 15),
         fontWeight: 700,
         marginTop: 10
     }

@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import MaterialIcon from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Pressable, StyleSheet, Text, View, ActivityIndicator } from 'react-native';
 
 import FormInput from '@/components/inputs/FormInput';
 import { BG, CARD_BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from '@/src/constant';
 import { useAuth } from '@/src/context/AuthContext';
+import { isSmallScreen, RESPONSIVE_FONT_SIZES, RESPONSIVE_SIZES } from '@/src/helpers/responsive';
 
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { ApiHelper } from '@/src/helpers/apiHelper';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import Toast from 'react-native-toast-message';
 
 type LoginGoogleResponse = {
@@ -29,8 +30,28 @@ export default function LoginScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState({ email: '', password: '' });
+
+  const validate = (): boolean => {
+    const newErrors: { email: string; password: string } = { email: '', password: '' };
+
+    if (!email.trim()) {
+      newErrors.email = 'El correo es requerido';
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = 'Correo inválido';
+    }
+    
+    if (!password.trim()) {
+      newErrors.password = 'La contraseña es requerida';
+    }
+
+    setErrors(newErrors);
+    return !newErrors.email && !newErrors.password;
+  };
 
   const handleLogin = async () => {
+    if (!validate()) return;
+
     try {
       setError(null);
       setLoading(true);
@@ -99,95 +120,117 @@ export default function LoginScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.iconContainer}>
-        <Icon style={styles.icon} name="arm-flex-outline" size={55} color={MAIN_COLOR} />
-      </View>
-      <Text style={styles.title}>Bienvenido</Text>
-      <Text style={styles.subtitle}>Inicie sesión para continuar</Text>
-
-      <FormInput
-        iconName="email"
-        size={24}
-        color={SUBTEXT}
-        placeholder="ejemplo@correo.com"
-        placeholderTextColor={SUBTEXT}
-        keyBoardType="email-address"
-        labelText="Correo electronico"
-        marginTop={35}
-        value={email}
-        onChangeText={setEmail}
-      />
-
-      <FormInput
-        iconName="lock-outline"
-        size={24}
-        color={SUBTEXT}
-        placeholder="Contraseña"
-        placeholderTextColor={SUBTEXT}
-        labelText="Contraseña"
-        marginTop={35}
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
-
-      <Text
-        style={styles.forgotPassword}
-        onPress={() => navigation.navigate('ForgotPassword')}
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
-        ¿Olvidaste tu contraseña?
-      </Text>
+        <View style={styles.iconContainer}>
+          <Icon style={styles.icon} name="arm-flex-outline" size={55} color={MAIN_COLOR} />
+        </View>
+        <Text style={styles.title}>Bienvenido</Text>
+        <Text style={styles.subtitle}>Inicie sesión para continuar</Text>
 
-      {error && <Text style={styles.errorMessage}>{error}</Text>}
+        <FormInput
+          iconName="email"
+          size={24}
+          color={SUBTEXT}
+          placeholder="ejemplo@correo.com"
+          placeholderTextColor={SUBTEXT}
+          keyBoardType="email-address"
+          labelText="Correo electronico"
+          marginTop={isSmallScreen ? 25 : 35}
+          value={email}
+          onChangeText={(text) => {
+            setEmail(text);
+            setErrors(prev => ({ ...prev, email: '' }));
+          }}
+          error={errors.email}
+        />
 
-      <View style={styles.buttonsContainer}>
-        <Pressable
-          style={[styles.button, (loading || !email || !password) && { opacity: 0.7 }]}
-          onPress={handleLogin}
-          disabled={loading || !email || !password}
+        <FormInput
+          iconName="lock-outline"
+          size={24}
+          color={SUBTEXT}
+          placeholder="Contraseña"
+          placeholderTextColor={SUBTEXT}
+          labelText="Contraseña"
+          marginTop={isSmallScreen ? 25 : 35}
+          secureTextEntry
+          value={password}
+          onChangeText={(text) => {
+            setPassword(text);
+            setErrors(prev => ({ ...prev, password: '' }));
+          }}
+          error={errors.password}
+        />
+
+        <Text
+          style={styles.forgotPassword}
+          onPress={() => navigation.navigate('ForgotPassword')}
         >
-          {loading ? (
-            <ActivityIndicator color={STRONG_TEXT} />
-          ) : (
-            <Text style={styles.buttonText}>Iniciar Sesion</Text>
-          )}
-        </Pressable>
-
-        <Text style={styles.oText}>o</Text>
-
-        <Pressable
-          style={[styles.googleButton, googleLoading && { opacity: 0.7 }]}
-          onPress={handleGoogleLogin}
-          disabled={googleLoading}
-        >
-          {googleLoading ? (
-            <ActivityIndicator color={STRONG_TEXT} />
-          ) : (
-            <>
-              <MaterialIcon style={styles.icon} name="google" size={30} color={STRONG_TEXT} />
-              <Text style={styles.buttonText}>Iniciar sesión con Google</Text>
-            </>
-          )}
-        </Pressable>
-      </View>
-
-      <View style={styles.registerTextContainer}>
-        <Text style={styles.register}>¿No tenés cuenta? </Text>
-        <Text onPress={() => navigation.navigate('Register')} style={styles.registerSubText}>
-          Registrate
+          ¿Olvidaste tu contraseña?
         </Text>
-      </View>
-    </View>
+
+        {error && <Text style={styles.errorMessage}>{error}</Text>}
+
+        <View style={styles.buttonsContainer}>
+          <Pressable
+            style={[styles.button, (loading || !email || !password) && { opacity: 0.7 }]}
+            onPress={handleLogin}
+            disabled={loading || !email || !password}
+          >
+            {loading ? (
+              <ActivityIndicator color={STRONG_TEXT} />
+            ) : (
+              <Text style={styles.buttonText}>Iniciar Sesion</Text>
+            )}
+          </Pressable>
+
+          <Text style={styles.oText}>o</Text>
+
+          <Pressable
+            style={[styles.googleButton, googleLoading && { opacity: 0.7 }]}
+            onPress={handleGoogleLogin}
+            disabled={googleLoading}
+          >
+            {googleLoading ? (
+              <ActivityIndicator color={STRONG_TEXT} />
+            ) : (
+              <>
+                <MaterialIcon style={styles.icon} name="google" size={30} color={STRONG_TEXT} />
+                <Text style={styles.buttonText}>Iniciar sesión con Google</Text>
+              </>
+            )}
+          </Pressable>
+        </View>
+
+        <View style={styles.registerTextContainer}>
+          <Text style={styles.register}>¿No tenés cuenta? </Text>
+          <Text onPress={() => navigation.navigate('Register')} style={styles.registerSubText}>
+            Registrate
+          </Text>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: BG,
+  },
+  scrollContent: {
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: BG,
+    paddingVertical: RESPONSIVE_SIZES.header.paddingTop,
+    paddingHorizontal: RESPONSIVE_SIZES.padding.horizontal,
   },
   iconContainer: {
     backgroundColor: '#8b003a7c',

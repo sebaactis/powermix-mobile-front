@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { View, Text, StyleSheet, Pressable, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, Pressable, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 
 import FormInput from "@/components/inputs/FormInput";
 import { BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
+import { isSmallScreen, RESPONSIVE_SIZES } from "@/src/helpers/responsive";
 import Toast from "react-native-toast-message";
 import { ApiHelper } from "@/src/helpers/apiHelper";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -104,54 +105,63 @@ export default function ResetPasswordScreen({ navigation }) {
     };
 
     return (
-        <View style={styles.container}>
-            <Toast
-                config={toastConfig}
-                topOffset={60}
-                visibilityTime={2500}
-
-            />
-            <Text style={styles.title}>Crear nueva contraseña</Text>
-            {email && <Text style={styles.subtitle}>{email}</Text>}
-
-            <FormInput
-                iconName="lock-outline"
-                size={24}
-                color={SUBTEXT}
-                placeholder="Nueva contraseña"
-                placeholderTextColor={SUBTEXT}
-                labelText="Nueva contraseña"
-                marginTop={35}
-                secureTextEntry
-                value={password}
-                onChangeText={setPassword}
-            />
-
-            <FormInput
-                iconName="lock-outline"
-                size={24}
-                color={SUBTEXT}
-                placeholder="Repetir contraseña"
-                placeholderTextColor={SUBTEXT}
-                labelText="Confirmar contraseña"
-                marginTop={20}
-                secureTextEntry
-                value={confirm}
-                onChangeText={setConfirm}
-            />
-
-            <Pressable
-                style={[styles.button, loading && { opacity: 0.7 }]}
-                onPress={handleReset}
-                disabled={loading}
+        <KeyboardAvoidingView
+            style={styles.container}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
+            <ScrollView
+                contentContainerStyle={styles.scrollContent}
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
             >
-                {loading ? (
-                    <ActivityIndicator color={STRONG_TEXT} />
-                ) : (
-                    <Text style={styles.buttonText}>Actualizar contraseña</Text>
-                )}
-            </Pressable>
-        </View>
+                <Toast
+                    config={toastConfig}
+                    topOffset={60}
+                    visibilityTime={2500}
+
+                />
+                <Text style={styles.title}>Crear nueva contraseña</Text>
+                {email && <Text style={styles.subtitle}>{email}</Text>}
+
+                <FormInput
+                    iconName="lock-outline"
+                    size={24}
+                    color={SUBTEXT}
+                    placeholder="Nueva contraseña"
+                    placeholderTextColor={SUBTEXT}
+                    labelText="Nueva contraseña"
+                    marginTop={isSmallScreen ? 25 : 35}
+                    secureTextEntry
+                    value={password}
+                    onChangeText={setPassword}
+                />
+
+                <FormInput
+                    iconName="lock-outline"
+                    size={24}
+                    color={SUBTEXT}
+                    placeholder="Repetir contraseña"
+                    placeholderTextColor={SUBTEXT}
+                    labelText="Confirmar contraseña"
+                    marginTop={isSmallScreen ? 15 : 20}
+                    secureTextEntry
+                    value={confirm}
+                    onChangeText={setConfirm}
+                />
+
+                <Pressable
+                    style={[styles.button, loading && { opacity: 0.7 }]}
+                    onPress={handleReset}
+                    disabled={loading}
+                >
+                    {loading ? (
+                        <ActivityIndicator color={STRONG_TEXT} />
+                    ) : (
+                        <Text style={styles.buttonText}>Actualizar contraseña</Text>
+                    )}
+                </Pressable>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 }
 
@@ -159,8 +169,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: BG,
-
+    },
+    scrollContent: {
+        flexGrow: 1,
         justifyContent: "center",
+        paddingVertical: RESPONSIVE_SIZES.header.paddingTop,
+        paddingHorizontal: RESPONSIVE_SIZES.padding.horizontal,
     },
     title: {
         fontSize: 24,

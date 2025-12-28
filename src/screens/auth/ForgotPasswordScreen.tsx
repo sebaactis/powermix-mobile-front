@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { View, Text, StyleSheet, Pressable, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, Pressable, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import FormInput from "@/components/inputs/FormInput";
 import { BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
+import { isSmallScreen, RESPONSIVE_SIZES } from "@/src/helpers/responsive";
 import Toast from "react-native-toast-message";
 import { ApiHelper } from "@/src/helpers/apiHelper";
 
@@ -62,37 +63,46 @@ export function ForgotPasswordScreen({ navigation }) {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Recuperar contraseña</Text>
-            <Text style={styles.subtitle}>
-                Ingresá el correo que usás para iniciar sesión.
-            </Text>
-
-            <FormInput
-                iconName="email"
-                size={24}
-                color={SUBTEXT}
-                placeholder="ejemplo@correo.com"
-                placeholderTextColor={SUBTEXT}
-                labelText="Correo electrónico"
-                marginTop={35}
-                keyBoardType="email-address"
-                value={email}
-                onChangeText={setEmail}
-            />
-
-            <Pressable
-                style={[styles.button, (!email || loading) && { opacity: 0.7 }]}
-                onPress={handleSendRecovery}
-                disabled={!email || loading}
+        <KeyboardAvoidingView
+            style={styles.container}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
+            <ScrollView
+                contentContainerStyle={styles.scrollContent}
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
             >
-                {loading ? (
-                    <ActivityIndicator color={STRONG_TEXT} />
-                ) : (
-                    <Text style={styles.buttonText}>Enviar instrucciones</Text>
-                )}
-            </Pressable>
-        </View>
+                <Text style={styles.title}>Recuperar contraseña</Text>
+                <Text style={styles.subtitle}>
+                    Ingresá el correo que usás para iniciar sesión.
+                </Text>
+
+                <FormInput
+                    iconName="email"
+                    size={24}
+                    color={SUBTEXT}
+                    placeholder="ejemplo@correo.com"
+                    placeholderTextColor={SUBTEXT}
+                    labelText="Correo electrónico"
+                    marginTop={isSmallScreen ? 25 : 35}
+                    keyBoardType="email-address"
+                    value={email}
+                    onChangeText={setEmail}
+                />
+
+                <Pressable
+                    style={[styles.button, (!email || loading) && { opacity: 0.7 }]}
+                    onPress={handleSendRecovery}
+                    disabled={!email || loading}
+                >
+                    {loading ? (
+                        <ActivityIndicator color={STRONG_TEXT} />
+                    ) : (
+                        <Text style={styles.buttonText}>Enviar instrucciones</Text>
+                    )}
+                </Pressable>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 }
 
@@ -100,7 +110,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: BG,
+    },
+    scrollContent: {
+        flexGrow: 1,
         justifyContent: "center",
+        paddingVertical: RESPONSIVE_SIZES.header.paddingTop,
+        paddingHorizontal: RESPONSIVE_SIZES.padding.horizontal,
     },
     title: {
         fontSize: 26,

@@ -1,5 +1,6 @@
 import { MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
 import { Proof } from "@/src/types";
+import { getResponsiveFontSize } from "@/src/helpers/responsive";
 import React from "react";
 import {
   Pressable,
@@ -133,7 +134,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: STRONG_TEXT,
-    fontSize: 15,
+    fontSize: getResponsiveFontSize(15, 13),
     fontWeight: "600",
     marginBottom: 7,
   },
@@ -152,12 +153,12 @@ const styles = StyleSheet.create({
   },
   metaLabel: {
     color: SUBTEXT,
-    fontSize: 12,
+    fontSize: getResponsiveFontSize(12, 11),
     marginRight: 4,
   },
   metaValue: {
     color: STRONG_TEXT,
-    fontSize: 12,
+    fontSize: getResponsiveFontSize(12, 11),
     flexShrink: 1,
   },
   amountContainer: {
@@ -167,12 +168,12 @@ const styles = StyleSheet.create({
   },
   amountLabel: {
     color: SUBTEXT,
-    fontSize: 12,
+    fontSize: getResponsiveFontSize(12, 11),
     marginBottom: 2,
   },
   amountValue: {
     color: MAIN_COLOR,
-    fontSize: 17,
+    fontSize: getResponsiveFontSize(17, 15),
     fontWeight: "700",
   },
 });
