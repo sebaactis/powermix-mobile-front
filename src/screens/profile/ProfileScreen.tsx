@@ -4,18 +4,17 @@ import ChangePasswordModal from "@/components/profile/ChangePasswordModal";
 
 import { BG, STRONG_TEXT } from "@/src/constant";
 import { useAuth } from "@/src/context/AuthContext";
-import { RESPONSIVE_SIZES } from "@/src/helpers/responsive";
+import { getResponsiveFontSize, getResponsivePadding, RESPONSIVE_SIZES } from "@/src/helpers/responsive";
 
 import React, { useState } from "react";
 import {
-  Platform,
   Pressable,
-  StatusBar,
   StyleSheet,
   Text,
   View,
   ScrollView,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Toast from "react-native-toast-message";
 
@@ -34,14 +33,14 @@ export default function ProfileScreen({ navigation }) {
   }
 
   return (
-    <View style={styles.screen}>
+    <SafeAreaView style={styles.screen} edges={['top']}>
       <View style={styles.header}>
         <Pressable
           style={styles.headerBtnLeft}
           onPress={() => navigation.navigate("Home")}
           hitSlop={8}
         >
-          <Icon name="arrow-left" size={24} color="#FFFFFF" />
+          <Icon name="arrow-left" size={20} color="#FFFFFF" />
         </Pressable>
 
         <Text style={styles.headerTitle}>Mi Perfil</Text>
@@ -55,7 +54,7 @@ export default function ProfileScreen({ navigation }) {
         <View style={styles.avatarWrap}>
           <View style={styles.avatarOuter}>
             <View style={styles.avatarInner}>
-              <Icon name="user" size={58} color="#EDEDED" />
+              <Icon name="user" size={52} color="#EDEDED" />
             </View>
           </View>
         </View>
@@ -104,7 +103,7 @@ export default function ProfileScreen({ navigation }) {
         visible={showChangePassword}
         onClose={() => setShowChangePassword(false)}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -112,8 +111,6 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: BG,
-    paddingTop:
-      Platform.OS === "android" ? StatusBar.currentHeight || 0 : 0,
   },
 
   header: {
@@ -126,7 +123,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     color: STRONG_TEXT,
-    fontSize: 18,
+    fontSize: getResponsiveFontSize(18, 16),
     fontWeight: "700",
   },
   headerBtnLeft: {
@@ -139,7 +136,7 @@ const styles = StyleSheet.create({
   },
 
   content: {
-    paddingHorizontal: 20,
+    paddingHorizontal: getResponsivePadding(20, 18),
   },
   scrollContent: {
     paddingBottom: RESPONSIVE_SIZES.header.paddingTop,
@@ -151,8 +148,8 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   avatarOuter: {
-    width: 118,
-    height: 118,
+    width: 100,
+    height: 100,
     borderRadius: 59,
     borderWidth: 4,
     borderColor: "#ff2b80",
@@ -160,40 +157,23 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   avatarInner: {
-    width: 106,
-    height: 106,
+    width: 90,
+    height: 90,
     borderRadius: 53,
     backgroundColor: "#232325",
     alignItems: "center",
     justifyContent: "center",
   },
-  editFab: {
-    position: "absolute",
-    right: -2,
-    bottom: -2,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: "#ff2b80",
-    alignItems: "center",
-    justifyContent: "center",
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
-  },
-
   name: {
     textAlign: "center",
     color: STRONG_TEXT,
-    fontSize: 30,
+    fontSize: getResponsiveFontSize(26, 24),
     fontWeight: "800",
   },
   email: {
     textAlign: "center",
     color: "#9e9ea0",
-    fontSize: 17,
+    fontSize: getResponsiveFontSize(17, 16),
     marginTop: 6,
     marginBottom: 14,
   },
@@ -213,7 +193,7 @@ const styles = StyleSheet.create({
   },
   textCloseSessionBtn: {
     color: "#ff0000",
-    fontSize: 18,
+    fontSize: getResponsiveFontSize(17, 16),
     fontWeight: "500",
   },
 });

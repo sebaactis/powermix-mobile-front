@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
+    ActivityIndicator,
     Animated,
     Modal,
     Pressable,
@@ -13,6 +14,7 @@ import Toast from "react-native-toast-message";
 import { MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
 import { useAuth } from "@/src/context/AuthContext";
 import { AuthApi } from "@/src/helpers/authApi";
+import { getResponsiveFontSize } from "@/src/helpers/responsive";
 
 type Props = {
     visible: boolean;
@@ -39,8 +41,6 @@ export default function ChangePasswordModal({ visible, onClose }: Props) {
         newPassword: "",
         confirmNewPassword: "",
     });
-
-    console.log(form)
 
     const [errors, setErrors] = useState<PasswordErrors>({});
     const [loading, setLoading] = useState(false);
@@ -134,8 +134,8 @@ export default function ChangePasswordModal({ visible, onClose }: Props) {
                     confirmPassword: form.confirmNewPassword,
                 }
             );
-            if (!res.success | !res.data) {
-                const backendMsg: string = res.error?.message
+            if (!res.success || !res.data) {
+                const backendMsg = res.error?.message ?? "Error desconocido"
 
                 Toast.show({
                     type: "appWarning",
@@ -245,9 +245,11 @@ export default function ChangePasswordModal({ visible, onClose }: Props) {
                             onPress={handleSavePassword}
                             disabled={loading}
                         >
-                            <Text style={styles.modalButtonPrimaryText}>
-                                {loading ? "Guardando..." : "Guardar"}
-                            </Text>
+                            {loading ? (
+                                <ActivityIndicator color={STRONG_TEXT} />
+                            ) : (
+                                <Text style={styles.modalButtonPrimaryText}>Guardar</Text>
+                            )}
                         </Pressable>
                     </View>
                 </Animated.View>
@@ -275,16 +277,15 @@ const styles = StyleSheet.create({
         shadowRadius: 10,
         shadowOffset: { width: 0, height: 4 },
         elevation: 6,
-        gap: 10
+        gap: 8
     },
     modalTitle: {
-        fontSize: 18,
+        fontSize: getResponsiveFontSize(16, 14),
         fontWeight: "700",
         color: STRONG_TEXT,
-        marginBottom: 4,
     },
     modalSubtitle: {
-        fontSize: 14,
+        fontSize: getResponsiveFontSize(14, 13),
         color: SUBTEXT,
         marginBottom: 14,
     },
@@ -295,9 +296,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
         paddingVertical: 10,
         color: STRONG_TEXT,
-        fontSize: 16,
+        fontSize: getResponsiveFontSize(15, 13),
         backgroundColor: "#2A2A2C",
-        marginBottom: 5,
+
     },
     modalInputError: {
         borderColor: "#f97373",
@@ -306,7 +307,7 @@ const styles = StyleSheet.create({
     modalButtonsRow: {
         flexDirection: "row",
         justifyContent: "flex-end",
-        gap: 10,
+        gap: 56,
         marginTop: 10,
     },
     modalButton: {
@@ -319,7 +320,7 @@ const styles = StyleSheet.create({
     },
     modalButtonSecondaryText: {
         color: SUBTEXT,
-        fontSize: 15,
+        fontSize: getResponsiveFontSize(15, 13),
         fontWeight: "500",
     },
     modalButtonPrimary: {
@@ -327,12 +328,11 @@ const styles = StyleSheet.create({
     },
     modalButtonPrimaryText: {
         color: "#FFFFFF",
-        fontSize: 15,
+        fontSize: getResponsiveFontSize(15, 13),
         fontWeight: "600",
     },
     errorText: {
         color: "#f97373",
-        fontSize: 13,
-        marginTop: 2,
+        fontSize: getResponsiveFontSize(14, 13),
     },
 });

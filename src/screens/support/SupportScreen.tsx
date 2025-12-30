@@ -114,10 +114,10 @@ export default function SupportScreen({ navigation }) {
 
         try {
             const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/user/contact`;
-            const res = AuthApi(url, "POST", signOut, { name, email, category, message })
+            const res = await AuthApi(url, "POST", signOut, { name, email, category, message })
 
             if (!res.success || !res.data) {
-                const backendMsg: string = res.error?.message
+                const backendMsg: string = res.error?.message ?? "Error desconocido"
 
                 Toast.show({
                     type: "appWarning",
@@ -161,7 +161,7 @@ export default function SupportScreen({ navigation }) {
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined}
             >
                 <ScrollView
-                    contentContainerStyle={{ padding: 16, paddingBottom: 32 }}
+                    contentContainerStyle={{paddingBottom: 32, paddingHorizontal: 14 }}
                     keyboardShouldPersistTaps="handled"
                 >
 
@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
     },
     headerTitle: {
         color: STRONG_TEXT,
-        fontSize: 18,
+        fontSize: getResponsiveFontSize(18, 16),
         fontWeight: "700",
     },
     headerBtnLeft: {
@@ -308,17 +308,20 @@ const styles = StyleSheet.create({
         borderColor: BG,
         borderWidth: 1,
         borderRadius: 16,
-        padding: 14,
+        paddingVertical: 8,
+        paddingHorizontal: 16,
     },
     sectionTitle:
     {
         color: STRONG_TEXT,
-        fontSize: getResponsiveFontSize(18, 16),
-        fontWeight: '700'
+        fontSize: getResponsiveFontSize(16, 14),
+        fontWeight: '700',
+        marginTop: 5
     },
     sectionHelp: {
         color: SUBTEXT,
-        marginTop: 4
+        marginTop: 8,
+        fontSize: getResponsiveFontSize(15, 13),
     },
     input: {
         backgroundColor: BG,
@@ -327,6 +330,8 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         paddingHorizontal: 12,
         height: 44,
+        color: "#FFFFFF",
+        fontSize: getResponsiveFontSize(14, 13),
     },
     errorText: {
         color: '#f97373',
@@ -348,23 +353,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
+        fontSize: getResponsiveFontSize(14, 13)
     },
     selectText:
     {
-        color: STRONG_TEXT
+        color: STRONG_TEXT,
+        fontSize: getResponsiveFontSize(14, 13)
     },
-    attach: {
-        marginTop: 16,
-        borderWidth: 1,
-        borderStyle: 'dashed',
-        borderRadius: 12,
-        padding: 14,
-        borderColor: CARD_BG,
-        backgroundColor: BG,
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    attachText: { color: SUBTEXT },
     cta: {
         marginTop: 16,
         height: 50,
@@ -408,6 +403,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     modalRowText: {
-        color: STRONG_TEXT
+        color: STRONG_TEXT,
+        fontSize: getResponsiveFontSize(14, 13),
+        marginLeft: 4
     }
 });

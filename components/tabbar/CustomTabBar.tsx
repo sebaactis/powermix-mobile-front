@@ -3,10 +3,12 @@ import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { useEffect, useRef } from "react";
 import { Animated, Dimensions, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { getResponsiveFontSize } from "@/src/helpers/responsive";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
   const translateX = useRef(new Animated.Value(0)).current;
   const tabWidth = Dimensions.get('window').width / state.routes.length;
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     Animated.spring(translateX, {
@@ -18,7 +20,7 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigat
   }, [state.index, tabWidth, translateX]);
 
   return (
-    <View style={styles.tabBar}>
+    <View style={[styles.tabBar, { paddingBottom: Platform.OS === 'ios' ? insets.bottom : 20 }]}>
 
       <Animated.View
         style={[
@@ -49,7 +51,7 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigat
         const color = isFocused ? MAIN_COLOR : '#CCCCCC';
 
         const icon = options.tabBarIcon
-          ? options.tabBarIcon({ focused: isFocused, color, size: 27 })
+          ? options.tabBarIcon({ focused: isFocused, color, size: 24 })
           : null;
 
         const label =
@@ -89,9 +91,6 @@ const styles = StyleSheet.create({
     borderTopStartRadius: 8,
     borderTopEndRadius: 8,
     overflow: 'hidden',
-    marginBottom: Platform.OS === 'ios' ? -34 : 0,
-    paddingBottom: 20,
-    paddingTop: 5
   },
   indicator: {
     position: 'absolute',
@@ -108,6 +107,7 @@ const styles = StyleSheet.create({
   },
   tabBarLabel: {
     marginTop: 1,
-    fontSize: getResponsiveFontSize(12, 11),
+    fontSize: getResponsiveFontSize(11, 10),
+    textAlign: 'center',
   },
 });

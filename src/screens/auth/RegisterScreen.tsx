@@ -2,11 +2,12 @@ import Icon from 'react-native-vector-icons/AntDesign';
 
 import FormInput from '@/components/inputs/FormInput';
 import { BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from '@/src/constant';
-import { isSmallScreen, RESPONSIVE_SIZES } from '@/src/helpers/responsive';
-import { Pressable, StyleSheet, Text, View, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { isCompactScreen, RESPONSIVE_SIZES } from '@/src/helpers/responsive';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useState } from 'react';
-
+import { ApiHelper } from '@/src/helpers/apiHelper';
 import Toast from 'react-native-toast-message';
+import { getResponsiveFontSize } from '@/src/helpers/responsive';
 
 type RegisterData = {
   name: string;
@@ -94,50 +95,20 @@ export default function RegisterScreen({ navigation }) {
     setLoading(true);
 
     try {
-      const res = await fetch(`${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: registerData.name.trim(),
-          email: registerData.email.trim(),
-          password: registerData.password,
-          confirmPassword: registerData.confirmPassword
-        }),
+      const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/register`;
+      const res = await ApiHelper(url, "POST", {
+        name: registerData.name.trim(),
+        email: registerData.email.trim(),
+        password: registerData.password,
+        confirmPassword: registerData.confirmPassword
       });
 
-      const data = await res.json().catch(() => null);
-
-      if (!res.ok) {
-
-        const backendMsg: string =
-          data?.message ||
-          data?.error ||
-          data?.details?.error ||
-          'Ocurrió un error en el servidor.';
-
-        if (res.status === 409) {
-          Toast.show({
-            type: 'appWarning',
-            text1: 'No pudimos crear el usuario',
-            text2: backendMsg,
-          });
-          return;
-        }
-
-        if (res.status === 400) {
-          Toast.show({
-            type: 'appWarning',
-            text1: 'No pudimos crear el usuario',
-            text2: backendMsg,
-          });
-          return;
-        }
+      if (!res.success || !res.data) {
+        const backendMsg = res.error?.message ?? 'Ocurrió un error en el servidor.';
 
         Toast.show({
           type: 'appWarning',
-          text1: 'Hubo un problema al intentar crear el usuario',
+          text1: 'No pudimos crear el usuario',
           text2: backendMsg,
         });
         return;
@@ -157,7 +128,7 @@ export default function RegisterScreen({ navigation }) {
       Toast.show({
         type: 'appError',
         text1: 'Error inesperado el intentar registrar un usuario',
-        text2: error
+        text2: error instanceof Error ? error.message : 'Error desconocido'
       });
     } finally {
       setLoading(false);
@@ -177,7 +148,7 @@ export default function RegisterScreen({ navigation }) {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.iconContainer}>
-          <Icon style={styles.icon} name="user-add" size={55} color={MAIN_COLOR} />
+          <Icon style={styles.icon} name="user-add" size={45} color={MAIN_COLOR} />
         </View>
         <Text style={styles.title}>Crear una cuenta nueva</Text>
         <Text style={styles.subtitle}>Unite para empezar a disfrutar de nuestro servicio</Text>
@@ -190,7 +161,7 @@ export default function RegisterScreen({ navigation }) {
           placeholderTextColor={SUBTEXT}
           keyBoardType="visible-password"
           labelText="Nombre y Apellido"
-          marginTop={isSmallScreen ? 20 : 25}
+          marginTop={isCompactScreen ? 20 : 25}
           onChangeText={(text) => handleRegisterData({ name: text })}
           value={registerData.name}
           error={errors.name}
@@ -204,7 +175,7 @@ export default function RegisterScreen({ navigation }) {
           placeholderTextColor={SUBTEXT}
           keyBoardType="email-address"
           labelText="Correo electronico"
-          marginTop={isSmallScreen ? 20 : 25}
+          marginTop={isCompactScreen ? 20 : 25}
           onChangeText={(text) => handleRegisterData({ email: text })}
           value={registerData.email}
           error={errors.email}
@@ -218,7 +189,7 @@ export default function RegisterScreen({ navigation }) {
           placeholderTextColor={SUBTEXT}
           keyBoardType="visible-password"
           labelText="Contraseña"
-          marginTop={isSmallScreen ? 20 : 25}
+          marginTop={isCompactScreen ? 20 : 25}
           onChangeText={(text) => handleRegisterData({ password: text })}
           value={registerData.password}
           error={errors.password}
@@ -232,7 +203,7 @@ export default function RegisterScreen({ navigation }) {
           placeholderTextColor={SUBTEXT}
           keyBoardType="visible-password"
           labelText="Confirmar contraseña"
-          marginTop={isSmallScreen ? 20 : 25}
+          marginTop={isCompactScreen ? 20 : 25}
           onChangeText={(text) => handleRegisterData({ confirmPassword: text })}
           value={registerData.confirmPassword}
           error={errors.confirmPassword}
@@ -254,11 +225,15 @@ export default function RegisterScreen({ navigation }) {
 
         <View style={styles.buttonsContainer}>
           <Pressable
-            style={[styles.button, !validEntries && { opacity: 0.7 }]}
-            disabled={!validEntries}
+            style={[styles.button, (!validEntries || loading) && { opacity: 0.7 }]}
+            disabled={!validEntries || loading}
             onPress={handleSubmit}
           >
-            <Text style={styles.buttonText}>{loading ? 'Creando cuenta...' : 'Crear cuenta'}</Text>
+            {loading ? (
+              <ActivityIndicator color={STRONG_TEXT} />
+            ) : (
+              <Text style={styles.buttonText}>Crear cuenta</Text>
+            )}
           </Pressable>
         </View>
       </ScrollView>
@@ -280,8 +255,8 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     backgroundColor: '#8b003a7c',
-    width: 80,
-    height: 83,
+    width: 70,
+    height: 73,
     borderRadius: 60,
     justifyContent: 'center',
     alignItems: 'center'
@@ -291,7 +266,7 @@ const styles = StyleSheet.create({
   },
   title:
   {
-    fontSize: 32,
+    fontSize: getResponsiveFontSize(22, 20),
     marginTop: 20,
     textAlign: 'center',
     color: STRONG_TEXT,
@@ -303,14 +278,14 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   subtitle: {
-    fontSize: 17.5,
+    fontSize: getResponsiveFontSize(18, 16),
     marginTop: 10,
     maxWidth: '80%',
     textAlign: 'center',
     color: SUBTEXT
   },
   subText: {
-    fontSize: 16,
+    fontSize: getResponsiveFontSize(16, 14),
     color: SUBTEXT,
     textAlign: 'center',
   },
@@ -320,16 +295,16 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: MAIN_COLOR,
-    marginTop: 25,
+    marginTop: 20,
     borderRadius: 8,
-    paddingVertical: 14,
+    paddingVertical: 12,
     width: '86%',
     alignItems: 'center',
     justifyContent: 'center',
   },
   buttonText: {
     color: STRONG_TEXT,
-    fontSize: 17,
+    fontSize: getResponsiveFontSize(16, 14),
     fontWeight: 600
   },
   buttonsContainer: {

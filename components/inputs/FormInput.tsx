@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
         borderWidth: 0.7,
         borderRadius: 8,
         paddingHorizontal: 10,
-        paddingVertical: 4,
+        paddingVertical: 2,
         backgroundColor: "#53535328",
     },
     inputContainerError: {
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     },
     inputLabel: {
         color: "#d6d6d6",
-        fontSize: getResponsiveFontSize(16, 14),
+        fontSize: getResponsiveFontSize(15, 13),
         fontWeight: '400',
     },
     emailInput: {
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         color: "#FFFFFF",
         flex: 1,
-        fontSize: getResponsiveFontSize(16, 14)
+        fontSize: getResponsiveFontSize(15, 13)
     },
     errorText: {
         color: '#f97373',

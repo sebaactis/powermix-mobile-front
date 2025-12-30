@@ -28,7 +28,7 @@ const TabNavigator = () => {
         options={{
           title: 'Inicio',
           tabBarIcon: ({ color }) => (
-            <Icon name="home" size={27} color={color} />
+            <Icon name="home" size={25} color={color} />
           ),
         }}
       />
@@ -38,7 +38,7 @@ const TabNavigator = () => {
         options={{
           title: 'Perfil',
           tabBarIcon: ({ color }) => (
-            <Icon name="user-circle-o" size={25} color={color} />
+            <Icon name="user-circle-o" size={23} color={color} />
           ),
         }}
       />
@@ -49,7 +49,7 @@ const TabNavigator = () => {
         options={{
           title: 'Comprobantes',
           tabBarIcon: ({ color }) => (
-            <Icon name="wpforms" size={25} color={color} />
+            <Icon name="wpforms" size={23} color={color} />
           ),
         }}
       />
@@ -60,7 +60,7 @@ const TabNavigator = () => {
         options={{
           title: 'QRs',
           tabBarIcon: ({ color }) => (
-            <Icon name="qrcode" size={25} color={color} />
+            <Icon name="qrcode" size={23} color={color} />
           ),
         }}
       />
@@ -71,7 +71,7 @@ const TabNavigator = () => {
         options={{
           title: 'Ayuda',
           tabBarIcon: ({ color }) => (
-            <Icon name="question-circle-o" size={25} color={color} />
+            <Icon name="question-circle-o" size={23} color={color} />
           ),
         }}
       />

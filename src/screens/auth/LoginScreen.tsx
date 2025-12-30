@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import MaterialIcon from 'react-native-vector-icons/FontAwesome';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import FormInput from '@/components/inputs/FormInput';
 import { BG, CARD_BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from '@/src/constant';
 import { useAuth } from '@/src/context/AuthContext';
-import { isSmallScreen, RESPONSIVE_FONT_SIZES, RESPONSIVE_SIZES } from '@/src/helpers/responsive';
+import { getResponsiveFontSize, isSmallScreen, RESPONSIVE_FONT_SIZES, RESPONSIVE_SIZES } from '@/src/helpers/responsive';
 
 import { ApiHelper } from '@/src/helpers/apiHelper';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
@@ -40,7 +39,7 @@ export default function LoginScreen({ navigation }) {
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       newErrors.email = 'Correo inválido';
     }
-    
+
     if (!password.trim()) {
       newErrors.password = 'La contraseña es requerida';
     }
@@ -111,9 +110,11 @@ export default function LoginScreen({ navigation }) {
       });
 
       console.log("✅ Login con Google completado");
-    } catch (e: any) {
-      console.error("❌ Error en login Google:", e);
-      setError(e.message || "Error al iniciar sesión con Google");
+    } catch (error: any) {
+      console.error("❌ Error en login Google:", error);
+      console.error("❌ Error message:", error?.message);
+      console.error("❌ Error code:", error?.code);
+      setError(error?.message || "Error al iniciar sesión con Google");
     } finally {
       setGoogleLoading(false);
     }
@@ -129,8 +130,12 @@ export default function LoginScreen({ navigation }) {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.iconContainer}>
-          <Icon style={styles.icon} name="arm-flex-outline" size={55} color={MAIN_COLOR} />
+        <View style={styles.logoContainer}>
+          <Image 
+            source={require('@/assets/splash-native.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
         </View>
         <Text style={styles.title}>Bienvenido</Text>
         <Text style={styles.subtitle}>Inicie sesión para continuar</Text>
@@ -176,8 +181,6 @@ export default function LoginScreen({ navigation }) {
           ¿Olvidaste tu contraseña?
         </Text>
 
-        {error && <Text style={styles.errorMessage}>{error}</Text>}
-
         <View style={styles.buttonsContainer}>
           <Pressable
             style={[styles.button, (loading || !email || !password) && { opacity: 0.7 }]}
@@ -202,11 +205,12 @@ export default function LoginScreen({ navigation }) {
               <ActivityIndicator color={STRONG_TEXT} />
             ) : (
               <>
-                <MaterialIcon style={styles.icon} name="google" size={30} color={STRONG_TEXT} />
+                <MaterialIcon name="google" size={22} color={STRONG_TEXT} />
                 <Text style={styles.buttonText}>Iniciar sesión con Google</Text>
               </>
             )}
           </Pressable>
+          {error && <Text style={styles.errorMessage}>{error}</Text>}
         </View>
 
         <View style={styles.registerTextContainer}>
@@ -224,6 +228,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: BG,
+    paddingBottom: 20
   },
   scrollContent: {
     flexGrow: 1,
@@ -232,26 +237,25 @@ const styles = StyleSheet.create({
     paddingVertical: RESPONSIVE_SIZES.header.paddingTop,
     paddingHorizontal: RESPONSIVE_SIZES.padding.horizontal,
   },
-  iconContainer: {
-    backgroundColor: '#8b003a7c',
-    width: 75,
-    height: 85,
-    borderRadius: 60,
+  logoContainer: {
+    width: 150,
+    height: 150,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  icon: {
-    zIndex: 10,
+  logo: {
+    width: '100%',
+    height: '100%',
   },
   title: {
-    fontSize: 32,
-    marginTop: 20,
+    fontSize: getResponsiveFontSize(26, 24),
+    marginTop: 10,
     textAlign: 'center',
     color: STRONG_TEXT,
     fontWeight: 'bold',
   },
   subtitle: {
-    fontSize: 17.5,
+    fontSize: getResponsiveFontSize(17, 15),
     marginTop: 10,
     color: SUBTEXT,
   },
@@ -260,29 +264,29 @@ const styles = StyleSheet.create({
     marginTop: 8,
     textAlign: 'right',
     width: '85%',
-    fontSize: 16,
+    fontSize: getResponsiveFontSize(16, 14),
     fontWeight: '500',
   },
   errorMessage: {
-    color: 'red',
-    marginTop: 20,
+    color: '#f97373',
     textAlign: 'center',
-    fontSize: 16,
-    fontWeight: '500',
-    paddingHorizontal: 20,
+    fontSize: getResponsiveFontSize(15, 14),
+    fontWeight: '400',
+    marginBottom: 13
   },
   button: {
     backgroundColor: MAIN_COLOR,
-    marginTop: 45,
+    marginTop: 30,
     borderRadius: 8,
-    paddingVertical: 14,
+    paddingVertical: 10,
     width: '86%',
     alignItems: 'center',
     justifyContent: 'center',
+
   },
   buttonText: {
     color: STRONG_TEXT,
-    fontSize: 17,
+    fontSize: getResponsiveFontSize(17, 15),
     fontWeight: '600',
   },
   registerTextContainer: {
@@ -294,12 +298,12 @@ const styles = StyleSheet.create({
   },
   register: {
     color: STRONG_TEXT,
-    fontSize: 16,
+    fontSize: getResponsiveFontSize(16, 14),
     fontWeight: '500',
   },
   registerSubText: {
     color: MAIN_COLOR,
-    fontSize: 16,
+    fontSize: getResponsiveFontSize(16, 14),
     fontWeight: '500',
   },
   googleButton: {
@@ -316,11 +320,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
-    gap: 15,
+    gap: 12,
   },
   oText: {
     color: STRONG_TEXT,
-    fontSize: 16,
+    fontSize: getResponsiveFontSize(16, 14),
     fontWeight: '500',
   },
 });

@@ -4,8 +4,8 @@ import ProgressRing from '@/components/home/ProgressRing';
 import { BG, CARD_BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from '@/src/constant';
 import { useAuth } from '@/src/context/AuthContext';
 import { AuthApi } from '@/src/helpers/authApi';
+import { getResponsiveFontSize, getResponsiveSize, RESPONSIVE_SIZES } from '@/src/helpers/responsive';
 import { Proof } from '@/src/types';
-import { getResponsiveSize, getResponsiveFontSize, RESPONSIVE_SIZES } from '@/src/helpers/responsive';
 import { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -16,6 +16,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -35,7 +36,7 @@ type UserMeResponse = {
   stamps_counter: number;
 };
 
-const TOTAL_STAMPS = 10;
+const TOTAL_STAMPS = 5;
 
 enum ProgressMessages {
   NONE = "Empeza a cargar tus comprobantes para ganar recompensas",
@@ -94,8 +95,6 @@ export default function HomeScreen({ navigation }) {
         });
 
       } catch (e: any) {
-        console.log(e.message)
-        console.log("Error inesperado al traer el usuario", e);
         setError(e.message || "Error cargando informacion del usuario");
       } finally {
         if (isRefresh) {
@@ -121,8 +120,6 @@ export default function HomeScreen({ navigation }) {
         const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/proofs/me/last3`;
         const res = await AuthApi(url, "GET", signOut)
 
-        console.log("📥 Respuesta backend (proofs):", res);
-
         if (!res.success) {
           const errorMsg =
             res.error?.message || "Error al cargar los comprobantes";
@@ -135,9 +132,8 @@ export default function HomeScreen({ navigation }) {
 
           return;
         }
-        setProofs(res.data);
+        setProofs(res.data || []);
       } catch (e) {
-        console.error("❌ Error inesperado al cargar comprobantes:", e);
         Toast.show({
           type: "appError",
           text1: "Ocurrió un error inesperado",
@@ -162,6 +158,8 @@ export default function HomeScreen({ navigation }) {
     fetchProofs(true);
   };
 
+  console.log('🔍 DEBUG HomeScreen:', { loading, proofsLength: proofs?.length, proofs });
+
   if (loading) {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
@@ -171,9 +169,9 @@ export default function HomeScreen({ navigation }) {
   }
 
   if (error) {
-    return (
+  return (
+    <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView
-        style={styles.container}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -182,25 +180,27 @@ export default function HomeScreen({ navigation }) {
           />
         }
       >
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 40 }}>
-          <Text style={{ color: 'red', marginBottom: 12 }}>{error}</Text>
-          <Text style={{ color: STRONG_TEXT }}>Desliza hacia abajo para reintentar</Text>
+        <View style={styles.errorContainer}>
+          <Icon name="alert-circle-outline" size={60} color="#f97373" />
+          <Text style={styles.errorText}>{error}</Text>
+          <Text style={styles.errorHint}>Desliza hacia abajo para reintentar</Text>
         </View>
       </ScrollView>
+    </SafeAreaView>
     );
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          tintColor={MAIN_COLOR}
-        />
-      }
-    >
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={MAIN_COLOR}
+          />
+        }
+      >
       <Text style={styles.sectionTitle}></Text>
 
       <View style={styles.circleWrapper}>
@@ -245,22 +245,22 @@ export default function HomeScreen({ navigation }) {
 
       <View>
         <Text style={styles.actityTitle}>Actividad Reciente</Text>
-        {!proofs ?
+        {loading ? null : (proofs?.length === 0 ? (
           <View style={styles.noProofsContainer}>
-            <Icon name="file-document-remove-outline" size={80} color="#9e9e9e" />
+            <Icon name="file-document-remove-outline" size={75} color="#9e9e9e" />
             <Text style={styles.noProofsText}>Aun no cargaste ningún comprobante</Text>
           </View>
-          :
+        ) : (
           <View style={styles.actityCardsContainer}>
-
             {proofs?.map((proof) => (
               <ActivityCard key={proof.proof_mp_id} proof={proof} />
             ))}
           </View>
-        }
+        ))}
 
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -269,13 +269,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: BG,
     paddingHorizontal: RESPONSIVE_SIZES.padding.horizontal,
-    paddingTop: RESPONSIVE_SIZES.header.paddingTop,
   },
   sectionTitle: {
     height: 0,
   },
   circleWrapper: {
     alignSelf: 'center',
+    marginTop: 24,
     marginBottom: 32,
     justifyContent: 'center',
     alignItems: 'center',
@@ -291,23 +291,23 @@ const styles = StyleSheet.create({
   },
   bigNumber: {
     color: STRONG_TEXT,
-    fontSize: 52,
+    fontSize: getResponsiveFontSize(52, 48),
     fontWeight: '800',
   },
   totalText: {
     color: SUBTEXT,
-    fontSize: 32,
+    fontSize: getResponsiveFontSize(28, 24),
     marginBottom: 6,
   },
   caption: {
     color: SUBTEXT,
-    fontSize: getResponsiveFontSize(18, 15),
+    fontSize: getResponsiveFontSize(17, 14),
     marginTop: 4,
   },
   message: {
     marginTop: 6,
     color: SUBTEXT,
-    fontSize: 16,
+    fontSize: getResponsiveFontSize(16, 14),
     textAlign: 'center',
   },
   btnContainer: {
@@ -318,20 +318,20 @@ const styles = StyleSheet.create({
   },
   button: {
     borderRadius: 8,
-    paddingVertical: 18,
-    width: '100%',
+    paddingVertical: 15,
+    width: '95%',
     alignItems: 'center',
     justifyContent: 'center',
   },
   buttonText: {
     color: STRONG_TEXT,
-    fontSize: 17,
+    fontSize: getResponsiveFontSize(17, 15),
     fontWeight: '600',
   },
   actityTitle: {
     marginTop: 40,
     color: STRONG_TEXT,
-    fontSize: 20,
+    fontSize: getResponsiveFontSize(19, 17),
     fontWeight: '800',
   },
   actityCardsContainer: {
@@ -341,12 +341,33 @@ const styles = StyleSheet.create({
   noProofsContainer: {
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 50
+    minHeight: 200,
+    marginBottom: 90
   },
   noProofsText: {
     color: "#9e9e9e",
-    fontSize: 17,
+    fontSize: getResponsiveFontSize(17, 15),
     fontWeight: 700,
     marginTop: 5
-  }
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 40,
+    paddingHorizontal: 20,
+  },
+  errorText: {
+    color: '#f97373',
+    fontSize: getResponsiveFontSize(16, 14),
+    fontWeight: '600',
+    marginTop: 12,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  errorHint: {
+    color: SUBTEXT,
+    fontSize: getResponsiveFontSize(14, 12),
+    textAlign: 'center',
+  },
 });

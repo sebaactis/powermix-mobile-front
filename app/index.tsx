@@ -14,10 +14,13 @@ import AnimatedSplash from './AnimatedSplash';
 
 export default function App() {
 
-  GoogleSignin.configure({
-    webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
-    offlineAccess: false,
-  });
+  // Configurar Google Sign-In una sola vez al montar el componente
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
+      offlineAccess: false,
+    });
+  }, []);
 
   // Evita que el splash nativo se oculte hasta que lo controlemos
   useEffect(() => {

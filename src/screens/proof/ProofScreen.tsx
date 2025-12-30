@@ -12,14 +12,13 @@ import {
     Animated,
     Dimensions,
     FlatList,
-    Platform,
     Pressable,
     RefreshControl,
-    StatusBar,
     StyleSheet,
     Text,
     View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import Icon from "react-native-vector-icons/FontAwesome";
 import MaterialIcon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -91,8 +90,6 @@ export default function ProofScreen({ navigation }) {
         try {
             const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/proofs/me/paginated?page=${pageToLoad}&pageSize=${PAGE_SIZE}`;
             const res = await AuthApi<PaginatedProofs>(url, "GET", signOut)
-
-            console.log("📥 Respuesta backend /proofs paginated:", res);
 
             if (!res.success) {
                 const errorMsg =
@@ -173,7 +170,7 @@ export default function ProofScreen({ navigation }) {
     }
 
     return (
-        <View style={styles.screen}>
+        <SafeAreaView style={styles.screen} edges={['top']}>
             <View style={styles.header}>
                 <Pressable
                     style={styles.headerBtnLeft}
@@ -220,12 +217,15 @@ export default function ProofScreen({ navigation }) {
                                 <Text style={styles.historyLinkText}>Ver listado completo</Text>
                             </Pressable>
                         </View>
-
-                        {proofs?.length === 0 && <View style={styles.noProofsContainer}>
+                    </Animated.View>
+                }
+                ListEmptyComponent={
+                    loadingInitial ? null : (
+                        <View style={styles.noProofsContainer}>
                             <MaterialIcon name="file-document-remove-outline" size={80} color="#9e9e9e" />
                             <Text style={styles.noProofsText}>Aun no cargaste ningún comprobante</Text>
-                        </View>}
-                    </Animated.View>
+                        </View>
+                    )
                 }
                 data={proofs}
                 keyExtractor={(item) => item.proof_mp_id}
@@ -246,7 +246,7 @@ export default function ProofScreen({ navigation }) {
                 onClose={() => setShowAddProof(false)}
                 setProofs={setProofs}
             />
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -254,9 +254,8 @@ const styles = StyleSheet.create({
     screen: {
         flex: 1,
         backgroundColor: BG,
-        paddingTop:
-            Platform.OS === "android" ? (StatusBar.currentHeight || 0) : 0,
     },
+
 
     header: {
         height: 56,
@@ -268,7 +267,7 @@ const styles = StyleSheet.create({
     },
     headerTitle: {
         color: STRONG_TEXT,
-        fontSize: 18,
+        fontSize: getResponsiveFontSize(18, 16),
         fontWeight: "700",
     },
     headerBtnLeft: {
@@ -300,7 +299,7 @@ const styles = StyleSheet.create({
     topCardText: {
         color: SUBTEXT,
         textAlign: "center",
-        fontSize: getResponsiveFontSize(16, 14),
+        fontSize: getResponsiveFontSize(15, 13),
         marginBottom: 12,
     },
 
@@ -315,7 +314,7 @@ const styles = StyleSheet.create({
     },
     uploadBtnText: {
         color: STRONG_TEXT,
-        fontSize: getResponsiveFontSize(17, 15),
+        fontSize: getResponsiveFontSize(15, 14),
         fontWeight: "800",
     },
     historyTitle: {

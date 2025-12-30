@@ -36,8 +36,8 @@ export default function AnimatedSplash({ isAppReady, onAnimationEnd }: AnimatedS
 const styles = StyleSheet.create({
   container: { backgroundColor: "#1E1E1E", justifyContent: "center", alignItems: "center" },
   logoContainer: {
-    width: "90%",
-    height: "40%",
+    width: "80%",
+    height: "50%",
     justifyContent: "center",
     alignItems: "center",
   },

@@ -9,11 +9,13 @@
     "backgroundColor": "#1E1E1E",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/splash-native.png",
       "resizeMode": "cover",
       "backgroundColor": "#1E1E1E"
     },
+    "icon": "./assets/icon.png",
     "ios": {
+      "icon": "./assets/icon.png",
       "supportsTablet": true,
       "infoPlist": {
         "UIViewControllerBasedStatusBarAppearance": true,
@@ -22,8 +24,10 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE"
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#1E1E1E"
       },
+      "icon": "./assets/icon.png",
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.anonymous.powermix",
@@ -49,7 +53,12 @@
       "expo-router",
       "expo-secure-store",
       "expo-web-browser",
-      "@react-native-google-signin/google-signin"
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.YOUR_IOS_CLIENT_ID_HERE"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
@@ -59,7 +68,8 @@
       "router": {},
       "eas": {
         "projectId": "b7425fc1-2129-4284-9733-ab110be8b2a3"
-      }
+      },
+      "expoPublicPowermixApiUrl": "https://powermix-backend-service.onrender.com"
     }
   }
 }

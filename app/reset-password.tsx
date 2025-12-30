@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Pressable, ActivityIndicator, KeyboardAvoidingV
 
 import FormInput from "@/components/inputs/FormInput";
 import { BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
-import { isSmallScreen, RESPONSIVE_SIZES } from "@/src/helpers/responsive";
+import { isCompactScreen, RESPONSIVE_SIZES } from "@/src/helpers/responsive";
 import Toast from "react-native-toast-message";
 import { ApiHelper } from "@/src/helpers/apiHelper";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -17,8 +17,6 @@ type ResetPasswordRouteParams = {
 export default function ResetPasswordScreen({ navigation }) {
     const router = useRouter();
     const params = useLocalSearchParams<ResetPasswordRouteParams>();
-
-    console.log("params", params);
 
     const tokenParam = params.token;
     const emailParam = params.email;
@@ -130,7 +128,7 @@ export default function ResetPasswordScreen({ navigation }) {
                     placeholder="Nueva contraseña"
                     placeholderTextColor={SUBTEXT}
                     labelText="Nueva contraseña"
-                    marginTop={isSmallScreen ? 25 : 35}
+                    marginTop={isCompactScreen ? 25 : 35}
                     secureTextEntry
                     value={password}
                     onChangeText={setPassword}
@@ -143,7 +141,7 @@ export default function ResetPasswordScreen({ navigation }) {
                     placeholder="Repetir contraseña"
                     placeholderTextColor={SUBTEXT}
                     labelText="Confirmar contraseña"
-                    marginTop={isSmallScreen ? 15 : 20}
+                    marginTop={isCompactScreen ? 15 : 20}
                     secureTextEntry
                     value={confirm}
                     onChangeText={setConfirm}

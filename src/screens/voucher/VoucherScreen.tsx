@@ -5,7 +5,6 @@ import { getResponsiveFontSize, getResponsiveSize } from "@/src/helpers/responsi
 import { useEffect, useState } from "react";
 import {
     ActivityIndicator,
-    Alert,
     Dimensions,
     FlatList,
     Image,
@@ -13,11 +12,11 @@ import {
     Platform,
     Pressable,
     RefreshControl,
-    StatusBar,
     StyleSheet,
     Text,
     View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import Icon from "react-native-vector-icons/FontAwesome";
 import MaterialIcon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -32,6 +31,7 @@ const statusBind = {
 }
 
 type VoucherApiItem = {
+    VoucherID: string;
     UserID: string;
     QRCode: string;
     ImageURL: string;
@@ -96,11 +96,12 @@ export default function VoucherScreen({ navigation }) {
     const [items, setItems] = useState<VoucherApiItem[]>([]);
     const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
+    const [deletingId, setDeletingId] = useState<string | null>(null);
 
     const [selected, setSelected] = useState<VoucherApiItem | null>(null);
     const [showModal, setShowModal] = useState(false);
 
-    const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/voucher/me`;
+    const urlGet = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/voucher/me`;
 
     const fetchVouchers = async (isRefresh = false) => {
         if (loading) return;
@@ -109,7 +110,7 @@ export default function VoucherScreen({ navigation }) {
         else setLoading(true);
 
         try {
-            const res = await AuthApi<ApiResponse<VoucherApiItem[]>>(url, "GET", signOut);
+            const res = await AuthApi<ApiResponse<VoucherApiItem[]>>(urlGet, "GET", signOut);
 
 
             if (!res.success) {
@@ -151,8 +152,40 @@ export default function VoucherScreen({ navigation }) {
         setShowModal(true);
     };
 
-    const handleDelete = (item: VoucherApiItem) => {
-        Alert.alert("Por ahora no", "El borrado se habilita cuando la API envíe estado UTILIZADO.");
+    const handleDelete = async (item: VoucherApiItem) => {
+        setDeletingId(item.VoucherID);
+        try {
+            const urlDelete = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/voucher/${item.VoucherID}`;
+            const res = await AuthApi<ApiResponse<any>>(urlDelete, "DELETE", signOut);
+
+            if (!res.success) {
+                Toast.show({
+                    type: "appError",
+                    text1: "Ocurrió un error",
+                    text2: res.error?.message || "Error al eliminar voucher",
+                });
+                return;
+            }
+
+            Toast.show({
+                type: "appSuccess",
+                text1: "Voucher eliminado",
+                text2: "El voucher ha sido eliminado correctamente.",
+            });
+
+            setItems((prevItems) => prevItems.filter((i) => i.VoucherID !== item.VoucherID));
+
+        } catch (e: any) {
+            Toast.show({
+                type: "appError",
+                text1: "Ocurrió un error inesperado",
+                text2: e?.message ?? "Error inesperado",
+            });
+
+        } finally {
+            setDeletingId(null);
+            setRefreshing(false);
+        }
     };
 
     const renderItem = ({ item }: { item: VoucherApiItem }) => {
@@ -174,7 +207,7 @@ export default function VoucherScreen({ navigation }) {
                             {canDelete ? (
                                 <Pressable onPress={() => handleDelete(item)} hitSlop={10} style={styles.deleteBtn}>
                                     <MaterialIcon name="trash-can-outline" size={getResponsiveSize(20, 18, 22)} color="#ff4d6d" />
-                                    <Text style={styles.deleteBtnText}>Borrar</Text>
+                                    <Text style={styles.deleteBtnText}>{deletingId === item.VoucherID ? "Eliminando..." : "Borrar"}</Text>
                                 </Pressable>
                             ) : (
                                 <View style={styles.deleteDisabled}>
@@ -182,14 +215,12 @@ export default function VoucherScreen({ navigation }) {
                                     <Text style={styles.deleteDisabledText}>Solo usado</Text>
                                 </View>
                             )}
-
-                            <MaterialIcon name="chevron-right" size={getResponsiveSize(26, 20, 26)} color="#7f7f7f" style={styles.qrChevron} />
                         </View>
                     </View>
-                    
+
                 </View>
 
-                
+
             </Pressable>
         );
     };
@@ -203,7 +234,7 @@ export default function VoucherScreen({ navigation }) {
     }
 
     return (
-        <View style={styles.screen}>
+        <SafeAreaView style={styles.screen} edges={['top']}>
             <View style={styles.header}>
                 <Pressable style={styles.headerBtnLeft} onPress={() => navigation.navigate("Home")} hitSlop={8}>
                     <Icon name="arrow-left" size={20} color="#FFFFFF" />
@@ -243,7 +274,7 @@ export default function VoucherScreen({ navigation }) {
             />
 
             <FullQrModal visible={showModal} onClose={() => setShowModal(false)} item={selected} />
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -251,7 +282,6 @@ const styles = StyleSheet.create({
     screen: {
         flex: 1,
         backgroundColor: BG,
-        paddingTop: Platform.OS === "android" ? (StatusBar.currentHeight || 0) : 0,
     },
 
     header: {
@@ -264,7 +294,7 @@ const styles = StyleSheet.create({
     },
     headerTitle: {
         color: STRONG_TEXT,
-        fontSize: 18,
+        fontSize: getResponsiveFontSize(17, 16),
         fontWeight: "700",
     },
     headerBtnLeft: {
@@ -284,9 +314,9 @@ const styles = StyleSheet.create({
     topCard: {
         backgroundColor: CARD_BG,
         borderRadius: 18,
-        paddingVertical: 18,
+        paddingVertical: 13,
         paddingHorizontal: 16,
-        marginVertical: 12,
+        marginVertical: 5,
         borderWidth: StyleSheet.hairlineWidth,
         borderColor: CARD_BG,
         width: width - 32,
@@ -295,8 +325,8 @@ const styles = StyleSheet.create({
     topCardText: {
         color: SUBTEXT,
         textAlign: "center",
-        fontSize: getResponsiveFontSize(16, 14),
-        marginBottom: 12,
+        fontSize: getResponsiveFontSize(15, 13),
+        marginBottom: 3,
     },
 
     historyHeaderRow: {
@@ -364,11 +394,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         gap: 8,
-    },
-
-    qrChevron: {
-        marginLeft: 8,
-        flexShrink: 0,
+        flexWrap: "nowrap",
+        flex: 1,
     },
 
     pill: {
@@ -378,7 +405,8 @@ const styles = StyleSheet.create({
         paddingVertical: 9,
         borderRadius: 999,
         borderWidth: 1,
-        flexShrink: 1
+        flexShrink: 1,
+        minWidth: 0,
     },
     pillDot: {
         width: 8,
@@ -387,7 +415,7 @@ const styles = StyleSheet.create({
         marginRight: 8,
     },
     pillText: {
-        fontSize: getResponsiveFontSize(11, 9),
+        fontSize: getResponsiveFontSize(10, 9),
         fontWeight: "800",
     },
 
@@ -408,11 +436,14 @@ const styles = StyleSheet.create({
         borderRadius: 999,
         borderWidth: 1,
         borderColor: "#ff4d6d",
+        flexShrink: 1,
+        minWidth: 0,
     },
     deleteBtnText: {
         color: "#ff4d6d",
         fontSize: getResponsiveFontSize(12, 10),
         fontWeight: "800",
+        flexShrink: 1,
     },
     deleteDisabled: {
         flexDirection: "row",
@@ -424,11 +455,14 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "#6f6f6f",
         opacity: 0.8,
+        flexShrink: 1,
+        minWidth: 0,
     },
     deleteDisabledText: {
         color: "#6f6f6f",
         fontSize: getResponsiveFontSize(12, 10),
         fontWeight: "800",
+        flexShrink: 1,
     },
 
     modalOverlay: {

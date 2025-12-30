@@ -11,15 +11,16 @@ import {
     Platform,
     Pressable,
     RefreshControl,
-    StatusBar,
     StyleSheet,
     Text,
     TextInput,
     View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import Icon from "react-native-vector-icons/FontAwesome";
 import MaterialIcon from "react-native-vector-icons/MaterialCommunityIcons";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 type PaginatedProofsResponse = {
     items: Proof[];
@@ -57,8 +58,44 @@ export default function ProofsFullListScreen({ navigation }) {
         maxAmount: "",
     });
 
+    const [showFromDatePicker, setShowFromDatePicker] = useState(false);
+    const [showToDatePicker, setShowToDatePicker] = useState(false);
+    const [fromDate, setFromDate] = useState<Date | undefined>(undefined);
+    const [toDate, setToDate] = useState<Date | undefined>(undefined);
+
     const handleChangeFilter = (field: keyof FiltersState, value: string) => {
         setFilters(prev => ({ ...prev, [field]: value }));
+    };
+
+    const formatDateToYYYYMMDD = (date: Date): string => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
+    const formatDateToDisplay = (dateString: string): string => {
+        if (!dateString) return "";
+        const [year, month, day] = dateString.split('-');
+        return `${day}/${month}/${year}`;
+    };
+
+    const handleFromDateChange = (event: any, selectedDate?: Date) => {
+        setShowFromDatePicker(Platform.OS === 'ios');
+        if (selectedDate) {
+            setFromDate(selectedDate);
+            const formatted = formatDateToYYYYMMDD(selectedDate);
+            handleChangeFilter("fromProofDate", formatted);
+        }
+    };
+
+    const handleToDateChange = (event: any, selectedDate?: Date) => {
+        setShowToDatePicker(Platform.OS === 'ios');
+        if (selectedDate) {
+            setToDate(selectedDate);
+            const formatted = formatDateToYYYYMMDD(selectedDate);
+            handleChangeFilter("toProofDate", formatted);
+        }
     };
 
     const buildUrlWithFilters = useCallback((pageToLoad: number) => {
@@ -109,7 +146,6 @@ export default function ProofsFullListScreen({ navigation }) {
 
 
             if (!res.success || !res.data) {
-                            console.log(res)
                 const errorMsg =
                     res.error?.message || "Error al cargar los comprobantes";
 
@@ -162,6 +198,7 @@ export default function ProofsFullListScreen({ navigation }) {
         setHasMore(true);
         setPage(1);
         setProofs([]);
+        setLoadingInitial(true);
         fetchProofs({ pageToLoad: 1 });
     };
 
@@ -173,6 +210,8 @@ export default function ProofsFullListScreen({ navigation }) {
             minAmount: "",
             maxAmount: "",
         });
+        setFromDate(undefined);
+        setToDate(undefined);
         setHasMore(true);
         setPage(1);
         setProofs([]);
@@ -189,7 +228,7 @@ export default function ProofsFullListScreen({ navigation }) {
     }
 
     return (
-        <View style={styles.screen}>
+        <SafeAreaView style={styles.screen} edges={['top']}>
 
             <View style={styles.header}>
                 <Pressable
@@ -219,25 +258,41 @@ export default function ProofsFullListScreen({ navigation }) {
 
 
                 <View style={styles.filterRow}>
-                    <TextInput
-                        style={[styles.filterInput, styles.filterInputHalf, { marginRight: 6 }]}
-                        placeholder="Desde (YYYY-MM-DD)"
-                        placeholderTextColor={SUBTEXT}
-                        value={filters.fromProofDate}
-                        onChangeText={text =>
-                            handleChangeFilter("fromProofDate", text)
-                        }
-                    />
-                    <TextInput
-                        style={[styles.filterInput, styles.filterInputHalf, { marginLeft: 6 }]}
-                        placeholder="Hasta (YYYY-MM-DD)"
-                        placeholderTextColor={SUBTEXT}
-                        value={filters.toProofDate}
-                        onChangeText={text =>
-                            handleChangeFilter("toProofDate", text)
-                        }
-                    />
+                    <Pressable
+                        style={[styles.filterInput, styles.filterInputHalf, { marginRight: 6, justifyContent: 'center' }]}
+                        onPress={() => setShowFromDatePicker(true)}
+                    >
+                        <Text style={filters.fromProofDate ? styles.dateText : styles.datePlaceholder}>
+                            {filters.fromProofDate ? formatDateToDisplay(filters.fromProofDate) : "Desde"}
+                        </Text>
+                    </Pressable>
+                    <Pressable
+                        style={[styles.filterInput, styles.filterInputHalf, { marginLeft: 6, justifyContent: 'center' }]}
+                        onPress={() => setShowToDatePicker(true)}
+                    >
+                        <Text style={filters.toProofDate ? styles.dateText : styles.datePlaceholder}>
+                            {filters.toProofDate ? formatDateToDisplay(filters.toProofDate) : "Hasta"}
+                        </Text>
+                    </Pressable>
                 </View>
+
+                {showFromDatePicker && (
+                    <DateTimePicker
+                        value={fromDate || new Date()}
+                        mode="date"
+                        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                        onChange={handleFromDateChange}
+                    />
+                )}
+
+                {showToDatePicker && (
+                    <DateTimePicker
+                        value={toDate || new Date()}
+                        mode="date"
+                        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                        onChange={handleToDateChange}
+                    />
+                )}
 
                 <View style={styles.filterRow}>
                     <TextInput
@@ -279,14 +334,18 @@ export default function ProofsFullListScreen({ navigation }) {
                     </Pressable>
                 </View>
             </View>
-            {proofs?.length === 0 && <View style={styles.noProofsContainer}>
-                <MaterialIcon name="file-document-remove-outline" size={80} color="#9e9e9e" />
-                <Text style={styles.noProofsText}>Aun no cargaste ningún comprobante</Text>
-            </View>}
             <FlatList
                 data={proofs}
                 keyExtractor={item => item.proof_mp_id}
                 renderItem={({ item }) => <RenderItem item={item} />}
+                ListEmptyComponent={
+                    loadingInitial ? null : (
+                        <View style={styles.noProofsContainer}>
+                            <MaterialIcon name="file-document-remove-outline" size={80} color="#9e9e9e" />
+                            <Text style={styles.noProofsText}>Aun no cargaste ningún comprobante</Text>
+                        </View>
+                    )
+                }
                 refreshControl={
                     <RefreshControl
                         refreshing={refreshing}
@@ -305,7 +364,7 @@ export default function ProofsFullListScreen({ navigation }) {
                 }
                 contentContainerStyle={styles.listContent}
             />
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -313,16 +372,12 @@ const styles = StyleSheet.create({
     screen: {
         flex: 1,
         backgroundColor: BG,
-        paddingTop:
-            Platform.OS === "android" ? (StatusBar.currentHeight || 0) : 0,
     },
     loaderContainer: {
         flex: 1,
         backgroundColor: BG,
         justifyContent: "center",
         alignItems: "center",
-        paddingTop:
-            Platform.OS === "android" ? (StatusBar.currentHeight || 0) : 0,
     },
     header: {
         height: 56,
@@ -425,5 +480,13 @@ const styles = StyleSheet.create({
         fontSize: getResponsiveFontSize(17, 15),
         fontWeight: 700,
         marginTop: 10
+    },
+    dateText: {
+        color: STRONG_TEXT,
+        fontSize: getResponsiveFontSize(13, 12),
+    },
+    datePlaceholder: {
+        color: SUBTEXT,
+        fontSize: getResponsiveFontSize(13, 12),
     }
 });

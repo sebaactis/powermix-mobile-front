@@ -2,7 +2,7 @@ import { useState } from "react";
 import { View, Text, StyleSheet, Pressable, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import FormInput from "@/components/inputs/FormInput";
 import { BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
-import { isSmallScreen, RESPONSIVE_SIZES } from "@/src/helpers/responsive";
+import { isCompactScreen, RESPONSIVE_SIZES } from "@/src/helpers/responsive";
 import Toast from "react-native-toast-message";
 import { ApiHelper } from "@/src/helpers/apiHelper";
 
@@ -84,7 +84,7 @@ export function ForgotPasswordScreen({ navigation }) {
                     placeholder="ejemplo@correo.com"
                     placeholderTextColor={SUBTEXT}
                     labelText="Correo electrónico"
-                    marginTop={isSmallScreen ? 25 : 35}
+                    marginTop={isCompactScreen ? 25 : 35}
                     keyBoardType="email-address"
                     value={email}
                     onChangeText={setEmail}

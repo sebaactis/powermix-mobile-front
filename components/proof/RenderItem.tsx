@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
         marginBottom: 1,
     },
     proofId: {
-        fontSize: getResponsiveFontSize(15, 13),
+        fontSize: getResponsiveFontSize(15, 12),
         color: STRONG_TEXT,
         fontWeight: "600",
     },
@@ -160,12 +160,12 @@ const styles = StyleSheet.create({
         justifyContent: "center",
     },
     amountHeaderLabel: {
-        fontSize: getResponsiveFontSize(12, 11),
+        fontSize: getResponsiveFontSize(12, 10),
         color: SUBTEXT,
         marginBottom: 2,
     },
     amountHeaderValue: {
-        fontSize: getResponsiveFontSize(18, 16),
+        fontSize: getResponsiveFontSize(17, 15),
         fontWeight: "700",
     },
     metaBlock: {
@@ -180,12 +180,12 @@ const styles = StyleSheet.create({
         marginRight: 4,
     },
     metaLabel: {
-        fontSize: getResponsiveFontSize(13, 12),
+        fontSize: getResponsiveFontSize(12, 11),
         color: SUBTEXT,
         marginRight: 4,
     },
     metaValue: {
-        fontSize: getResponsiveFontSize(13, 12),
+        fontSize: getResponsiveFontSize(12, 11),
         color: STRONG_TEXT,
         flexShrink: 1,
     },

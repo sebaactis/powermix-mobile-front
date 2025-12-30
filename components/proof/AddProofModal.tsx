@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
+  ActivityIndicator,
   Animated,
   Modal,
   Pressable,
@@ -15,6 +16,7 @@ import Toast from "react-native-toast-message";
 import { CARD_BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
 import { useAuth } from "@/src/context/AuthContext";
 import { AuthApi } from "@/src/helpers/authApi";
+import { getResponsiveFontSize } from "@/src/helpers/responsive";
 
 type Props = {
   visible: boolean;
@@ -163,8 +165,6 @@ export default function AddProofModal({ visible, onClose, setProofs }: Props) {
   const handleSubmit = async () => {
     if (!validate()) return;
 
-    console.log(other)
-
     try {
       setLoading(true);
 
@@ -179,12 +179,12 @@ export default function AddProofModal({ visible, onClose, setProofs }: Props) {
         );
 
         if (!res.success || !res.data) {
-          const error = data.error?.fields["error"]
+          const errorMsg = res.error?.fields?.error || res.error?.message || "Error al cargar el comprobante"
 
           Toast.show({
             type: "appWarning",
             text1: "No se pudo cargar el comprobante",
-            text2: error
+            text2: errorMsg
           })
 
           return
@@ -209,12 +209,12 @@ export default function AddProofModal({ visible, onClose, setProofs }: Props) {
 
 
         if (!res.success || !res.data) {
-          const error = data.details?.error || "Error al cargar el comprobante"
+          const errorMsg = res.error?.fields?.error || res.error?.message || "Error al cargar el comprobante"
 
           Toast.show({
             type: "appWarning",
             text1: "No se pudo cargar el comprobante",
-            text2: error
+            text2: errorMsg
           })
           return
         }
@@ -483,9 +483,11 @@ export default function AddProofModal({ visible, onClose, setProofs }: Props) {
               onPress={handleSubmit}
               disabled={loading}
             >
-              <Text style={styles.buttonPrimaryText}>
-                {loading ? "Enviando..." : "Enviar comprobante"}
-              </Text>
+              {loading ? (
+                <ActivityIndicator color={STRONG_TEXT} />
+              ) : (
+                <Text style={styles.buttonPrimaryText}>Enviar comprobante</Text>
+              )}
             </Pressable>
           </View>
         </Animated.View>
@@ -512,20 +514,21 @@ const styles = StyleSheet.create({
   },
 
   modalScrollView: {
-    flex: 1,
+    maxHeight: 500,
     marginTop: 4,
   },
 
   modalTitle: {
-    fontSize: 18,
+    fontSize: getResponsiveFontSize(16, 15),
     fontWeight: "700",
     color: STRONG_TEXT,
     marginBottom: 4,
   },
   modalSubtitle: {
-    fontSize: 14,
+    fontSize: getResponsiveFontSize(14, 13),
     color: SUBTEXT,
     marginBottom: 14,
+    marginTop: 3
   },
 
   fieldGroup: {
@@ -533,7 +536,7 @@ const styles = StyleSheet.create({
   },
   fieldLabel: {
     color: STRONG_TEXT,
-    fontSize: 14,
+    fontSize: getResponsiveFontSize(14, 12),
     marginBottom: 4,
   },
   input: {
@@ -543,7 +546,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 9,
     color: STRONG_TEXT,
-    fontSize: 15,
+    fontSize: getResponsiveFontSize(15, 13),
     backgroundColor: "#111214",
   },
   inputError: {
@@ -552,7 +555,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: "#f97373",
-    fontSize: 12,
+    fontSize: getResponsiveFontSize(13, 12),
     marginTop: 2,
   },
 
@@ -578,7 +581,7 @@ const styles = StyleSheet.create({
   },
   dropdownSelectorText: {
     color: STRONG_TEXT,
-    fontSize: 15,
+    fontSize: getResponsiveFontSize(14, 13),
   },
   dropdownList: {
     borderRadius: 10,
@@ -594,7 +597,7 @@ const styles = StyleSheet.create({
   },
   dropdownItemText: {
     color: STRONG_TEXT,
-    fontSize: 15,
+    fontSize: getResponsiveFontSize(14, 13),
   },
 
   buttonsRow: {
@@ -613,7 +616,7 @@ const styles = StyleSheet.create({
   },
   buttonSecondaryText: {
     color: SUBTEXT,
-    fontSize: 15,
+    fontSize: getResponsiveFontSize(14, 13),
     fontWeight: "500",
   },
   buttonPrimary: {
@@ -621,7 +624,7 @@ const styles = StyleSheet.create({
   },
   buttonPrimaryText: {
     color: "#FFFFFF",
-    fontSize: 15,
+    fontSize: getResponsiveFontSize(14, 13),
     fontWeight: "600",
   },
 });

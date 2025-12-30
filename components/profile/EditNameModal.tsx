@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
+    ActivityIndicator,
     Animated,
     Modal,
     Pressable,
@@ -13,6 +14,7 @@ import { useAuth } from "@/src/context/AuthContext";
 import { MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
 
 import { AuthApi } from "@/src/helpers/authApi";
+import { getResponsiveFontSize } from "@/src/helpers/responsive";
 
 type Props = {
     visible: boolean;
@@ -180,9 +182,11 @@ export default function EditNameModal({ visible, onClose }: Props) {
                             onPress={handleSaveName}
                             disabled={loading}
                         >
-                            <Text style={styles.modalButtonPrimaryText}>
-                                {loading ? "Guardando..." : "Guardar"}
-                            </Text>
+                            {loading ? (
+                                <ActivityIndicator color={STRONG_TEXT} />
+                            ) : (
+                                <Text style={styles.modalButtonPrimaryText}>Guardar</Text>
+                            )}
                         </Pressable>
                     </View>
                 </Animated.View>
@@ -212,13 +216,13 @@ const styles = StyleSheet.create({
         elevation: 6,
     },
     modalTitle: {
-        fontSize: 18,
+        fontSize: getResponsiveFontSize(16, 14),
         fontWeight: "700",
         color: STRONG_TEXT,
         marginBottom: 4,
     },
     modalSubtitle: {
-        fontSize: 14,
+        fontSize: getResponsiveFontSize(14, 13),
         color: SUBTEXT,
         marginBottom: 14,
     },
@@ -229,7 +233,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
         paddingVertical: 10,
         color: STRONG_TEXT,
-        fontSize: 16,
+        fontSize: getResponsiveFontSize(16, 13),
         backgroundColor: "#2A2A2C",
         marginBottom: 5,
     },
@@ -253,7 +257,7 @@ const styles = StyleSheet.create({
     },
     modalButtonSecondaryText: {
         color: SUBTEXT,
-        fontSize: 15,
+        fontSize: getResponsiveFontSize(14, 13),
         fontWeight: "500",
     },
     modalButtonPrimary: {
@@ -261,12 +265,12 @@ const styles = StyleSheet.create({
     },
     modalButtonPrimaryText: {
         color: "#FFFFFF",
-        fontSize: 15,
+        fontSize: getResponsiveFontSize(15, 13),
         fontWeight: "600",
     },
     errorText: {
         color: "#f97373",
-        fontSize: 13,
+        fontSize: getResponsiveFontSize(13, 12),
         marginTop: 2,
     },
 });
