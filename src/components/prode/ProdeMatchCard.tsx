@@ -47,7 +47,11 @@ function getStatusColor(status: string): string {
 	return colors[status] ?? "#6b7280";
 }
 
-export default function ProdeMatchCard({ match, onPressEdit, onPressVouchers }: Props) {
+export default function ProdeMatchCard({
+	match,
+	onPressEdit,
+	onPressVouchers,
+}: Props) {
 	return (
 		<View style={styles.card}>
 			<View style={styles.stageRow}>
@@ -128,13 +132,8 @@ export default function ProdeMatchCard({ match, onPressEdit, onPressVouchers }: 
 						<Text style={styles.rewardSub}>
 							Podés verlo en tu sección de premios
 						</Text>
-						<Pressable
-							style={styles.rewardBtn}
-							onPress={onPressVouchers}
-						>
-							<Text style={styles.rewardBtnText}>
-								Ver en Mis Premios
-							</Text>
+						<Pressable style={styles.rewardBtn} onPress={onPressVouchers}>
+							<Text style={styles.rewardBtnText}>Ver en Mis Premios</Text>
 						</Pressable>
 					</View>
 				</View>
