@@ -13,12 +13,13 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import Icon from "react-native-vector-icons/FontAwesome";
+import MaterialIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import { AuthApi } from "@/src/helpers/authApi";
 import { useAuth } from "@/src/context/AuthContext";
 import { ProdeMatch, ProdePrediction } from "@/src/types/prode";
 import ProdeMatchCard from "../../components/prode/ProdeMatchCard";
 import ProdePredictionModal from "../../components/prode/ProdePredictionModal";
-import { STRONG_TEXT, SUBTEXT } from "../../constant";
+import { CARD_BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "../../constant";
 
 type ViewState =
 	| { type: "loading" }
@@ -26,6 +27,26 @@ type ViewState =
 	| { type: "unavailable" }
 	| { type: "error"; message: string }
 	| { type: "list"; matches: ProdeMatch[] };
+
+function InfoHeader() {
+	return (
+		<View style={styles.infoCard}>
+			<View style={styles.infoIconRow}>
+				<View style={styles.infoIconCircle}>
+					<MaterialIcon name="soccer" size={24} color={STRONG_TEXT} />
+				</View>
+				<View style={{ flex: 1 }}>
+					<Text style={styles.infoTitle}>¿Cómo funciona?</Text>
+					<Text style={styles.infoDesc}>
+						Pronosticá el resultado exacto de cada partido de Argentina en
+						los 90 minutos reglamentarios. Si acertás, ¡ganás un batido o
+						voucher de regalo!
+					</Text>
+				</View>
+			</View>
+		</View>
+	);
+}
 
 export default function ProdeScreen() {
 	const navigation = useNavigation<any>();
@@ -179,6 +200,7 @@ export default function ProdeScreen() {
 					<FlatList
 						data={state.matches}
 						keyExtractor={(item) => item.id}
+						ListHeaderComponent={<InfoHeader />}
 						renderItem={({ item }) => (
 							<ProdeMatchCard
 								match={item}
@@ -297,5 +319,35 @@ const styles = StyleSheet.create({
 	list: {
 		padding: 16,
 		paddingBottom: 100,
+	},
+	infoCard: {
+		backgroundColor: CARD_BG,
+		borderRadius: 12,
+		padding: 16,
+		marginBottom: 16,
+	},
+	infoIconRow: {
+		flexDirection: "row",
+		alignItems: "flex-start",
+		gap: 14,
+	},
+	infoIconCircle: {
+		width: 44,
+		height: 44,
+		borderRadius: 22,
+		backgroundColor: MAIN_COLOR + "25",
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	infoTitle: {
+		fontSize: 15,
+		fontWeight: "700",
+		color: STRONG_TEXT,
+		marginBottom: 6,
+	},
+	infoDesc: {
+		fontSize: 13,
+		color: SUBTEXT,
+		lineHeight: 19,
 	},
 });
