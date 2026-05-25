@@ -1,0 +1,58 @@
+project:
+  name: powermix
+  type: mobile-app
+  framework:
+    - expo
+    - react-native
+    - typescript
+  entrypoint: app/index.tsx
+  navigation_root: src/navigation/MainNavigator.tsx
+
+sdd:
+  execution_mode: interactive
+  artifact_store:
+    openspec: true
+    engram: true
+  chained_pr_strategy: auto-forecast
+  review_budget:
+    changed_lines: null
+  strict_tdd: true
+  phase_order:
+    - proposal
+    - design
+    - tasks
+    - apply
+    - verify
+  phase_rules:
+    proposal:
+      required_before_implementation: true
+    design:
+      required_before_apply: true
+    tasks:
+      required_before_apply: true
+    apply:
+      requires_green_lint_or_tests: true
+    verify:
+      required_before_completion: true
+
+quality:
+  lint:
+    command: npm run lint
+    required: true
+  tests:
+    runner: none-detected
+    command: null
+    required_for_change: true
+    fallback_when_runner_missing:
+      - define test approach in proposal/design
+      - add automated tests if feasible for touched modules
+      - if automation is not feasible, document manual verification steps in verify
+
+change_context:
+  upcoming_change: prode-predictions
+  requirements_source: prode-frontend.md
+  constraints:
+    - add a new fixed circular floating button near the lower screen area to navigate to PRODE
+    - do not reuse an existing button for PRODE entry
+    - do not introduce a new tab for PRODE
+    - preserve existing dirty worktree changes
