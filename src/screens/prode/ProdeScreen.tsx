@@ -1,3 +1,4 @@
+import { POWERMIX_API_URL } from "@/src/config/api";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import {
@@ -40,7 +41,7 @@ export default function ProdeScreen() {
 
 			try {
 				const res = await AuthApi<ProdeMatch[]>(
-					`${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/prode/matches`,
+					`${POWERMIX_API_URL}/api/v1/prode/matches`,
 					"GET",
 					signOut,
 				);
@@ -81,7 +82,7 @@ export default function ProdeScreen() {
 	const handleSavePrediction = useCallback(
 		async (matchId: string, argentinaGoals: number, opponentGoals: number) => {
 			const res = await AuthApi<ProdePrediction>(
-				`${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/prode/matches/${matchId}/prediction`,
+				`${POWERMIX_API_URL}/api/v1/prode/matches/${matchId}/prediction`,
 				"PUT",
 				signOut,
 				{ argentina_goals: argentinaGoals, opponent_goals: opponentGoals },

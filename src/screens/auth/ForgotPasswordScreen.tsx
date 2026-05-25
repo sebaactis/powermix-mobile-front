@@ -1,3 +1,4 @@
+import { POWERMIX_API_URL } from "@/src/config/api";
 import { useState } from "react";
 import { View, Text, StyleSheet, Pressable, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import FormInput from "@/components/inputs/FormInput";
@@ -21,7 +22,7 @@ export function ForgotPasswordScreen({ navigation }) {
         try {
             setLoading(true);
 
-            const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/recoveryPassword`;
+            const url = `${POWERMIX_API_URL}/api/v1/recoveryPassword`;
             const res = await ApiHelper<RecoveryPasswordRequestResponse>(url, "POST", { email });
 
             if (!res.success) {

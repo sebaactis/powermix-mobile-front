@@ -1,3 +1,4 @@
+import { POWERMIX_API_URL } from "@/src/config/api";
 import Field from '@/components/support/Field';
 import SupportRow from '@/components/support/SupportRow';
 import { CARD_BG, STRONG_TEXT, SUBTEXT, BG, MAIN_COLOR } from '@/src/constant';
@@ -113,7 +114,7 @@ export default function SupportScreen({ navigation }) {
         setLoading(true)
 
         try {
-            const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/user/contact`;
+            const url = `${POWERMIX_API_URL}/api/v1/user/contact`;
             const res = await AuthApi(url, "POST", signOut, { name, email, category, message })
 
             if (!res.success || !res.data) {

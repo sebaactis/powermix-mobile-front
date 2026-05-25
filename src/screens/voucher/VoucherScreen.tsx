@@ -1,3 +1,4 @@
+import { POWERMIX_API_URL } from "@/src/config/api";
 import { BG, CARD_BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
 import { useAuth } from "@/src/context/AuthContext";
 import { AuthApi } from "@/src/helpers/authApi";
@@ -101,7 +102,7 @@ export default function VoucherScreen({ navigation }) {
     const [selected, setSelected] = useState<VoucherApiItem | null>(null);
     const [showModal, setShowModal] = useState(false);
 
-    const urlGet = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/voucher/me`;
+    const urlGet = `${POWERMIX_API_URL}/api/v1/voucher/me`;
 
     const fetchVouchers = async (isRefresh = false) => {
         if (loading) return;
@@ -155,7 +156,7 @@ export default function VoucherScreen({ navigation }) {
     const handleDelete = async (item: VoucherApiItem) => {
         setDeletingId(item.VoucherID);
         try {
-            const urlDelete = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/voucher/${item.VoucherID}`;
+            const urlDelete = `${POWERMIX_API_URL}/api/v1/voucher/${item.VoucherID}`;
             const res = await AuthApi<ApiResponse<any>>(urlDelete, "DELETE", signOut);
 
             if (!res.success) {

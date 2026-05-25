@@ -10,6 +10,7 @@ import { loadTokens } from "../storage/tokenStorage";
 import { loadUser, saveUser, clearUser } from "../storage/userStorage";
 import { ApiHelper } from "../helpers/apiHelper";
 import Toast from "react-native-toast-message";
+import { POWERMIX_API_URL } from "../config/api";
 
 import {
   initAuthRuntimeFromStorage,
@@ -108,7 +109,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const signIn = async (email: string, password: string) => {
-    const baseUrl = process.env.EXPO_PUBLIC_POWERMIX_API_URL!;
+    const baseUrl = POWERMIX_API_URL!;
     const url = `${baseUrl}/api/v1/login`;
 
     const res = await ApiHelper<AuthResponse>(url, "POST", { email, password });

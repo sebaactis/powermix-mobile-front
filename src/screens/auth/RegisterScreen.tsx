@@ -1,3 +1,4 @@
+import { POWERMIX_API_URL } from "@/src/config/api";
 import Icon from 'react-native-vector-icons/AntDesign';
 
 import FormInput from '@/components/inputs/FormInput';
@@ -95,7 +96,7 @@ export default function RegisterScreen({ navigation }) {
     setLoading(true);
 
     try {
-      const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/register`;
+      const url = `${POWERMIX_API_URL}/api/v1/register`;
       const res = await ApiHelper(url, "POST", {
         name: registerData.name.trim(),
         email: registerData.email.trim(),

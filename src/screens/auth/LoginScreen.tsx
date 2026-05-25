@@ -1,3 +1,4 @@
+import { POWERMIX_API_URL } from "@/src/config/api";
 import React, { useState } from 'react';
 import { ActivityIndicator, Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import MaterialIcon from 'react-native-vector-icons/FontAwesome';
@@ -87,7 +88,7 @@ export default function LoginScreen({ navigation }) {
         return;
       }
 
-      const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/login-google`;
+      const url = `${POWERMIX_API_URL}/api/v1/login-google`;
 
       const res = await ApiHelper<LoginGoogleResponse>(url, "POST", {
         access_token: tokens.accessToken,

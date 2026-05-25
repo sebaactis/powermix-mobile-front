@@ -1,3 +1,4 @@
+import { POWERMIX_API_URL } from "@/src/config/api";
 import ActivityCard from '@/components/home/ActivityCard';
 import ProgressRing from '@/components/home/ProgressRing';
 
@@ -75,7 +76,7 @@ export default function HomeScreen({ navigation }) {
         }
 
 
-        const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/user/me`;
+        const url = `${POWERMIX_API_URL}/api/v1/user/me`;
         const res = await AuthApi<UserMeResponse>(url, "GET", signOut)
 
 
@@ -117,7 +118,7 @@ export default function HomeScreen({ navigation }) {
       }
 
       try {
-        const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/proofs/me/last3`;
+        const url = `${POWERMIX_API_URL}/api/v1/proofs/me/last3`;
         const res = await AuthApi(url, "GET", signOut)
 
         if (!res.success) {

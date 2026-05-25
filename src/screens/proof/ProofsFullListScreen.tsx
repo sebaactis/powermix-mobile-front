@@ -1,3 +1,4 @@
+import { POWERMIX_API_URL } from "@/src/config/api";
 import { RenderItem } from "@/components/proof/RenderItem";
 import { BG, MAIN_COLOR, STRONG_TEXT, SUBTEXT } from "@/src/constant";
 import { useAuth } from "@/src/context/AuthContext";
@@ -99,7 +100,7 @@ export default function ProofsFullListScreen({ navigation }) {
     };
 
     const buildUrlWithFilters = useCallback((pageToLoad: number) => {
-        let url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/proofs/me/paginated?page=${pageToLoad}&pageSize=${PAGE_SIZE}`;
+        let url = `${POWERMIX_API_URL}/api/v1/proofs/me/paginated?page=${pageToLoad}&pageSize=${PAGE_SIZE}`;
 
         if (filters.id_mp.trim()) {
             url += `&id_mp=${encodeURIComponent(filters.id_mp.trim())}`;

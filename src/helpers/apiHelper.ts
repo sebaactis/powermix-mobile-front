@@ -4,6 +4,7 @@ import {
 	setTokens,
 	clearAuthRuntime,
 } from "@/src/helpers/authRuntime";
+import { POWERMIX_API_URL } from "../config/api";
 
 type ApiError = {
 	message: string;
@@ -30,7 +31,7 @@ async function tryRefresh(auth: AuthOptions) {
 	const rt = getRefreshToken();
 	if (!rt) throw new Error("no_refresh_token");
 
-	const refreshUrl = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/refreshToken`;
+	const refreshUrl = `${POWERMIX_API_URL}/api/v1/refreshToken`;
 
 	const res = await fetch(refreshUrl, {
 		method: "POST",

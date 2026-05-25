@@ -1,3 +1,4 @@
+import { POWERMIX_API_URL } from "@/src/config/api";
 import AddProofModal from "@/components/proof/AddProofModal";
 import { RenderItem } from "@/components/proof/RenderItem";
 
@@ -88,7 +89,7 @@ export default function ProofScreen({ navigation }) {
         }
 
         try {
-            const url = `${process.env.EXPO_PUBLIC_POWERMIX_API_URL}/api/v1/proofs/me/paginated?page=${pageToLoad}&pageSize=${PAGE_SIZE}`;
+            const url = `${POWERMIX_API_URL}/api/v1/proofs/me/paginated?page=${pageToLoad}&pageSize=${PAGE_SIZE}`;
             const res = await AuthApi<PaginatedProofs>(url, "GET", signOut)
 
             if (!res.success) {
