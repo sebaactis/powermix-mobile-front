@@ -38,9 +38,9 @@ function InfoHeader() {
 				<View style={{ flex: 1 }}>
 					<Text style={styles.infoTitle}>¿Cómo funciona?</Text>
 					<Text style={styles.infoDesc}>
-						Pronosticá el resultado exacto de cada partido de Argentina en
-						los 90 minutos reglamentarios. Si acertás, ¡ganás un batido o
-						voucher de regalo!
+						Pronosticá el resultado exacto de cada partido de Argentina en los
+						90 minutos reglamentarios. Si acertás, ¡ganás un batido o voucher de
+						regalo!
 					</Text>
 				</View>
 			</View>
